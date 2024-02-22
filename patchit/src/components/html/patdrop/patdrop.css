@@ -1,0 +1,164 @@
+.patdropdown {
+  width: 100%;
+  height: 100%;
+  border: 0.1rem solid transparent;
+  border-radius: 0.5rem;
+  line-height: 25px !important;
+}
+
+.patdropdown:hover {
+  cursor: pointer;
+  border: 0.1rem solid rgba(255,255,255,0.1);
+}
+
+.patdrophiddenitems {
+  position: relative;
+  top: 0.5rem;
+  max-height: 27rem;
+  width: 100%;
+  z-index: 5;
+  overflow-y: auto;
+  background: rgba(0,0,0,0.9);
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.7);
+}
+
+/* patprofile ------------------------------------------------------*/
+
+.patdropdownprofile {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  padding-left: 0.5rem;
+  border-radius: 0.5rem;
+}
+
+.patprofile, .patmetaprofile {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  font-weight: 450;
+  font-size: 1vw;
+}
+
+.patmetaprofile {
+  height: 40%;
+  width: 100%;
+  font-weight: 500;
+  font-size: 0.8vw;
+  color: rgba(255,255,255,0.2);
+  padding-left: 0.1rem;
+}
+
+.patprofileicn, .patprofilemetaicn, .patdroppericn, .patdropperlasticn {
+  margin: 0 0.5rem 0 0;
+  font-size: 150% !important;
+  line-height: 25px !important;
+  height: auto !important;
+}
+
+.patdropperlasticn {
+  margin-left: auto;  
+  animation-name: animatedicns;
+  animation-duration: 4s;
+  animation-iteration-count: 1;
+}
+
+.patprofilemetaicn {
+  margin: 0 0.3rem 0 0;
+  font-size: 110% !important;
+}
+
+.patprofileimgwrapper, .patprofilemetaimgwrapper {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  width: 15%;
+  height: 70%;
+  margin: 0 0.7rem 0 0.5rem;
+}
+
+.patprofilemetaimgwrapper {
+  width: 30%;
+  height: 100%;
+  margin: 0 0.5rem 0 0;
+}
+
+.patprofileimg, .patprofilemetaimg {
+  width: 100%;
+  height: 100%;
+  border-radius: 0.5rem;
+}
+
+.patprofilemetaimg {
+  border-radius: 0.3rem;
+}
+
+.patprofiletitle {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  flex-direction: column;
+  height: 100%;
+}
+
+.patprofileinput {
+  height: 100%;
+  width: 100%;
+  color: transparent;  
+}
+
+.patprofileinput .inputprefix {
+  color: white;
+}
+
+/* patdropper ---------------------------------------------------------*/
+
+.patdropper, .patdroppertxt {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+  font-size: 1vw;
+  font-weight: 500;
+  color: rgba(255,255,255,0.4);
+  padding: 0.7rem 0.5rem;
+  overflow-x: auto;
+}
+
+.patdroppertxt {
+  color: rgba(255,255,255,0.7);
+  cursor: default;
+  font-size: 0.9vw;
+}
+
+.patdropper:hover{
+  background: rgba(20, 20, 20, 0.2);
+  color: white;
+  cursor: pointer;
+}
+
+.patdropperimgwrapper {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  width: 2.5vw;
+  height: 2.5vw;
+  margin: 0 0.7rem 0 0.5rem;
+  border-radius: 50%;
+}
+
+.patdropperimg {
+  height: 100%;
+  width: 100%;
+  border-radius: 50%;
+}
+
+@keyframes animatedicns {
+  from { color: grey;}
+  to { transform: rotateY(360deg); }
+}
+

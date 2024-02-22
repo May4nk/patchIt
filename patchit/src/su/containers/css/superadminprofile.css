@@ -1,0 +1,198 @@
+.suprofileoverview {
+  height: 5rem;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-top: 2rem;
+  border-bottom: 0.1rem solid rgba(255,255,255,0.1);
+  margin-bottom: 2rem;
+}
+
+.triggered {
+  background: rgba(0,0,0,0.2);
+  color: white;
+}
+
+.sucontent, .sutab {
+  display: flex;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.sucontent {
+  flex-direction: column;
+  justify-content: center;
+}
+
+.createpatcherbtnwrapper {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  width: 100%;
+  margin-left: auto;
+}
+
+.createpatcherbtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255,255,255,0.1);  
+  color:rgb(89, 109, 109);
+  border-radius: 1.5rem;
+  padding: 0.2rem 0.7rem;
+  text-transform: capitalize;
+  font-size: 0.9rem;
+  font-weight: 450;
+}
+
+.createpatcherbtnicn {
+  padding-right: 0.3rem;
+}
+
+.createpatcherbtn:hover {
+  cursor: pointer;
+  color: rgba(255,255,255,0.7);
+  border-color: white
+}
+
+.suprofiles {
+  border: 0.1rem solid black;
+  border-radius: 0.5rem;
+  background: rgba(0,0,0,0.3);
+  margin: 1rem;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+}
+
+.actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: auto;
+  margin-top: -0.7rem;
+  background: black;
+  padding: 0.3rem;
+  border-radius: 0.5rem;
+  margin-right: -0.7rem;
+}
+
+.suprofiles:hover {
+  border: 0.1rem solid rgba(255,255,255,0.3);
+  cursor: pointer;
+}
+
+.suprofilecontent {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0rem 1rem 0.5rem 1rem;
+}
+
+.suprofilespicwrapper {
+  height: 2.5rem;
+  width: 2.5rem;
+  border-radius: 50%;
+  border: 0.1rem solid white;
+  margin-right: 0.3rem;
+}
+
+.suprofileabout {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  margin-left: 0.1rem;
+}
+
+.suprofileusername {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: rgba(255,255,255,0.5);
+}
+
+.suprofileemail {
+  font-size:  0.7rem;
+  font-weight: 450;
+  color: rgba(255,255,255,0.3);
+}
+
+.suposts {
+  border: 0.1rem solid black;
+  width: 30%;
+  background: rgba(0,0,0,0.3);
+  border-radius: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  padding: 0.5rem;
+  margin: 1rem;
+}
+
+.suposts:hover {
+  border: 0.1rem solid rgba(255,255,255,0.3);
+  cursor: pointer;
+}
+
+.supoststitle {
+  font-size: 1vw;
+  color: rgba(255,255,255,0.7);
+  font-weight: 500;
+}
+
+.supostcontent {
+  max-width: 21rem;
+  border-radius: 0.5rem;
+  word-wrap: break-word;
+  color: grey;
+  width: 100%;
+  overflow: hidden;
+  max-height: 10rem;
+  white-space: pre-wrap;
+  background: rgba(0,0,0,0.2);
+  font-size: 0.8rem;
+}
+
+.supostcontentpic {
+  width: 100%;
+  max-height: 10rem;
+}
+
+.supostfooter, .supostheader {
+  font-size: 1vw;
+  color: gray;
+  font-weight: 400;
+  display: flex;
+  width: 100%;
+  margin: 0.5rem 0;
+  border-radius: 1.5rem;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.supostheader {
+  font-size: 0.6rem;
+}
+
+.commandusername {
+  color: rgba(255,255,255,0.7);
+  padding: 0rem 0.3rem;
+  font-size: 0.7rem;
+  font-weight: 500;
+}
+
+.supostfooterlikes {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(77, 74, 74, 0.1);
+  padding: 0.2rem 0.3rem;
+  border-radius: 1rem;
+}
+
+.supostfootericn {
+  padding: 0 0.3rem;
+}

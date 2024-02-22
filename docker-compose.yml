@@ -1,0 +1,32 @@
+version: "3.8"
+services: 
+  db:
+    image: postgres
+    ports:
+      - 5432:5432
+    environment: 
+      - POSTGRES_PASSWORD=patch
+    volumes:
+      - patch-db:/var/lib/postgresql/14/main
+
+  frontend: 
+    build:
+      context: ./patchit
+    ports:
+      - 127.0.0.1:3000:3000
+    command: sh -c "npm start"
+
+  backend:
+    build:
+      context: ./server
+    ports: 
+      - 127.0.0.1:5000:5000
+    command: sh -c "npm run start:prod"
+    depends_on:
+      - "db"
+    environment:
+      - ./server/.env.prod
+
+volumes:
+  patch-db:  
+

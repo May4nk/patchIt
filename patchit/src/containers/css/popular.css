@@ -1,0 +1,15 @@
+.contenttitle {
+  font-size: 1em; 
+  margin-top: 0.5em;
+  padding-left: 1.7em;
+  color: grey;
+}
+
+.contentfilter {
+  display: flex;
+  width: 98%;
+  height: 13em;
+  flex-direction: row;
+  justify-content: space-between;
+}
+

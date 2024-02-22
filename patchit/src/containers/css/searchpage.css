@@ -1,0 +1,174 @@
+.searchoverview {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  color: rgba(255,255,255, 0.8);
+  margin-top: 1rem;
+  margin-bottom: -0.3rem;
+  margin-left: 1rem;
+  width: 100%;
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.searchbycontent {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  flex-direction: column;
+  width: 70%;
+}
+
+.searchbycard {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+  border: 1px;
+  color: rgba(255,255,255,0.7);
+  padding: 0.7rem; 
+  margin: 0.3rem 0;
+  border-radius: 0.5rem;
+  background: rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+}
+
+.searchbypostcontent {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  flex-direction: column;
+}
+
+.searchbypostheader { 
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.searchbyheaderpicwrapper {
+  height: 2rem;
+  width: 2rem;
+  border-radius: 50%;
+}
+
+.searchbyheaderpic {
+  height: 100%;
+  width: 100%;
+  border-radius: 50%;
+}
+
+.searchbyheadercommunity {
+  margin: 0rem 0.3rem;
+  font-weight: 500;
+}
+
+.searchbyheaderposttime {
+  font-weight: 400;
+  font-size: 0.8rem;
+}
+
+.searchbypostbody {
+  font-weight: 450;
+  margin: 0.5rem;
+} 
+                    
+.searchbypostfooter {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center; 
+  margin-left: 0.5rem;
+  font-size: 0.7rem;
+}
+
+.searchbypostpicwrapper {
+  width: 30%;
+  height: 7rem;
+  border-radius: 0.5rem;
+}
+
+.searchbypostpic {
+  width: 100%;
+  height: 100%;
+  border-radius: 0.5rem;
+  opacity: 0.9;
+}
+
+.searchbycardpicwrapper {
+  height: 3.5rem;
+  width: 3.5rem;
+  border-radius: 50%;
+}
+
+.searchbycardpic {
+  height: 100%;
+  width: 100%; 
+  border-radius: 50%;
+}
+
+.searchbycardcontent {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; 
+  flex-direction: column;
+  width: 100%;
+  margin-left: 1rem;
+}
+                   
+.searchbycardcontentheader {  
+  font-weight: 500;
+}
+
+.searchbycardcontentabout {
+  font-size: 0.7rem;
+  color: rgba(255,255,255,0.4);
+}
+
+.searchbycardcontentinfo {
+  font-size: 0.7rem; 
+  font-weight: 500;
+  color: rgba(255,255,255,0.5);
+}       
+
+.searchbypostcomment, .searchbypostpcomment {
+  font-size: 1vw;
+  font-weight: 500;
+  color: rgba(255,255,255,0.6);
+  background: rgba(0, 0, 0, 0.2);
+  width: 100%;
+  padding: 0.5rem 0.7rem;
+  border-radius: 0.5rem;
+  margin: 0.3rem 0;
+}
+
+.searchbypostpcomment {
+  font-size: 1.1vw;
+  color: rgba(255,255,255,0.8);  
+}
+
+.searchbypostcommenttext {
+  margin-left: 0.5rem;
+}
+
+.searchbypostpcommentheader {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  font-size: 0.9vw;
+}
+
+.searchbypostpcommentpicwrapper {
+  height: 1.3rem;
+  width: 1.3rem;
+  border-radius: 50%;
+  margin-right: 0.5rem;
+}
+
+.searchbypostpcommentpic {
+  height: 100%;
+  width: 100%;
+  border-radius: 50%;
+}

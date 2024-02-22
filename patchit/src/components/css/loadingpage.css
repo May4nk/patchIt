@@ -1,0 +1,45 @@
+.loadingwrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20% 0;
+  height: 100%;
+  width: 100%;
+  flex-direction: column;
+}
+
+.loadinglogo1 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #44444445;
+  width: 4.5rem;
+  height: 4.5rem;
+  padding: 0 !important;
+  box-shadow: unset;
+}
+
+#loadinglogo {
+  width: 10.5rem;
+  height: 10.5rem;
+}
+
+.loadingtext { 
+  color: rgba(255, 255, 255, 0.8);
+  margin-top: 0.5rem;
+  margin-left: 0.5rem;
+  font-size: 0.95vw;
+  font-weight: 500;
+  font-family: GillSans, Calibri, Trebuchet, sans-serif;
+}
+
+.loadingmetatext {
+  color: rgba(255, 255, 255, 0.4);
+  font-weight: 450;
+  font-size: 0.8vw;
+}
+
+.btn-floating:hover {
+  background: #44444445;
+  cursor: default !important; 
+}

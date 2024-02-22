@@ -1,0 +1,260 @@
+.block {
+  display: block;
+}
+
+.none {
+  display: none;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgb(0,0,0,0.7);
+  z-index: 100;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.loginbox {
+  max-width: 27%;
+  background-color: rgb(0,0,0,0.9);
+  box-shadow: 5px 5px #0d0c0c;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  flex-direction: column;
+  line-height: 23px;
+  padding: 1rem;
+  padding-bottom: 1.5rem;
+}
+
+.closeicn {
+  margin-left: auto;
+  cursor: pointer;
+  color: grey;
+}
+
+.closeicn:hover {
+  color: white;
+}
+
+.logincardlogowrapper {
+  height: 5.5rem;
+  width: 5.5rem;
+  margin: 0rem 2rem 3rem 1rem;
+}
+
+.logincardlogo {
+  height: 100%;
+  width: 100%;
+}
+
+.logincontent {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  width: 85%;
+  margin: 0rem auto;
+}
+
+.logincardtitle {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+  font-size: 1.5rem;
+  font-weight: 500;
+  margin: 0.5rem 0;
+}
+
+.logincardtitleicn {
+  margin-left: auto;
+  color: grey;
+  font-size: 1.3rem !important;
+  cursor: pointer;
+  height: 100%;
+}
+
+.logincardtitleicn:hover {
+  color: white;
+}        
+
+.form {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  width: 100%;
+}
+
+.loginforminp {
+  color: rgba(255,255,255,0.3);
+  height: 2.5em;
+  width: 100%;
+  margin: 0.5rem 0rem;
+  box-shadow: 3px 3px #0d0c0c;
+}
+
+.forgotpass {
+  color: grey;
+  margin: -7%;
+  font-size: 0.9em;
+  margin: 0.1rem 0;
+}
+
+.fpassword:hover {
+  color: white;
+  cursor: pointer;
+}
+
+.policy {
+  margin-top: 7%;
+  color: grey;
+  font-size: 0.7rem;
+}
+
+.tc {
+  font-size: 0.9rem;
+  color: grey;
+  margin: 1rem 0rem 0.5rem 0rem;
+}
+
+.policytxt {
+  margin: 1rem 0;
+  font-size: 0.9em !important;  
+}
+
+#mybtn, #magicbtn {
+  margin: 0.5rem 0;
+  border-radius: 2rem;
+  font-weight: 500;
+  width: 53%;
+  text-transform: capitalize !important;
+  font-size: 0.9rem;  
+  background-color: #2196F3;
+  color: black;
+  padding: 0.3rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#magicbtn {
+  background-color: #071013;
+  color: rgba(255,255,255,0.8); 
+  border: 1px solid rgba(255,255,255,0.3);
+}
+
+.magiclinkbtnicon{
+  width: 15%;
+  padding-right: 0.3rem;
+}
+
+.signup {
+  color: grey;
+  font-size: 0.8rem;
+}
+
+.magicloginscreen {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.mailpic {
+  height: 100%;
+  width: 100%;
+}
+
+.senttext {
+  font-size: 0.9vw;
+  font-weight: 500;
+  color: rgba(255,255,255,0.7);
+  margin-top: -1rem;
+}
+
+.ortxt {
+  width: 100%;
+  color: rgba(255,255,255,0.2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 1rem 0;
+}
+
+.otherformlogin {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.loginotherform {
+  border-radius: 1.5rem;
+  padding: 0.3rem 0.5rem; 
+  border: 0.1rem solid rgba(255,255,255,0.1);
+  margin: 0 0.3rem;
+  background: black;
+  font-size: 0.8vw;
+  font-weight: 500;
+  color: rgba(255,255,255,0.7);
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  cursor: pointer;
+  height: 1.8rem;
+}
+
+.loginformslogo {
+  height: 100% !important;
+  width: 100% !important;
+  line-height: 23px !important;
+  margin-right: 0.1rem;
+}
+
+.magiclinkicon {
+  height: 100%;
+  width: 18%;
+  margin-right: 0.5rem;
+}
+
+.loginotherform:hover {
+  background: rgba(255,255,255,0.1);
+  border-color: rgba(255,255,255,0.3);
+}
+
+.loginotherformicn {
+  font-size: 17px !Important;
+}
+
+.signupbtn {
+  cursor: pointer;
+  color: rgba(255,255,255,0.5);
+  font-weight: 500;
+  padding-left: 0.2rem;
+  font-size: 0.9rem;
+  text-decoration: underline;
+}
+
+.signupbtn:hover {
+  color: #2196F3;  
+  text-decoration: none;
+}
+
+.extraspace {
+  margin: 3rem 0;
+}
+
+.check {
+  font-size: 0.7rem;
+  font-weight: 400;
+  margin-top: -0.3rem;
+  margin-left: -2.3rem;
+}

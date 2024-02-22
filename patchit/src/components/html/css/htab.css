@@ -1,0 +1,23 @@
+.htabwrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.htab {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin: 0 1rem;
+  padding: 0.5rem 0.7rem;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 0.9rem;
+  text-transform: capitalize;
+}
+
+.htabicn {
+  padding: 0rem 0.3rem;
+  line-height: 23px !important;
+  font-size: 1.4rem;
+}

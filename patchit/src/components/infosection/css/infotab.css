@@ -1,0 +1,86 @@
+.infotab {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.infosecabout {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  width: 100%;
+  flex-direction: column;
+}
+
+.popularcommunity {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  flex-direction: column;
+  padding: 0rem 0.7rem;
+  width: 100%;
+  color: rgba(255,255,255,0.5);
+  cursor: pointer;
+}
+
+.popularcommunity:hover {
+  background: rgba(62, 60, 60, 0.1);
+  color: rgba(255,255,255);
+}
+
+.popularcommunityheader, .popularcommunityfooter {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+}
+
+.popularcommunityheader {
+  margin: 0.3rem 0;
+}
+
+.popularcommunitypicwrapper {
+  height: 2rem;
+  width: 2rem;
+  border-radius: 50%;
+  margin-right: 0.5rem;
+}
+
+.popularcommunitypic{
+  height: 100%;
+  width: 100%;
+  border-radius: 50%;
+}
+
+.popularcommunitybody {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  flex-direction: column;
+  margin: 0.3rem 0;
+}
+              
+.popularcommunitytitle {
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.popularcommunityfooter {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.popularcommunityfooterprops {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  font-size: 0.7rem;
+  font-weight: 500;
+  margin-right: 0.7rem;
+}
+
+.popularcommunityfootericn {
+  margin-right: 0.3rem;
+}

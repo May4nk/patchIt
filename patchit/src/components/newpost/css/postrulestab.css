@@ -1,0 +1,26 @@
+.tab {
+  display: flex;
+  justify-content: flex-start;
+  padding: 0.5rem 0;
+  width: 90%;
+  margin: 0 1rem;
+  align-items: center;
+}
+
+.tabname, .tabtitle {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 500;
+  font-size: 1vw;
+}
+
+.tabtitle {
+  font-size: 1.3vw;
+  color: grey;
+}
+
+#ruleslogo {
+  height: 7rem;
+  width: 7rem;
+}

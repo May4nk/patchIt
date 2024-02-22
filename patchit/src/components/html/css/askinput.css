@@ -1,0 +1,96 @@
+.custominput {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  border: 1px solid !important;
+  border-radius: 0.3rem;
+}
+
+::placeholder {
+  color: grey;
+  opacity: 0.7;
+}
+
+.inputprefix {
+  margin-left: 0.5rem;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.askinputtab {
+  margin: 0 0.3rem;
+  border: 0.1rem solid rgba(255,255,255,0.1);
+  font-size: 0.8rem;
+  height: 60%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 0.7rem;
+  border-radius: 1.5rem;
+  color: rgba(255,255,255,0.5);
+  cursor: pointer;
+}
+
+.askinputtab:hover {
+  border: 0.1rem solid rgba(255,255,255,0.3);
+  color: rgba(255,255,255,0.7);
+}
+
+.askinputtabicn {
+  height: 100% !important;
+  line-height: 23px !important;
+  font-size: 0.9rem !important;
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+}
+
+.custominputspace {
+  display: flex;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+  overflow-y: hidden;
+  width: 23%;
+  line-height: 23px;
+  overflow-x: auto;
+}
+
+.inputpostfix {
+  margin-right: 0.5rem;
+  font-size: 100% !important;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.inputpostfix:hover {
+  color: #2196f3;  
+}
+
+input.askinput {
+  border: none !important;
+  width: 100% !important;
+  height: 100% !important;
+  box-sizing: border-box !important;
+  padding: 0 0.5rem !important;
+  font-size: 1rem !important;
+  margin-bottom: 0 !important;
+  border-radius: 0.3rem;
+  color: rgba(255,255,255,0.8);
+}
+
+input:focus {
+  border-color: rgba(255,255,255,0.5) !important;
+  box-shadow: none !important;
+}
+
+.inputlength {
+  font-size: 0.8rem;
+  margin-right: 0.5rem;
+}

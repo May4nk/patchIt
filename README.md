@@ -1,2 +1,2 @@
-# patchIt
-patch It is open source social app alike reddit
+# patchit
+patchit is opensource social media app alike reddit to patch things up.

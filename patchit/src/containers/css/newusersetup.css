@@ -1,0 +1,213 @@
+.block {
+  display: block;
+}
+
+.none {
+  display: none;
+}
+
+.setuserboxoverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgb(0,0,0,0.9);
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.setuserbox {
+  min-width: 27%;
+  box-shadow: 5px 5px #0d0c0c;
+  display: flex;
+  height: 80%;
+  justify-content: flex-start;
+  align-items: flex-start;
+  flex-direction: column;
+  padding: 1rem;
+  background: #0f1213c7;
+  border-radius: 0.5rem;
+  color: rgba(255,255,255,0.7);
+}
+
+.newusersetuplogowrapper {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  width: 100%;
+  height: 4rem;
+}
+
+.newusersetuplogo{
+  height: 100%;
+  width: 4rem;
+}
+
+.skipbtn {
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.skipbtn:hover {
+  color: white;
+  cursor: pointer;
+}
+
+.newusericn {
+  width: 5rem;
+  height: 5rem;
+  opacity: 0.7;
+}
+
+.newuserusernametitle {
+  font-weight: 500;
+  font-size: 1.1rem;
+  margin-top: auto;
+}
+
+.newuserusernametitle1 {
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin: 1rem 0;
+}
+
+.newuserusername {
+  color: rgba(255,255,255,0.3);
+  width: 100%;
+  height: 2.5rem;
+}
+
+
+.newuserbackgroundbox, .newuserprofilepicbox {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  border: 0.1rem solid rgba(255,255,255,0.1);
+  background: rgba(0,0,0,0.3);
+  height: 60%;
+  width: 37rem;
+  border-radius: 0.5rem;
+}
+
+.newuserbackgroundpic {
+  height: 100%;
+  width: 100%;
+  border-radius: 0.5rem;
+}
+
+.newuserprofilepicbox {
+  border-radius: 50%;
+  height: 21rem;
+  width: 21rem;
+  margin: 0 2rem;
+  align-self: center;
+}
+
+.newuserprofilepic {
+  height: 100%;
+  width: 100%;
+  border-radius: 50%;
+}
+
+
+.profilepicdel {
+  margin-top: -1rem;
+  margin-left: 18%;
+  cursor: pointer;
+}
+
+.delicn:hover {
+  color: #F44336;
+}
+
+.bgpicdel {
+  cursor: pointer;
+  margin-left: auto;
+  margin-top: -2rem;
+}
+
+.newusertitle {
+  margin-bottom: 1rem;
+  font-weight: 350;
+  font-size: 0.9rem;
+}
+
+.metatitle {
+  margin-bottom: 1rem;
+  font-weight: 500;
+  font-size: 0.7rem;
+  color: rgba(255,255,255,0.3);
+}
+
+.newusercommunitiesbox {
+  max-height: 23rem;
+  width: 29rem;
+  padding: 0.5rem;
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  overflow-y: auto;
+}
+
+.communityspace {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: rgba(255,255,255,0.7);
+  border: 0.1rem solid transparent;
+  font-size: 0.9rem;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: 1.3rem;
+  background: rgba(0,0,0,0.3);
+  cursor: pointer;
+  margin: 0.5rem;
+}
+
+.communityspace.selectedcommunity {
+  background: rgba(0,0,0,0.7);
+  color: white;
+  border: 0.1rem solid rgba(255,255,255,0.2);
+}
+
+.communityspace:hover {
+  background: rgba(0,0,0,0.4);
+  color: white;
+}
+
+.setusername {
+  margin-top: 1rem;
+  display: flex;
+  margin-left: auto;
+  align-items: center;
+  justify-content: flex-end;
+  width: 100%;
+}
+
+.setusernamebtn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 1.5rem;
+  width: 7rem;
+  font-weight: 600;
+  height: 2rem;
+  font-size: 0.8rem;
+  text-transform: capitalize;
+}
+
+#newuserbgpic, #newuserdp {
+  opacity: 0;
+  position: absolute;
+  width: 5%;
+  z-index: -1;
+}
+
+.newuserpicicn {
+  cursor: pointer;
+}

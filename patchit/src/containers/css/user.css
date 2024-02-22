@@ -1,0 +1,91 @@
+.useroverviewcomment {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  flex-direction: column;
+  color: grey;
+  border-radius: 0.5rem;
+  margin-top: 1rem;
+  background: #090808e8;
+  box-shadow: 1px 1px black;
+  padding: 0.5rem;
+}
+                   
+.cmntoverviewpost {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+  font-size: 0.7rem;
+  color: rgba(255,255,255,0.3);
+}
+                      
+.cmntoverviewpostpicwrapper {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+}
+
+.cmntoverviewpostpic {
+  height: 100%;
+  width: 100%;
+  border-radius: 50%;
+}
+
+.cmntoverviewpostname {
+  font-size: 0.9rem;
+  color: rgba(255,255,255,0.7);
+  padding: 0 0.5rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.cmntoverviewpostname:hover {
+  color: white;
+}
+
+.cmntoverviewposttitle {
+  padding: 0.5rem;
+  cursor: pointer;
+  color: rgba(255,255,255,0.7);
+}
+                    
+.cmntoverviewcontent {
+  background: black;
+  width: 100%;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+}
+
+.zeropost {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.zeroposttile {
+  font-size: 1.1rem;
+  color: gray;
+}
+
+.zeroposttitle1 {
+  font-size: 0.9rem;
+  color: rgba(255,255,255,0.4);
+}
+
+.zeropostbtnwrapper {
+  margin-top: 0.5rem;
+}
+
+.zeropostbtn {
+  border-radius: 0.5rem;
+  color: black;
+  background: #37474f;
+}
+
+.zeropostbtn:hover {
+  background: #90a4ae;
+}

@@ -1,0 +1,49 @@
+.flexy {
+  display: flex;
+  width: 98%;
+}
+
+.contentpost {
+  flex: 2 1 67%;
+  padding: 1.5rem 1.7rem;
+}
+
+.contentinfo {
+  flex: 1 1 33%;
+  margin-top: 1.5rem;
+}
+
+.postsort {
+  border-radius: 0.3rem;
+  height: 3.5rem;
+  background: #090808e8;
+  margin-bottom: 1rem;
+  box-shadow: 1px 1px #1d262b;
+}
+
+.useroverview {
+  display: flex;
+  align-items: center;
+  margin-top: 1rem;
+  padding: 0.5rem;
+  width: auto;
+}
+
+.useroverview .htab {
+  border-radius: 1.5rem;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 1.1vw;
+  text-transform: capitalize;
+  font-weight: 470;
+  padding: 0.3rem 1rem;  
+}
+
+.useroverview .htab:hover {
+  color: white;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.htab.selected {
+  color: white;
+  background: rgba(0, 0, 0, 0.4);
+}

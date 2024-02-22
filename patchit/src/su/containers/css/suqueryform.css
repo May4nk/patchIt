@@ -1,0 +1,122 @@
+.suform {
+  width: 100%;
+  margin: 0.5rem 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 1rem;
+  border-radius: 0.5rem;
+  background: rgb(7, 7, 7);
+}
+
+.suformtitle {
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.querytable {
+  color: white;
+}
+
+.querypanels {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.queryformat {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  flex-direction: column;
+  margin: 1.5rem;
+  flex-basis: 70%;
+}
+
+.query {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color:rgba(226, 209, 209, 0.637);
+  width: 100%;
+}
+
+.metaqueryformat {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.metaquery {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  font-size: 0.9rem;
+  margin: 0.5rem 0.9rem;
+}
+
+.deletequery {
+  margin-right: auto;
+  cursor: pointer;
+}
+
+.queryoptions {
+  min-width: 9rem;
+  height: 1.7rem;
+  width: auto;
+}
+
+.queryoptions .droppers {
+  height: 2.3rem;
+}
+
+.queryoptions .droppersitemtext {
+  font-size: 0.9vw !important;
+  font-weight: 500 !important;
+}
+
+.queryask {
+  height: 2rem;
+  width: 8rem;
+  color: rgba(255, 255, 255, 0.1);
+}
+
+.querask input {
+  font-size: 0.7rem !important;
+}
+
+.queryactions {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  flex-wrap: wrap;
+  flex-basis: 30%;
+}
+
+.queryvariables, .querybtn {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color:rgb(89, 109, 109);
+  background: black;
+  padding: 0.3rem 0.7rem;
+  border-radius: 1rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-transform: capitalize;
+  margin: 0.3rem;
+}
+
+.queryvariables:hover {
+  color: white;
+  border-color: white;
+}
+
+.querybtn {
+  color:rgb(64, 151, 221);
+  border-radius: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.querybtn:hover {
+  border-color: white;
+}
+
+.querybtn:focus {
+  background: none;
+}

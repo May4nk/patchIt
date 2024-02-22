@@ -1,0 +1,36 @@
+.infousercommunitycontent {
+  padding: 0.5rem;
+  width: 100%;
+}
+
+.userscommunitytitle {
+  color: #90a4ae;
+  font-weight: 450;
+}
+
+.userscommunitycontent {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 0.5rem;
+  width: 100%;
+  flex-wrap: wrap;
+  overflow-y: auto;
+}
+
+.userscommunitycontenttitle {
+  border-radius: 1.5rem;
+  border: 1px solid #454d50;
+  color: #797c7e;
+  font-size: 0.9rem;
+  font-weight: 500;
+  padding: 0.1rem 0.5rem;
+  margin: 0.2rem 0.3rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.userscommunitycontenttitle:hover {
+  color: white;
+  border-color: white;
+}

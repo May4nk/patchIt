@@ -1,0 +1,49 @@
+.errorcard, .msgcard {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  margin-bottom: 1rem;
+  margin-right: 1rem;
+  width: 25%;
+  max-width: 40%;
+  border-radius: 0.5rem;
+  background: #ef9a9a ;
+  color: black;
+  padding: 1rem;
+  z-index: 100; 
+  line-height: 23px;
+}
+
+.msgcard {
+  background: #b3e5fc;
+}
+
+.block{
+  display: block;
+}
+
+.none {
+  display: none;
+}
+
+.errorcardheader {
+  font-size: 1.1rem;
+  font-weight: 450;  
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.erroricn {
+  padding-right: 0.7rem;
+}
+
+.errorcardcontent {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  font-weight: 430;
+  font-size: 0.9rem;
+  margin: 0.5rem;  
+  text-transform: capitalize;
+}

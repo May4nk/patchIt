@@ -1,0 +1,101 @@
+.postpic {
+  border: 1px solid grey;
+  min-height: 17rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.multiimageprofiles {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  flex-direction: column;
+  margin-top: 0.5rem;
+  width: 100%;
+}
+
+.multiimage {
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: row;
+  padding: 0.5rem;
+  width: 99%;
+  overflow-x: auto;
+  cursor: pointer;
+}
+
+.currentimage {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  width: 100%;
+  padding-bottom: 1rem;
+}
+
+.imageoutline {
+  height: 23rem;
+  display: flex;
+  flex: 2;
+  justify-content: center;
+  align-items: center;
+  border-radius: 1%;
+  margin: 0.5rem;
+  background: rgba(0,0,0,0.1);
+}
+
+#currentimg {
+  max-height: 100%;
+  width: 100%;
+  border-radius: 1%;
+}
+
+.currentimagetitle {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  margin: 0.5rem;
+  color: grey;
+}
+
+.currentpostcaption {
+  height: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.currentpostcaption input {
+  color: white;
+}
+
+.uploadpic {
+  cursor: pointer;
+  align-self: center;
+  color: grey;
+}
+
+#uploadpic {
+  cursor: pointer;
+  border: 0.1rem dotted rgb(0,0,0,0.3);
+  border-radius: 3%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 7rem;
+  height: 7rem;
+  color: grey;
+  background: rgba(0,0,0,0.2)
+}
+
+.uploadpic:hover, #uploadpic:hover {
+  color: white;
+}
+
+#img {
+  opacity: 0;
+  position: absolute;
+  z-index: -1;
+  width: 9%;
+}
+

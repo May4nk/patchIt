@@ -1,0 +1,17 @@
+.suprofileoverviewtabs {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: 1rem;
+  padding: 0.2rem 0.9rem;
+  border-radius: 2rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.7);
+  text-transform: capitalize;
+}
+
+.suprofileoverviewtabs:hover {
+  color: white;
+  cursor: pointer;
+}
+

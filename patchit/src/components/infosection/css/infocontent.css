@@ -1,0 +1,33 @@
+.info {
+  border-radius: 0.5rem; 
+  min-height: 3rem;
+  background: black;
+  margin-bottom: 1rem;
+  box-shadow: 1px 1px #1d262b;
+}
+
+.infosec {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  background-image: url("../../../img/logo_bg.png");
+  background-size: 50%;
+  background-attachment: center;  
+  background-repeat: no-repeat;
+  background-position: center;  
+}
+
+.infotabheading {
+  font-weight: 500;
+  font-size: 0.8rem;
+  color: grey;
+  padding: 0.5rem;
+  display: flex;
+  width: 100%;
+  justify-content: flex-start;
+  align-items: center;
+  text-transform: uppercase;
+}

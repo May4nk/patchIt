@@ -1,0 +1,104 @@
+.commentspace {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 0.5rem;
+}
+
+.commentspaceadd {
+  color: #cfd8dc;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 0.1px solid #607d8b;
+  border-radius: 1.5rem;
+  padding: 0.3rem 0.7rem;
+  font-size: 0.9rem;
+}
+
+.commentspaceaddicn {
+  margin-right: 0.5rem;
+  font-size: 1.3rem;
+}
+
+.commentspaceadd:hover {
+  cursor: pointer;
+  color: white;
+  border-color: white;
+}
+
+.newcommentwrapper {
+  width: 100%;
+  height: 9rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: black;
+  flex-direction: column;
+  margin-top: 1rem;
+  border-radius: 0.5rem;
+  color: white;
+  padding: 0.5rem;
+}
+
+.parentComment {
+  font-size: 0.8rem;
+  color: rgba(255,255,255,0.7);
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  font-weight: 500;
+}
+
+.parentcommenttxt {
+  color: rgba(255,255,255, 0.4);
+  padding-left: 0.5rem;
+}
+
+.newcomment {
+  color: #cfd8dc;
+  border: 0;
+  height: 4.5rem;
+  width: 100%;
+  background: black;
+  border-radius: 0.5rem;
+  padding: 0.1rem;
+  font-size: 0.9rem;
+  font-weight: 450;
+  resize: none;
+}
+
+.newcommentaction {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-top: 0.5rem;
+  width: 100%;
+}
+     
+.newcommentactionbtnpost, .newcommentactionbtncancel {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 500;
+  font-size: 0.9rem;
+  margin-right: 0.7rem;
+  color: #859da8;
+  cursor: pointer;
+  padding: 0.1rem 0.7rem;
+  border-radius: 1rem;
+  background: rgba(79, 75, 75, 0.1);
+}
+
+.newcommentactionbtnpost:hover {
+  color: #29b6f6;
+  background: rgba(255,255,255,0.1);
+}
+
+.newcommentactionbtncancel:hover {
+  color: #f44336;
+  background: rgba(255,255,255,0.1);
+}

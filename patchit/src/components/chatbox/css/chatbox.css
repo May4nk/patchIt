@@ -1,0 +1,35 @@
+.block {
+  display: block;
+}
+
+.none {
+  display: none;
+}
+
+.chatbox {        
+  position: fixed;
+  right: 1rem;
+  border-radius: 0.5rem 0.5rem 0 0;
+  bottom: 0;
+  z-index: 100;
+  background: #0d0d0d;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 70%;
+  width: 53%;
+  line-height: 23px !important;
+  cursor: default;
+}
+
+.chatlist { 
+  height: 100%;
+  width: 35%;
+  border-right: 0.1rem solid rgba(64, 60, 60, 0.1);
+}
+
+.chatmsgs {
+  height: 100%;
+  width: 65%; 
+}

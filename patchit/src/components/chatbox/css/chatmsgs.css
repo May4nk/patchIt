@@ -1,0 +1,371 @@
+/* done */
+.rchatcontainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  font-size: 0.9rem;
+}
+
+.startnewchat {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  height: 90%;
+}
+
+.startnewchatpicwrapper {
+  height: 10vw;
+  width: 10vw;
+  border-radius: 50%;
+  margin-bottom: 1rem;
+}
+
+.startnewchatpic {
+  height: 100%;
+  width: 100%;
+  border-radius: 50%;
+}
+
+.startnewchattext {
+  font-weight: 450;
+  font-size: 0.9rem;
+}
+
+.startnewchattext1 {
+  font-size: 0.9rem;
+}
+
+.startnewchatbtnwrapper {
+  margin-top: 1rem;
+}
+
+.startnewchatbtn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 1.5rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  background: #64B5F6 !important;
+  color: black; 
+  padding: 0.2rem 0.9rem;
+  text-transform: capitalize;
+}
+
+.foundeduserpicwrapper {
+  height: 1.7rem;
+  width: 1.7rem;
+  border-radius: 50%;
+  margin: 0 0.3rem;
+  border: 0.1rem solid black;
+}
+
+.foundeduserpic {
+  height: 100%;
+  width: 100%;
+  border-radius: 50%;
+}
+
+.selectedGroupUsers {
+  max-height: 19%;  
+  color: rgba(255,255,255,0.6);
+  width: 94%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  overflow-y: auto;
+  flex-wrap: wrap;
+  margin: 0.7rem;
+  font-size: 0.7rem;
+  border: 0.1rem solid rgba(255, 255, 255, 0.3);
+  background: black;
+  padding: 0.5rem;
+  border-radius: 1rem;
+}
+
+.groupUser {
+  border: 0.1rem solid rgba(255, 255, 255, 0.1);
+  padding: 0 0.5rem;
+  margin: 0.3rem;
+  border-radius: 1rem;
+  cursor: pointer;
+}
+
+.groupUser:hover {
+  border-color: rgba(255, 255, 255, 0.3);
+  color: white;
+}
+
+.searchusernametxt {
+  color: rgba(255,255,255,0.3);
+  width: 94%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  margin-top: 0.7rem;
+  font-size: 0.9rem;
+}
+
+.suggestedusername {
+  max-height: 65%;  
+  color: rgba(255,255,255,0.3);
+  width: 94%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  overflow-y: auto;
+  flex-wrap: wrap;
+  margin-top: 0.7rem;
+  margin-bottom: auto;
+  font-size: 0.9rem;
+}
+
+.foundedusernames {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0,0,0,0.3);
+  padding: 0.3rem 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin: 0.5rem;  
+  border-radius: 1.3rem;
+  cursor: pointer;
+  border: 0.1rem solid transparent;
+}
+
+.foundedusernames:hover {
+  background: rgba(0,0,0,0.7);
+  color: white;
+}
+
+.createroom {
+  width: 96%;
+  height: 2.3rem;
+  margin-top: 1.5rem;
+  color: rgba(255,255,255,0.3);
+  background: black;
+}
+
+.messageinput input, .createroom input{
+  color: white;
+}
+
+.chattitleicnwrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: auto;
+}
+
+.chattitleicn {
+  color: rgba(255,255,255,0.4);
+  font-size: 1.3rem !important;
+  line-height: 23px !important;
+  height: 100% !important;
+  cursor: pointer;
+}
+
+.chattitleicn:hover {
+  color: white;
+}
+/* done */
+
+
+.acceptroom {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+  align-items: center;
+}
+
+.acceptroombtn {
+  height: 1.5rem;
+  border-radius: 1.5rem;
+  display: flex;
+  padding: 0.5rem 0.7rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  align-items: center;
+  justify-content: center;
+  margin: 0.5rem;
+  text-transform: capitalize;
+  color: black;
+  background: #64B5F6 !important;
+}
+
+.chattitle, .chattitles {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  height: 2.5rem;
+  width: 100%;
+  padding: 0.3rem 1rem;
+  font-weight: 430;
+  color: #cfd8dc;
+}
+
+
+.chat {
+  padding: 0.5rem;
+  overflow: auto;
+  background: #131315;
+  height: 100%;
+  max-width: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.chatlmsg, .chatrmsg {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 0.3rem 0.1rem;
+}
+
+.chatlmsg {
+  justify-content: flex-end;
+}
+
+.chatrmsg {
+  justify-content: flex-start;
+}
+
+.sentchatoptions, .receivedchatoptions {
+  display: none; 
+  color: rgba(255,255,255,0.4);
+}
+
+.chatoptions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.sentchatoptions {
+  margin-right: 0.3rem;
+}
+
+.receivedchatoptions {
+  margin-left: 0.3rem;
+}
+
+.chatoptionicn {
+  height: 100% !important;
+  line-height: 21px !important;
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.1rem !important;
+  margin: 0 0.3rem;
+}
+
+.chatlmsg:hover .sentchatoptions, .chatrmsg:hover .receivedchatoptions {
+  display: block;
+}
+
+.chatlmsg:hover, .chatrmsg:hover {
+  cursor: pointer;
+} 
+
+.chatoptionicn:hover {
+  color: white;
+}
+
+.senttxt, .receivedtxt {
+  background: rgba(0,0,0,0.3);
+  box-shadow: 1px 1px #020202;
+  border-radius: 0.5rem;
+  max-width: 71%;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  padding: 0.1rem 0.5rem;
+  color: rgba(255,255,255,0.7);
+  font-weight: 450;
+  font-size: 0.9rem;
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: column;
+}
+
+.receivedtxt {
+  box-shadow: 1px 1px rgba(255,255,255,0.1);
+}
+
+.chatform {
+  display: flex;
+  margin-top: auto;
+  padding: 0 0.3rem;
+  width: 100%;
+  height: 3rem;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  border-top: 0.1rem solid rgba(255,255,255,0.1);
+}
+
+.messageinput {
+  margin: 0 0.5rem;
+  width: 85%;
+  height: 93%;
+  color: transparent;
+  background: rgba(0,0,0,0.3);
+  border-radius: 1rem;
+}
+
+.chatsubmit:hover {
+  cursor: pointer;
+  color: #2196F3 !important;
+}
+
+.chatroomoptionsdrop {          /* chatroomoptions  */
+  position: relative;
+  display: inline-block;
+  margin-right: 0.5rem;
+}
+
+.chatroomoptionwrapper {
+  position: absolute;
+  background: rgba(0, 0, 0, 0.9);
+  border-radius: 0.5rem;
+  width: 8rem;
+  z-index: 5;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  flex-direction: column;
+  margin-left: -4.5rem;
+  margin-top: 0.3rem;
+}
+
+.chatroomoptions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 2.1rem;
+  width: 100%;
+  padding: 0 0.3rem;
+  color: rgba(255,255,255,0.3);
+  border-radius: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.chatroomoptionicn {
+  line-height: 31px !important;
+  height: 100% !important;
+  font-size: 1.2rem !important;
+  margin-left: auto;
+}
+
+.chatroomoptions:hover {
+  cursor: pointer;
+  color: #ef9a9a;
+}       

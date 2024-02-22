@@ -1,0 +1,99 @@
+.recommendedposts {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 0.5rem 0;
+  width: 100%;
+}
+
+.recommendedposttitle {
+  font-size: 0.7rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.3);
+  padding: 0 0.3rem;
+}
+
+.recommendedpost {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  color: rgba(255,255,255,0.5);
+  width: 100%;
+  margin: 0.2rem 0; 
+  padding: 0.3rem 0.7rem; 
+}
+
+.recommendedpost:hover {
+  background: rgba(57, 51, 51, 0.11);
+}
+
+.recommendedpostheader, .recommendedpostbody, .recommendedpostfooter {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; 
+  width: 100%;
+  margin: 0.3rem 0;
+  color: rgba(255,255,255,0.5);
+}
+
+.recommendedpostbody {
+  font-size: 0.9rem;
+  font-weight: 450;
+}
+          
+.recpostheaderpicwrapper {
+  height: 2rem;
+  width: 2rem;
+  border-radius: 50%;
+  margin-right: 0.5rem;
+}
+
+.recpostheaderpic {
+  height: 100%;
+  width: 100%;
+  border-radius: 50%;
+} 
+
+.recpostheadertitle {
+  font-weight: 500;
+  cursor: pointer;
+  color: rgba(255,255,255,0.7);
+}
+
+.recpostheadertitle:hover {
+  color: white;
+}
+          
+.recpostheaderuser {
+  margin-left: auto;
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; 
+  margin-right: 0.3rem; 
+  padding: 0 0.3rem;
+  border-radius: 1.5rem;
+  border: 0.1rem solid transparent;
+  color: rgba(255,255,255,0.5);
+}
+
+.recpostheaderuser:hover {
+  color: white;
+  border: 0.1rem solid rgba(255,255,255,0.1);
+}
+
+.recpostheaderusericn {
+  margin-right: 0.3rem;
+}        
+            
+.recpostfooterlikes, .recpostfootercmnts { 
+  font-size: 0.7rem;
+  font-weight: 500;
+  margin-right: 0.7rem;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; 
+}

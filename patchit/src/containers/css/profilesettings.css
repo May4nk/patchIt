@@ -1,0 +1,120 @@
+.switch label input[type="checkbox"]:checked + .lever::after {
+  background-color: #2196F3;
+}
+
+.useroverviewtitle {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  color: grey;
+  font-size: 1.3rem;
+  margin: 0.7rem 0;
+}
+
+.uoverviewicn {
+  padding-right: 0.5rem;
+}
+
+.usetting {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  align-items: flex-start;
+  width: 60%;
+  margin: 1rem 0;
+}
+
+.usettingtitle {
+  color: grey;
+  font-size: 1.3rem;
+  margin: 0.5rem 0;
+}
+
+.usettingtitlemeta {
+  font-size: 0.8rem;
+  margin: 0.3rem 0 0 0;
+  color: grey;
+  border-bottom: 0.1rem solid rgba(255,255,255,0.1);
+  width: 100%;
+  text-transform: capitalize;
+}
+
+.usettingitems {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+  margin: 0.7rem 0;
+}
+
+.usettingitemlabels {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  flex-direction: column;
+}
+
+.usettingitemtitle {
+  color: white;
+  margin: 0.3rem 0;
+}
+
+.usettingitemmetatitle {
+  font-size: 0.7rem;
+  color: grey;
+}
+
+.usettingitemchange {
+  margin-left: auto;
+}
+
+.usettingitemdrop {
+  margin-left: auto;
+  height: 2.5rem;
+  width: 20%;
+}
+
+.usettingitemdrop .patdropdownprofile {
+  color: rgba(255,255,255,0.7);
+}
+
+.usettingitemdrop .droppers {
+  font-size: 0.9rem;
+  text-transform: capitalize;
+  font-weight: 500;
+}
+
+.usettingitembtn, .usettingupdatechangesbtn {
+  border-radius: 1.3rem;
+  font-weight: 600;
+  text-transform: capitalize !important;
+  height: 2rem;
+  width: 4rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 0.7rem;
+}
+
+.usettingupdatechangesbtn {
+  margin-left: auto;
+}
+
+.picwrapper, .wallpicwrapper{
+  height: 5rem;
+  width: 5rem;
+  border-radius: 50%;
+  opacity: 0.8;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.wallpicwrapper {
+  width: 10rem;
+  border-radius: 0.5rem;
+}
+
+.pic, .wallpic {
+  height: 100%;
+  width: 100%;
+  border-radius: inherit;
+}

@@ -1,0 +1,69 @@
+html {
+  background: #111010;
+  width: 100%;
+  min-height: 100%;
+}
+
+body {
+  min-height: 100%;
+}
+
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  margin: auto;
+  width: 100%;
+  z-index: 1000;
+  box-shadow: 1px 3px 3px black;
+}
+
+.fcontainer, .othercontainer {
+  height: 100%;
+  display: flex;
+  background: #111010a6;
+  margin-top: 4rem;
+  width: 100%;
+}
+
+.othercontainer {
+  flex-direction: column;
+}
+
+.mysidenav {
+  width: 19%;
+  position: fixed;
+  overflow-y: auto;
+  height: 91%;
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  color: white;
+  background: #0000004A;
+}
+
+.fcontainerflexy {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.content, .nocontent {
+  padding: 7px;
+  display: flex;
+  flex-basis: 81%;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  width: 100%;
+}
+
+.nocontent {
+  flex-basis: 100%;
+  margin-left: 21%;
+}

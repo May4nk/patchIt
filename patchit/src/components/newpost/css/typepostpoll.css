@@ -1,0 +1,44 @@
+.polloptions {
+  border: 0.1rem solid grey;
+  margin-top: -0.2rem;
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+.options {
+  margin: 1rem;
+  width: 60%;
+}
+
+.pollinputs {
+  height: 2.5rem;
+  margin-bottom: 0.5rem;
+  color: grey;
+}
+
+.pollinputs input {
+  color: white;
+}
+
+.addoptions {
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 1rem;  
+  padding: 0.2rem 1rem;
+  font-size: 0.9rem;  
+}
+
+.addoptions:hover {
+  background: rgb(0,0,0,0.3);
+  color: #42a5f5;
+}
+
+.pollrules {
+  margin: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  font-size: 0.9vw;
+}

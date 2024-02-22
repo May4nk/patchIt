@@ -1,0 +1,131 @@
+.block {
+  display: block;
+}
+
+.none {
+  display: none;
+}
+
+.overlay {        
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgb(0,0,0,0.7);
+  z-index: 100;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.communityform {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  width: 43%;
+  height: auto;
+  color: white;
+  background: #030303;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 0.5rem;
+  line-height: 25px;
+  padding: 0.5rem;
+  background-image: url("./../../img/logo_bg.png");
+  background-size: 20%;
+  font-size: 0.9rem;
+  background-repeat: no-repeat;
+  background-position: center;  
+}
+
+.communityformname {
+  margin: 0.5rem 0;
+}
+
+.communityformtitle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  border-bottom: 0.1rem solid rgba(255, 255, 255,0.3);
+}
+
+.formtitle {
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.formname {
+  font-weight: 500;
+}
+
+.formnameinfo {
+  font-size: 0.7rem;
+  color: rgba(248, 243, 243, 0.5);
+}
+
+.createcommunityusername, .createcommunitydesc {
+  width: 100%;
+  height: 2.5rem;
+  color: rgb(255, 255, 255, 0.6);
+}
+
+.createcommunitydesc {
+  height: 4rem;
+  margin: 1rem 0;
+}
+
+.createcommunityusername input, .createcommunitydesc input {
+  color: rgba(255,255,255);
+}
+
+.forminputpadding {
+  margin-right: -1rem;
+}
+
+.errortxt {
+  font-size: 0.7rem;
+  width: 100%;
+  color: rgb(236, 26, 26);
+}
+
+.communityformtype {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin: 1rem 0;
+  width: 100%;
+}
+
+.communitytype {
+  margin: 0.3rem;
+}
+
+.communitytypename {
+  color: white;  
+  margin-right: 1rem;
+}
+
+.communityformbtnwrapper {
+  margin-left: auto;
+}
+
+.communityformbtn {
+  border-radius: 2rem;
+  background: transparent;
+  color: grey;
+  border: 1px solid rgba(255,255,255,0.1);
+  padding: 0.5rem 0.7rem;
+}
+
+.communityformbtn:hover {
+  border-color: white;
+  color:rgb(16, 140, 241)
+}
+
+.createcommunitycategory {
+  width: 40%;
+  height: 2.7rem;
+  color: white;
+}

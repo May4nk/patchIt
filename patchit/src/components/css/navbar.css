@@ -1,0 +1,86 @@
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 4rem !important;
+  background: #0d0d0d;
+  padding: 0.5rem 1rem;
+}
+
+.navhead {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 0.5rem;
+  height: 100%;
+}
+
+.logo {
+  height: 3rem;
+  width: 9rem;
+}
+
+.navigationbar {
+  width: 23%;
+  margin: 0 0.5rem;
+  height: 100%;
+  background: rgba(0,0,0,0.1);
+  color: white;
+}
+
+.searchbarwrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 45%;
+  height: 100%;
+  margin: 0 0.3rem;
+}
+
+.loginuseraccessbtns {
+  width: 17%;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin: 0 0.5rem;
+  height: 100%;
+}
+
+.loginusersec {
+  border-left: 0.1rem solid rgba(255,255,255,0.1);
+  height: 90%;
+  margin: 0 0.3rem;
+}
+
+.loginusericns {
+  height: 90%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 19%;
+  padding: 0.4rem;
+  color: white;
+  font-size: 20% !important;
+}
+
+.loginusericns:hover {
+  background: rgba(0,0,0,0.9);
+  cursor: pointer;
+}
+
+.userprofile {
+  width: 20%;
+  height: 100%;
+  margin: 0 0.5rem;
+  background: rgba(0,0,0,0.1);
+  color: white;
+}
+
+#abtn {
+  border-radius: 0.5rem;
+  color: white;
+  background: black;
+  font-weight: 600;
+  width: 9rem;
+} 
+
