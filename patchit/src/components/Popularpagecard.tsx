@@ -16,11 +16,24 @@ const Popularpagecard = ({ data }: popularcardprops) => {
     <Link to={`/post/${id}`} className="topcontentbox hoverable">     
       { type === "IMAGE" ? (
         <>
-          <img src={ require(`../img/${ JSON.parse(content)[0].postSrc}`) } className="topcontentpix" alt="sample_pic"/> 
+          <img src={require(`../img/${ JSON.parse(content)[0].postSrc}`)} className="topcontentpix" alt="sample_pic"/> 
           <div className="topcontenttext">
             { title.length > 70 ? title.slice(0,73)+"..." : title }
           </div>
         </>
+      ):  type === "POLL" ? (
+        <div className="topcontentblog">
+          <div className="topcontentblogtitle">
+            { title.length > 70 ? title.slice(0,70)+"..." : title }
+          </div>
+          <div className="topcontentpoll"> 
+            {JSON.parse(content).map((polls: any, idx: number) => (
+              <div className="topcontentpolltext" key={idx}>
+                { polls.poll }
+              </div>
+            ))}
+          </div>
+        </div>
       ) : (type === "BLOG" || type === "LINK") && (
         <div className="topcontentblog">
           <div className="topcontentblogtitle">

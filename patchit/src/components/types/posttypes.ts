@@ -22,3 +22,5 @@ export interface useractiontype {
   communities: communitytype[];
   savedposts: savedposttype[]; 
 }
+
+export type postdblikestype = (userreact: number, type: string, postlikenumber: number) => void;

@@ -1,7 +1,7 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { AuthContext } from "../context/authContext";
+import { useAuth } from "../common/hooks/useAuth";
 
 //component
 import Inforecommended from "../components/infosection/Inforecommended";
@@ -13,7 +13,7 @@ import Patdrop from "../components/html/patdrop/Patdrop";
 import { GETPOST, SUBSCRIBETOMORECOMMENT, GETUSERALLREACTIONS } from "./queries/postpage";
 import { POSTLIKEDISLIKE, UPSERTSAVEDPOST } from "../components/queries/post";
 
-//css
+//css & types & constants
 import "./css/main.css";
 import "./css/postpage.css"; 
 import { parsedimgtype } from "../components/types/posttypes";
@@ -34,9 +34,8 @@ import {
 let pic: string = require("../img/a.jpg");
 
 const Postpage = () => {
-
   const { postid } = useParams<Record<string, string>>();
-  const { user }: authcontexttype = useContext(AuthContext); 
+  const { user }: authcontexttype = useAuth(); 
   const userId:number|null = user && Number(user["id"] || user["user_id"]);
   const navigate = useNavigate();
   

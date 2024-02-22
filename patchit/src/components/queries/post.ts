@@ -1,5 +1,13 @@
 import { gql } from "@apollo/client";
 
+export const UPDATEPOST = gql`
+mutation UpsertPost($data: UpsertPostInput) {
+  upsertPost(data: $data) {
+    id
+  }
+}
+`;
+
 export const REMOVEUSERCOMMUNITY = gql`
   mutation RemoveUserCommunity($data: RemoveUserCommunityInput) {
     removeUserCommunity(data: $data) {

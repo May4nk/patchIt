@@ -1,7 +1,6 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useLazyQuery } from "@apollo/client";
-import { useState, useContext, useEffect } from "react";
-import { AuthContext } from "../../context/authContext";
+import { useAuth } from "../../common/hooks/useAuth";
 
 import Chatlist from "./chatlist/Chatlist";
 import Chatmsgs from "./chatmsgs/Chatmsgs";
@@ -24,7 +23,7 @@ const Chatbox = (chatboxprops: chatboxprops) => {
   const { showChatbox, setShowChatbox } = chatboxprops;
   const show: string = showChatbox ? "display" : "none";
   
-  const { user }: authcontexttype = useContext(AuthContext); 
+  const { user }: authcontexttype = useAuth(); 
   const userId: number | null = user && Number(user["id"] || user["user_id"]); 
   
   const [chatLevel, setChatLevel] = useState<number>(0);

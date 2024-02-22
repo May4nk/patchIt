@@ -1,7 +1,7 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useMutation } from "@apollo/client";
-import { AuthContext } from "../../context/authContext";
+import { useAuth } from "../../common/hooks/useAuth";
 
 //queries & mutations
 import { INSERTUSERCOMMUNITY, REMOVEUSERCOMMUNITY }  from "../queries/infosection";
@@ -17,7 +17,7 @@ const Infoabout = (infoaboutprops: infoaboutprops) => {
   const { data, userdata } = infoaboutprops;
 
   const navigate = useNavigate();
-  const { user }: authcontexttype = useContext(AuthContext);
+  const { user }: authcontexttype = useAuth();
   const userId: number|null = user && Number(user["id"] || user["user_id"]);
   const userName: string|null = user && user["username"];
   const userRole: number|null = user && (user["role"] ? user["role"]?.id : user["role_id"]);

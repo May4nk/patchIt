@@ -1,11 +1,17 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate} from "react-router-dom";
 import { useLazyQuery } from "@apollo/client";
-
-import { AuthContext } from "../../context/authContext";
+import { useAuth } from "../../common/hooks/useAuth";
 
 //queries
-import {GETPOSTS, GETUSERS, GETCOMMUNITIES, GETCHATS, GETROLES, GETCATEGORIES} from "../queries";
+import { 
+  GETPOSTS,
+  GETUSERS,
+  GETCOMMUNITIES,
+  GETCHATS,
+  GETROLES,
+  GETCATEGORIES
+} from "../queries";
 
 //components
 import Suqueryform from "./Suqueryform";
@@ -34,7 +40,7 @@ import { authcontexttype } from "../../context/types";
 
 const Superadminprofile = () => { 
   const navigate = useNavigate();
-  const { user }: authcontexttype = useContext(AuthContext);
+  const { user }: authcontexttype = useAuth();
   const userRole: number|null = user && (user["role"] ? user["role"]?.id : user["role_id"]);
     
   //states

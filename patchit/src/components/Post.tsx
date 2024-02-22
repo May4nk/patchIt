@@ -3,7 +3,7 @@ import { useLazyQuery, useMutation } from "@apollo/client";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../common/hooks/useAuth";
 
-import Postpoll from "./Postpoll";
+import Postpoll from "./Postpoll"; //component
 
 //query&mutation
 import { 
@@ -11,12 +11,21 @@ import {
   POSTLIKEDISLIKE,
   INSERTUSERCOMMUNITY,
   REMOVEUSERCOMMUNITY,
-  UPSERTSAVEDPOST
+  UPSERTSAVEDPOST,
+  UPDATEPOST
 } from "./queries/post";
 
-//css
+//css & types
 import "./css/post.css";
-import { postprops, parsedimgtype, useractiontype, communitytype, savedposttype, reactposttype } from "./types/posttypes";
+import { 
+  postprops,
+  parsedimgtype,
+  useractiontype,
+  communitytype,
+  savedposttype,
+  reactposttype,
+  postdblikestype
+} from "./types/posttypes";
 import { authcontexttype } from "../context/types";
 
 const Post = ({ postData, showcommunity } : postprops) => {
@@ -46,29 +55,54 @@ const Post = ({ postData, showcommunity } : postprops) => {
   const [joincommunity] = useMutation(INSERTUSERCOMMUNITY);
   const [leavecommunity] = useMutation(REMOVEUSERCOMMUNITY);
   const [upsertSavedPost] = useMutation(UPSERTSAVEDPOST);
+  const [upsertPost] = useMutation(UPDATEPOST);
   const [getUserReactions, { data, loading }] = useLazyQuery(GETUSERALLREACTIONS);
 
   const allUserActions = !loading && data?.listUsers[0];
 
   //handlers
-  const handleLike = () => {
-    if(user) {
-      likedislikepost({
+  const postdblikes: postdblikestype = (userreact: number, type: string, postlikenumber: number) => {
+    likedislikepost({
+      variables: {
+        data: {
+          reaction: userreact,
+          post_id: Number(id),
+          user_id: userId
+        }
+      }  
+    }); 
+    if(type === "+") {
+      upsertPost({
         variables: {
           data: {
-            reaction: 1,
-            post_id: Number(id),
-            user_id: userId
+            id: id,
+            likes: likes + postlikenumber
           }
-        }  
-      }) 
+        }
+      }); 
+    } else if(type === "-") {
+      upsertPost({
+        variables: {
+          data: {
+            id: id,
+            likes: likes - postlikenumber
+          }
+        }
+      }); 
+    }
+  }
+  const handleLike = () => {
+    if(user) {        
       if(likeState === "none") {
+        postdblikes(1, "+", 1);        
         setPostLikes(postLikes + 1);
         setLikeState("like");
       } else if(likeState === "like") {
+        postdblikes(0, "-", 1);
         setPostLikes(postLikes - 1);
         setLikeState("none");        
       } else if(likeState === "dislike") {
+        postdblikes(1, "+", 2);        
         setPostLikes(postLikes + 2);
         setLikeState("like");
       }
@@ -78,23 +112,17 @@ const Post = ({ postData, showcommunity } : postprops) => {
   }
 
   const handleDislike = () => {
-    if(user) {
-      likedislikepost({
-        variables: {
-          data: {
-            reaction: -1,
-            post_id: Number(id),
-            user_id: userId
-          }
-        }  
-      }) 
+    if(user) {      
       if (likeState === "none") {
+        postdblikes(-1, "-", 1);
         setPostLikes(postLikes - 1);
         setLikeState("dislike");
       } else if (likeState === 'dislike'){
+        postdblikes(0, "+", 1);
         setPostLikes(postLikes + 1);
         setLikeState("none");
       } else if (likeState === "like") {
+        postdblikes(-1, "-", 2);
         setPostLikes(postLikes - 2);
         setLikeState("dislike");
       }

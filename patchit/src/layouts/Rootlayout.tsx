@@ -1,17 +1,17 @@
-import React, { useContext } from "react";
+import React from "react";
 import { Outlet } from "react-router-dom";
 
 //components
 import Navbar from "../components/Navbar";
 import Sidenav from "../components/sidenav/Sidenav";
-import { AuthContext } from "../context/authContext";
+import { useAuth } from "../common/hooks/useAuth";
 
 //css & types
 import "./main.css";
 import { authcontexttype } from "../context/types";
 
 const Rootlayout = () => {
-  const { user }: authcontexttype = useContext(AuthContext);
+  const { user }: authcontexttype = useAuth();
   
   return (  
     <>

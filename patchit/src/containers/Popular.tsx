@@ -33,8 +33,7 @@ const Popular = () => {
         }
       ],
       limit: 4,
-      filter: {
-        type: "BLOG" || "IMAGE" || "LINK",
+      filter: {        
         status: "ACTIVE",
         privacy: "PUBLIC"
       }

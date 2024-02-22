@@ -5,11 +5,11 @@ export const postTypeDefs = `
     owner: User!
     community_id: Community
     content: String
-    type: TYPE!
+    type: TYPE
     likes: Int
     status: STATUS!
     privacy: PRIVACY!
-    created_at: String
+    created_at: String!
     tags: [PostTags]
     comments: [Comment]
   }
@@ -28,14 +28,16 @@ export const postTypeDefs = `
     LINK
   }
   input UpsertPostInput {
-    title: String!
-    owner: Int!
+    title: String
+    owner: Int
     community_id: Int
     content: String
-    type: String!
+    type: String
     status: String
     privacy: String
     tag: [String]
+    likes: Int
+    id: Int
   }
   input RemovePostInput {
     id: Int!

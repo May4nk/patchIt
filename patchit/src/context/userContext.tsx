@@ -1,11 +1,17 @@
-import React, { createContext, useState, useEffect, useContext } from "react";
+import React, { createContext, useState, useEffect } from "react";
 import { useLazyQuery } from "@apollo/client";
+import { useAuth } from "../common/hooks/useAuth";
 
-import { AuthContext } from "./authContext";
+import { GETLOGGEDUSER } from "./queries"; //query
 
-import { GETLOGGEDUSER } from "./queries";
-
-import { loggedusercontexttype, userstate, authcontexttype, usercontextdatatype, usertype } from "./types";
+//types
+import { 
+  loggedusercontexttype,
+  userstate, 
+  authcontexttype, 
+  usercontextdatatype,
+  usertype
+} from "./types";
 
 const LoggedUserContext = createContext<loggedusercontexttype>({
   loggedUser: null,
@@ -13,7 +19,7 @@ const LoggedUserContext = createContext<loggedusercontexttype>({
 });
 
 const LoggedUserProvider = (props: any) => {
-  const { user }: authcontexttype = useContext(AuthContext);
+  const { user }: authcontexttype = useAuth();
   const loggedInUsername: string|null = user && user["username"];
   
   const [userState, setUserState] = useState<userstate>({ 
