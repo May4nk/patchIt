@@ -45,16 +45,6 @@ export const postResolvers = {
         throw err;
       }
     },
-    likes: async({ id }: { id: number }): Promise<number> => {
-      try {
-        const postLiked: postlikedislikestype[] = await listAll<postlikedislikestype, { post_id: number }>("post_like_dislikes", { filter: { "post_id": id }});
-        const postLikes = postLiked.reduce((total, post) => total + Number(post.reaction), 0);
-        return postLikes;
-      
-      } catch(err) {
-        throw err;
-      }
-    },
     tags: async({ id }: { id: number }): Promise<posttagstype[]> => {
       try {
         const postTags: posttagstype[] = await listAll<posttagstype, { post_id: number }>("posts_tags_relation", { filter: { "post_id": id }});
