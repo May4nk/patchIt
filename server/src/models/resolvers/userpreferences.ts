@@ -15,7 +15,7 @@ export const userpreferenceResolvers = {
     userpreference: async ( parent: undefined, { userId }: { userId: number } ): Promise<userpreferencetype> => {
       try {
         const userpreferenceById: userpreferencetype = await findOne<userpreferencetype, { user_id: number }>("user_preferences", { "user_id" : userId });
-        if(!userpreferenceById) throw new Error(`Not setting found for User with Id: ${ userId }`);
+        if(!userpreferenceById) throw new Error(`No setting found for User with Id: ${ userId }`);
 
         return userpreferenceById;
       } catch(err) {

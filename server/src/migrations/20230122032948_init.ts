@@ -31,6 +31,7 @@ export async function up(knex: Knex): Promise<void> {
         table.string("username").notNullable().unique();
         table.string("password").notNullable();
         table.enu("status", ["ACTIVE","INACTIVE"]).defaultTo("ACTIVE").notNullable();
+        table.enu("privacy", ["PUBLIC","PRIVATE"]).defaultTo("PUBLIC").notNullable();
         table.date("dob");
         table.string("country");
         table.string("about");

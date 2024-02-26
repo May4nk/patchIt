@@ -1,9 +1,9 @@
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 import db from "../../db.js";
 import { findOne } from "../../common/queries.js";
 import { userdatatype, remuserdatatype, rusertype, logindatatype, magiclinkdatatype } from "./types/usermutetypes.js";
 import { usertype } from "../resolvers/types/usertypes.js";
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
 
 export const userMutations = {
   Mutation: {       
@@ -57,46 +57,49 @@ export const userMutations = {
         
         const userFound: usertype = await findOne<usertype, { username: string }>("users", { username: data.username });
 
-        if (userFound) {
-          
-          const validatePassword: boolean = await bcrypt.compare(data.password, userFound.password);
+        if (userFound) {         
+          if(userFound.status === "ACTIVE") {                   
+            const validatePassword: boolean = await bcrypt.compare(data.password, userFound.password);
 
-          if (validatePassword) {
-            const token: string = jwt.sign({
-              user_id: userFound.id,
-              email: userFound.email,
-              username: userFound.username,
-              role_id: userFound.role
-            }, 
-            "PASS_STRING",
-            { expiresIn: "2h" });
+            if (validatePassword) {
+              const token: string = jwt.sign({
+                user_id: userFound.id,
+                email: userFound.email,
+                username: userFound.username,
+                role_id: userFound.role
+              }, 
+              "PASS_STRING",
+              { expiresIn: "2h" });
 
-            const checkUserToken = await findOne("tokens", { user_id: userFound.id });
+              const checkUserToken = await findOne("tokens", { user_id: userFound.id });
 
-            if(checkUserToken){
-              const updateTokenInDb = await db("tokens")
-                .where("user_id", userFound.id)
-                .update({
-                  token: token
-                })
+              if(checkUserToken){
+                const updateTokenInDb = await db("tokens")
+                  .where("user_id", userFound.id)
+                  .update({
+                    token: token
+                  })
+              } else {
+                const insertTokenInDb = await db("tokens")
+                  .insert({
+                    token: token,
+                    user_id: userFound.id,
+                  });
+              }
+              
+              userFound.token = token;
+
+              return userFound;
+
             } else {
-              const insertTokenInDb = await db("tokens")
-                .insert({
-                  token: token,
-                  user_id: userFound.id,
-                });
+              throw Error("incorrect password");
             }
-            
-            userFound.token = token;
-
-            return userFound;
-
           } else {
-            throw Error("incorrect password");
+            throw Error("This account is deactivated");
           }
         } else {
           throw Error("user not found");
-        }
+        }        
       } catch(err) {
         throw err;
       }
