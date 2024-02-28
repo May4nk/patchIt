@@ -25,7 +25,7 @@ const Community = () => {
   const [sortby, setSortby] = useState<string>("likes");
 
   //queries 
-  const [getCommunity, { data, loading, error }] = useLazyQuery(GETCOMMUNITY);  
+  const [getCommunity, { data, loading, error }] = useLazyQuery(GETCOMMUNITY);
    
   useEffect(() => {
     if(cname){
@@ -57,7 +57,7 @@ const Community = () => {
                 <div className="aftername">{ data?.community?.communityname }</div>
                 <div className="afterchannelname"> {`c/${data?.community?.communityname}`} </div>
               </div>
-            </div>            
+            </div>
             { data?.community?.description && (
               <div className="communityinfo">
                 { data?.community?.description }

@@ -1,0 +1,80 @@
+.block {
+  display: block;
+}
+
+.none {
+  display: none;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgb(0,0,0,0.7);
+  z-index: 100;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal {
+  max-width: 30%;
+  background-color: rgba(1, 11, 17, 0.9);
+  box-shadow: 2px 2px #0d0c0c;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  flex-direction: column;
+  line-height: 23px;
+  padding: 1rem;
+  padding-bottom: 1.5rem;
+  font-size: 0.9rem;
+  font-weight: 470;  
+  color: rgb(255, 255, 255,0.7);
+  border-radius: 0.7rem;
+}
+
+.modallogowrapper {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  height: 7rem;
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+.modallogo {
+  height: 100%;
+  width: 30%;
+}
+
+.modalinput {
+  height: 2.5rem;
+  width: 100%;
+  color: rgba(255, 255, 255, 0.7);
+  margin-top: 1rem;
+  background: black;
+}
+
+.btnwrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.actionbtn, .closebtn {
+  padding: 0.1rem 0.9rem;
+  font-size: 0.8rem;
+  border-radius: 2rem;
+  font-weight: 500;
+  text-transform: capitalize;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 0.3rem;
+}

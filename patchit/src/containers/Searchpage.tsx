@@ -60,7 +60,7 @@ const Searchpage = () => {
         variables: {
           filter: {
             status: "ACTIVE",
-            privacy: "PUBLIC"        
+            privacy: "PUBLIC"
           }
         }
       });  
@@ -75,7 +75,8 @@ const Searchpage = () => {
       getUsers({
         variables: {
           filter: {
-            status: "ACTIVE"
+            status: "ACTIVE",
+            privacy: "PUBLIC"
           }
         }
       });

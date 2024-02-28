@@ -10,12 +10,7 @@ import { UPSERTCOMMENT } from "./queries"; //queries
 //css
 import "./css/commentspace.css";
 import { authcontexttype } from "../../context/types";
-import { newcommenttype, commenttype, commentspaceprops, } from "./types";
-
-interface parentcommenttype {
-  id: number;
-  comment: string;
-}
+import { newcommenttype, commenttype, commentspaceprops, parentcommenttype } from "./types";
 
 const Commentspace = (commentspaceprops: commentspaceprops) => {
   const { postId, comments } = commentspaceprops;
@@ -34,7 +29,7 @@ const Commentspace = (commentspaceprops: commentspaceprops) => {
   
   if(comments?.length !== 0) {
     comments?.forEach((comment: any) => {
-      if(comment.parent_id === null ) {     
+      if(comment.parent_id === null ) {
         group[0].push(comment);
       } else {
         group[comment?.parent_id?.id] ||= [];
@@ -49,11 +44,11 @@ const Commentspace = (commentspaceprops: commentspaceprops) => {
       ...newComment,
       [e.target.name]: e.target.value
     })
-  }
+  }  
 
   const handleAddComment: (e: any) => void = (e) => {
-    e.preventDefault();  
-    if(newComment.comment.length !== 0) {   
+    e.preventDefault();
+    if(newComment.comment.length !== 0) {
       insertComment({
         variables: {
           data: newComment
@@ -71,7 +66,7 @@ const Commentspace = (commentspaceprops: commentspaceprops) => {
     if(user) {
       setNewComment({ user_id: userId!, post_id: Number(postId), parent_id: null, comment: "" });
       setParentComment({ id: 0, comment: ""});
-      setAddComment(!addComment);     
+      setAddComment(!addComment);
     } else {
       navigate("/account/login");
     }
@@ -86,20 +81,31 @@ const Commentspace = (commentspaceprops: commentspaceprops) => {
   return (
     <div className="commentspace">
       {!addComment && (
-        <div className="commentspaceadd waves-effect waves-light" onClick={ handleCommentSection }>  
+        <div className="commentspaceadd waves-effect waves-light" onClick={ handleCommentSection }>
         <i className="material-icons commentspaceaddicn"> add </i>
         Comment
-      </div>    
-      )}      
-      { addComment && (      
+      </div>
+      )}
+      { addComment && (
         <div className="newcommentwrapper">
           { newComment.parent_id !== null && (
             <div className="parentComment">
               <i className="material-icons tiny"> reply </i>
-              <div className="parentcommenttxt">{ parentComment?.comment }</div>
+              <div className="parentcommenttxt">
+                { parentComment && parentComment?.comment.length > 103
+                  ? `${parentComment?.comment.substring(0,103)}...`
+                  : parentComment?.comment 
+                }
+              </div>
             </div>
           )}
-          <textarea className="newcomment" placeholder="Add a comment..." name="comment" onChange={ handleComment } value={ newComment.comment }></textarea>
+          <textarea 
+            className="newcomment"
+            placeholder="Add a comment..."
+            name="comment"
+            onChange={ handleComment }
+            value={ newComment.comment }
+          ></textarea>
           <div className="newcommentaction">
             <div className="newcommentactionbtnpost waves-effect waves-light" onClick={ handleAddComment }>
               Post
@@ -111,10 +117,10 @@ const Commentspace = (commentspaceprops: commentspaceprops) => {
         </div>
       )}
       <Commentlist 
-        rootcomments={ group[0] } 
-        allcomments={ group } 
-        setNewComment={ setNewComment } 
-        newComment={ newComment } 
+        rootcomments={ group[0].reverse() }
+        allcomments={ group }
+        setNewComment={ setNewComment }
+        newComment={ newComment }
         setParentComment={ setParentComment }
       />
     </div>

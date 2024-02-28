@@ -1,11 +1,11 @@
-import React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
 
 import Commentlist from "./Commentlist"; //component
 
 //css
-import { commentprops } from "./types";
 import "./css/comment.css";
+import { commentprops, handleparentidtype } from "./types";
+
 let pic = require("../../img/a.jpg");
 
 const Comments = (commentprops: commentprops) => {
@@ -21,7 +21,7 @@ const Comments = (commentprops: commentprops) => {
     setExpand(false);
   }
 
-  const handleParentId: (parentId: number, parentComment: string) => void = (parentId: number, parentComment: string) => {
+  const handleParentId: handleparentidtype = (parentId: number, parentComment: string) => {
     setNewComment({
       ...newComment,
       parent_id: Number(parentId) 
@@ -44,7 +44,7 @@ const Comments = (commentprops: commentprops) => {
           .19hrs ago
         </div>
       </div>
-      { open && (      
+      { open && (
         <>
           <div className={`commentcontent ${rootComments !== undefined && "nextcmnt"}`}>
             <div className="commentcontentmsg">
@@ -52,8 +52,8 @@ const Comments = (commentprops: commentprops) => {
             </div>
             <div className="commentallactions">
               { rootComments !== undefined && (
-                <i className="material-icons tiny commentallactionicn" onClick={ () => setExpand(!expand) }> 
-                  add_circle_outline 
+                <i className="material-icons tiny commentallactionicn blue-text" onClick={() => setExpand(!expand)}>
+                  { expand ? "add_circle" : "add_circle_outline" }
                 </i>
               )}
               <div className="commentactiontray">
@@ -63,21 +63,23 @@ const Comments = (commentprops: commentprops) => {
                   </i>
                   0
                 </div>
-                <div className="commentaction waves-effect waves-light" onClick={ () => handleParentId(data?.id, data?.comment) }>                  
-                    Reply
+                <div className="commentaction waves-effect waves-light"
+                  onClick={ () => handleParentId(data?.id, data?.comment) }
+                >
+                  Reply
                 </div>
               </div>
             </div>
-          </div>         
+          </div>
           { rootComments !== undefined && (
             <div className="show">
               { expand ? (
-                <Commentlist 
-                  rootcomments={ rootComments } 
-                  allcomments={ childcomments } 
-                  setNewComment={ setNewComment } 
-                  newComment={ newComment }                 
-                  setParentComment={ setParentComment } 
+                <Commentlist
+                  rootcomments={ rootComments }
+                  allcomments={ childcomments }
+                  setNewComment={ setNewComment }
+                  newComment={ newComment }
+                  setParentComment={ setParentComment }
                 />
               ) : (
                 <div className="more" onClick={() => setExpand(!expand)}>

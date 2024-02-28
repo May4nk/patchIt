@@ -38,3 +38,10 @@ export interface chatstatetype {
   sendmsg: string;
 }
 
+export interface modalstatetype {  
+  txt?: string;
+  btntxt?: string;
+  toUpdate: string;
+  placeholder?: string;
+}
+

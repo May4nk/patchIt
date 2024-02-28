@@ -36,3 +36,9 @@ export interface commentspaceprops {
   comments: comments[];
 }
 
+export type handleparentidtype = (parentId: number, parentComment: string) => void;
+
+export interface parentcommenttype {
+  id: number;
+  comment: string;
+}

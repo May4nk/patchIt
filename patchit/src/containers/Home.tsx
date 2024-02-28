@@ -21,7 +21,7 @@ const Home = () => {
   const { user }: authcontexttype = useAuth();
   const userId: number|null = user && Number(user["id"] || user["user_id"]);
   
-  const [sortby, setSortby] = useState<string>("created_at");
+  const [sortby, setSortby] = useState<string>("created_at");  
   
   //queries
   const [getPostsForHome, { data: homePostData, loading: homePostLoading }] = useLazyQuery(GETALLPOSTFORHOME);  

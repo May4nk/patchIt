@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { Link, useParams, useNavigate } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useAuth } from "../common/hooks/useAuth";
-import { useLazyQuery } from "@apollo/client";
+import { useLazyQuery, useMutation } from "@apollo/client";
 
 //components
 import Login from "./Login";
@@ -13,6 +13,7 @@ import Searchbox from "./searchbox/Searchbox";
 import Patdrop from "./html/patdrop/Patdrop";
 
 import { GETUSERCOMMUNITIES } from "./queries/navbar";
+import { UPDATEUSER } from "../common/loginqueries";
 
 //css & constants & types
 import "./css/navbar.css";
@@ -24,11 +25,11 @@ let pic: string = require("../img/a.jpg"); //change
 let logo: string = require("../img/navbar_logo.png");
 
 const Navbar = () => {
-  const navigate = useNavigate();
   const { cname } = useParams<string>();
   const { logout, user }: authcontexttype = useAuth();
   const userId: number|null = user && Number(user["id"] || user["user_id"]);
   const loggedInUsername: string|null = user && user["username"];
+  const userRole: number|null = user && (user?.role?.id || user?.role_id);  
 
   const [showLogin, setShowLogin] = useState<boolean>(false);
   const [createCommunity, setCreateCommunity] = useState<boolean>(false); 
@@ -38,6 +39,7 @@ const Navbar = () => {
   const [showSearchbox, setShowSearchbox] = useState<boolean>(false);
 
   const [getUserCommunities, { data, loading }] = useLazyQuery(GETUSERCOMMUNITIES);
+  const [updateUser] = useMutation(UPDATEUSER);
 
   //constants 
   const profileDropperprofile: profiletype = { 
@@ -73,8 +75,17 @@ const Navbar = () => {
 
   //handlers
   const handleLogout: () => void = () => {
+    if(userRole === 1337) {
+      updateUser({
+        variables: {
+          data: {
+            id: userId,
+            status: "INACTIVE",
+          }
+        }
+      });
+    }
     logout();    
-    navigate("/c/popular");    
   }
 
   useEffect(() => {

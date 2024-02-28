@@ -80,10 +80,7 @@
   align-items: center;
   justify-content: center;
   margin-left: -0.5rem;
-}
-
-.commentallactionicn:hover {
-  color: #2196F3;
+  cursor: pointer;
 }
 
 .commentactiontray {

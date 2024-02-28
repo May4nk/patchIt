@@ -15,21 +15,21 @@ const Commentlist = (commentlistprops: commentlistprops) => {
     <div className="allcomments">
       { rootcomments?.length > 0 ? (
         rootcomments?.map((comment: any, idx: number) => (
-          <Comments 
-            data={ comment } 
-            key={ idx } 
-            childcomments={ allcomments } 
-            setNewComment={ setNewComment } 
-            newComment={ newComment } 
+          <Comments
+            data={ comment }
+            key={ idx }
+            childcomments={ allcomments }
+            setNewComment={ setNewComment }
+            newComment={ newComment }
             setParentComment={ setParentComment }
           />
         ))
-      ) : (     
-        <Zeropostcard 
+      ) : (
+        <Zeropostcard
           title={ "No comments done yet!!" }
           openstate={ false }
           content={[
-            {           
+            {
               title: "Be first to comment here",
               unlock: "chat_bubble_outline",
               content: "must be logged in to comment"

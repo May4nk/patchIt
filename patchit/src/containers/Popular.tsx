@@ -24,7 +24,7 @@ const Popular = () => {
   const [getPopularPosts, { data: popularPostsData, loading: popularPostsLoading }] = useLazyQuery(GETALLPOSTS);
 
   const { data: cardPostsData, loading: cardPostsLoading } = useQuery(GETPOPULARCARDPOSTS, {
-    variables: {     
+    variables: {
       sort: [
         {
           column: "likes",
@@ -33,7 +33,7 @@ const Popular = () => {
         }
       ],
       limit: 4,
-      filter: {        
+      filter: {
         status: "ACTIVE",
         privacy: "PUBLIC"
       }
@@ -50,13 +50,13 @@ const Popular = () => {
             "order": "desc"
           }
         ],    
-        filter: {      
+        filter: {
           privacy: "PUBLIC",
           status: "ACTIVE"
         }
       }
     });
-  }, [sortby]);
+  }, [sortby, getPopularPosts]);
 
   if (cardPostsLoading) {
     return ( <Loadingpage /> )
@@ -76,8 +76,12 @@ const Popular = () => {
               <Sortpanel sort={ sortby } setSort={ setSortby } />
             </div>
             { !popularPostsLoading ? (
-              popularPostsData?.listPosts?.map((post: posttype, idx: number) => (              
-                <Post postData={ post } key={ idx } showcommunity={ post.community_id === null ? false : true } />
+              popularPostsData?.listPosts?.map((post: posttype, idx: number) => (
+                <Post 
+                  key={ idx } 
+                  postData={ post } 
+                  showcommunity={ post.community_id === null ? false : true }
+                />
               ))) : (
                 <Loadingpage />
               )

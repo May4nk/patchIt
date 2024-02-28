@@ -12,7 +12,7 @@ import { SIGNUPUSER, LOGINUSER, MAGICLINKLOGIN, UPDATEUSER, LISTUSERS, UPSERTUSE
 import { authcontexttype } from "../context/types";
 import { loginUsertype, loggedintype, loginthroughtype, usrdatatype, logindatatype, usertype } from "./types";
 
-const useLoginvia = (loginmethod: loginthroughtype) =>  {  
+const useLoginvia = (loginmethod: loginthroughtype) =>  {
   
   const navigate = useNavigate();
   const authcontext: authcontexttype = useAuth();
@@ -46,32 +46,32 @@ const useLoginvia = (loginmethod: loginthroughtype) =>  {
 
   const login: (usrdata: usrdatatype) => Promise<loginUsertype> = (usrdata: usrdatatype) => {
     return new Promise((resolve, reject) => {
-      loginuser({    
+      loginuser({
         variables: {
           data: {
             username: usrdata.username, 
             password: usrdata.password,
           }
         }, onError: ({ message }: { message: string}) => {
-          reject(new Error(message));
+          reject(message);
         },
-        onCompleted: ({ loginUser }: loggedintype) => {          
-          if(loginUser) {            
+        onCompleted: ({ loginUser }: loggedintype) => {
+          if(loginUser) {
             const loggedinData: loginUsertype = loginUser;
-            resolve(loggedinData);            
+            resolve(loggedinData);
             authcontext.login(loggedinData);
-            updateLoggedUser({ new_user: loggedinData?.new_user! });        
+            updateLoggedUser({ new_user: loggedinData?.new_user! });
             !loggedinData?.new_user! ? navigate("/home") : navigate(`/u/${ loggedinData?.username! }`);
           }
         }
       });
-    })    
+    })
   }
 
   const googleLogin: () => void = useGoogleLogin({
     onSuccess: async(res) => { 
       const credReq = await fetch(`https://www.googleapis.com/oauth2/v3/userinfo?access_token=${res.access_token}`);
-      const userCred = await credReq.json();  
+      const userCred = await credReq.json();
       const signupdata = { 
         email: userCred.email,
         username: userCred.name, 
@@ -81,28 +81,30 @@ const useLoginvia = (loginmethod: loginthroughtype) =>  {
 
       if(!isUserExist) {
         signupuser({ 
-          variables: { 
+          variables: {
             data: signupdata
           },   
           onError: (err: any) => {
             throw Error(err.message);
           },
-          onCompleted: ({ insertUser }: { insertUser: usertype }) => {                  
+          onCompleted: ({ insertUser }: { insertUser: usertype }) => {
             if(insertUser) {
               createUserpreference({
                 variables: {
                   data: {
                     user_id: insertUser.id
                   }
-                }                
+                }
               });
               login({ password: signupdata.password, ...insertUser });
             }
           }
         })
-      } else {      
+      } else {
         const { email, ...logindata } = signupdata;
-        login(logindata);
+        login(logindata).catch((err: string) => {
+          console.log(err);
+        });
       }
     },
     onError: codeResponse => {
@@ -110,7 +112,7 @@ const useLoginvia = (loginmethod: loginthroughtype) =>  {
     }
   });
   
-  const anonymousLogin: () => void = () => {    
+  const anonymousLogin: () => void = () => {
     let anonusername: string = randomUsername([]);
     let anonemail: string = randomMail();
 
@@ -122,17 +124,17 @@ const useLoginvia = (loginmethod: loginthroughtype) =>  {
       isUsernameExist = checker(anonusername, anonemail);
     }
 
-    if(!isUsernameExist) {        
-      const anonlogindata: logindatatype = { 
-        username: anonusername, 
-        password: randomPassword(), 
-        email: anonemail, 
+    if(!isUsernameExist) {
+      const anonlogindata: logindatatype = {
+        username: anonusername,
+        password: randomPassword(),
+        email: anonemail,
       };
       try {
-        signupuser({ 
-          variables: { 
+        signupuser({
+          variables: {
             data: anonlogindata
-          },        
+          },
           onCompleted: ({ insertUser }: { insertUser: usertype }) => {
             if(insertUser) {
               updateUser({
@@ -148,10 +150,11 @@ const useLoginvia = (loginmethod: loginthroughtype) =>  {
                   data: {
                     user_id: insertUser.id
                   }
-                }                
+                }
+              }).then(() => {
+                const { email, ...anonData } = anonlogindata;
+                login(anonData);
               });
-              const { email, ...anonData } = anonlogindata;          
-              login(anonData);
             }
           }
         });
@@ -162,14 +165,14 @@ const useLoginvia = (loginmethod: loginthroughtype) =>  {
     }
   }
 
-  const magiclinkLogin: (mailTo: string) => any = async(mailTo: string) => {   
-    try {       
+  const magiclinkLogin: (mailTo: string) => any = async(mailTo: string) => {
+    try {
       const clicklogin = await magicLogin({
         variables: {
           data: {
-            email: mailTo,          
+            email: mailTo,
           }
-        },              
+        },
       });
 
       createUserpreference({
@@ -177,7 +180,7 @@ const useLoginvia = (loginmethod: loginthroughtype) =>  {
           data: {
             user_id: clicklogin.data.magicloginUser.id
           }
-        }                
+        }
       });
       
       const token: string = clicklogin.data.magicloginUser.token;
@@ -185,11 +188,11 @@ const useLoginvia = (loginmethod: loginthroughtype) =>  {
       const mail = {
         service_id: 'service_6ntc9cu',
         template_id: 'template_wrjw7a4',
-        user_id: 'suEDEnYrpT15nDWJf',      
+        user_id: 'suEDEnYrpT15nDWJf',
         template_params: {
           'to_email': mailTo,
           'to_name': mailTo.substring(0, mailTo.indexOf("@")),
-          'message': `Please click on link to verify yourself. \n http://localhost:3000/account/verify/${ token }`,        
+          'message': `Please click on link to verify yourself. \n http://localhost:3000/account/verify/${ token }`,
         }
       }
     

@@ -59,12 +59,12 @@ const Chatbox = (chatboxprops: chatboxprops) => {
         if(!subdata) return prev;
         const newChatroom: userchatroomtype[] = subdata.newUserChatroom;    
         console.log(prev, "prev");        
-        return {
+        return Object.assign({}, prev, {
           listSpecificUserChatrooms: [ ...newChatroom, ...prev?.listSpecificUserChatrooms ]
-        };
+        });
       },            
     })  
-  },[subscribeToMore])
+  },[])
 
   useEffect(() => {
     if(showChatbox) {

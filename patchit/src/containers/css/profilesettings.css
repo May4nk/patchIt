@@ -85,15 +85,14 @@
 }
 
 .usettingitembtn, .usettingupdatechangesbtn {
-  border-radius: 1.3rem;
-  font-weight: 600;
-  text-transform: capitalize !important;
-  height: 2rem;
-  width: 4rem;
+  border-radius: 1.5rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-transform: capitalize;
+  padding: 0.4rem 0.8rem;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 0.7rem;
 }
 
 .usettingupdatechangesbtn {

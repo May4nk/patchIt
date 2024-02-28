@@ -21,7 +21,7 @@ export interface posttype {
   content?: string;
   status: STATUS;
   likes: number;
-  owner: ownertype;
+  owner: ownertype;  
   comments: { id: number }[];
   community_id: communitytype;
   created_at: string;

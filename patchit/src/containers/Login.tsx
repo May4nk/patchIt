@@ -34,12 +34,13 @@ const Login = () => {
   
   const [userByToken] = useLazyQuery(GETUSERBYTOKEN);
 
-  //states  
+  //states
   const [userData, setUserData] = useState<userdatatypes>({ email: "", password: "", username: "" });
   const [forgotUsernameLevels, setForgotUsernamelevels] = useState<number>(0);
-  const { email, ...loginData } = userData;
   const [clicked, setClicked] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  
   
   //handlers   
   const handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void = (e) => {
@@ -52,7 +53,7 @@ const Login = () => {
   const handleOneClickLogin = async(e: React.FormEvent) => {
     e.preventDefault();
     setClicked(true);
-    const mailSent = await magiclogin(userData.email);    
+    const mailSent = await magiclogin(userData.email);
     if(mailSent.status === 200) {
       setClicked(false);
       setUserData({ email: "", username: "", password: "" });
@@ -63,7 +64,8 @@ const Login = () => {
   const logingUser: (e: React.FormEvent) => void = async(e) => {
     e.preventDefault();
     if(userData?.username?.length !== 0 && userData?.password?.length !== 0) {
-      login(loginData).catch((err: string) => {        
+      const { email, ...loginData } = userData;
+      login(loginData).catch((err: string) => {
         setError(err);
       });
     }
@@ -75,7 +77,7 @@ const Login = () => {
     }
 
     if(verifycode !== undefined && verifycode?.length !== 0) {
-      setForgotUsernamelevels(201);          
+      setForgotUsernamelevels(201);
       userByToken({
         variables: {
           filter: {
@@ -85,35 +87,35 @@ const Login = () => {
       }).then(({ data }: any) => {
         if(data) {
           const loggedinData = data?.listTokens[0]?.user_id;
-          auth.login(loggedinData);        
+          auth.login(loggedinData);
           updateLoggedUser({ new_user: loggedinData?.new! });
           navigate("/home");
         }
       })
-    }           
+    }
   },[])
 
   return (
-    <div className="loginpage">      
+    <div className="loginpage">
       <div className="loginpagepicwrapper"> 
         <img src={ pic } className="loginpagepic" alt={"loginpage_pic"}/>
-      </div>      
-      <div className="loginpagecontent"> 
+      </div>
+      <div className="loginpagecontent">
         { forgotUsernameLevels !== 201 && (
-          <Link to={"/c/popular"}>          
-              <img src={ logo } className="loginpagelogopic" alt={"logo"}/>                         
+          <Link to={"/c/popular"}>
+              <img src={ logo } className="loginpagelogopic" alt={"logo"}/>
           </Link>
         )}
         <div className="loginpagetitle">
-          { forgotUsernameLevels === 0 ? "Log in" : 
-            forgotUsernameLevels === 1 ? "find Username" : 
-            forgotUsernameLevels === 2 ? "Forgot Password" : 
+          { forgotUsernameLevels === 0 ? "Log in" :
+            forgotUsernameLevels === 1 ? "find Username" :
+            forgotUsernameLevels === 2 ? "Forgot Password" :
             forgotUsernameLevels === 7 && "Magic login"
           }
         </div>
         { forgotUsernameLevels === 0 ? (
           <div className="loginpagemetatitle">
-            By continuing, you agree to our User Agreement. 
+            By continuing, you agree to our User Agreement.
           </div>
         ) : forgotUsernameLevels === 1 ? (
           <div className="loginpagemetatitle">
@@ -128,14 +130,14 @@ const Login = () => {
             Check mail for otp to login
           </div>
         )}
-        <div className="loginpageformwrapper"> 
-          { forgotUsernameLevels === 0 ? (         
+        <div className="loginpageformwrapper">
+          { forgotUsernameLevels === 0 ? (
             <>
               <div className="loginwithother">
-                <div className="loginthrough">             
+                <div className="loginthrough">
                   <div className="waves-effect waves-light loginthroughbtn" onClick={() => googlelogin() }>
                     <div className="googlelogoicnwrapper">
-                      <img src={ googlelogo } className="googlelogoicn" alt={"google_logo"}/>  
+                      <img src={ googlelogo } className="googlelogoicn" alt={"google_logo"}/>
                     </div>
                     oogle
                   </div>
@@ -150,40 +152,46 @@ const Login = () => {
                       perm_identity
                     </i>
                     Anonymous browsing
-                  </div>                    
+                  </div>
                 </div>
               </div>
               <div className="loginpageextra">
                 OR
-              </div>     
+              </div>
             </>
-          ) : (        
-             forgotUsernameLevels !== 201 && (   
+          ) : (
+             forgotUsernameLevels !== 201 && (
               <div className="loginpagebackarrow" onClick={ () => setForgotUsernamelevels(0) }>
                 <i className="material-icons">arrow_back</i>
               </div>
               )
           )}
-          { forgotUsernameLevels === 0 ? (         
+          { forgotUsernameLevels === 0 ? (
             <>
               <form className="loginpageform" onSubmit={ logingUser }>
                 <div className="loginpageinputs">
                   <Askinput 
-                    placeholder={"Username"} 
-                    name={"username"} 
-                    onChange={ handleChange } 
+                    placeholder={"Username"}
+                    name={ "username" }
+                    onChange={ handleChange }
                     prefix={"u/"}
                   />
                 </div>
                 <div className="loginpageinputs">
                   <Askinput 
-                    placeholder={"Password"} 
-                    name={"password"} 
-                    onChange={ handleChange } 
-                    type={ "password" }
+                    placeholder={ "Password" }
+                    name={ "password" }
+                    onChange={ handleChange }
+                    type={ showPassword ? "text" : "password" }
+                    postfix={ showPassword ? "IChttps" : "ICno_encryption" }
+                    onClickPostfix={ () => setShowPassword(!showPassword) }
                   />
                 </div>
-                <button className="waves-effect waves-light btn loginpagebtn black-text" type="submit" disabled={ userData?.username?.length === 0 || userData?.password?.length === 0 ? true : false }>
+                <button
+                  className="waves-effect waves-light btn loginpagebtn black-text"
+                  type="submit"
+                  disabled={ userData?.username?.length === 0 || userData?.password?.length === 0 ? true : false }
+                >
                   <div className="loginpagebtntxt">Log In </div>
                   <i className="material-icons loginpagebtnicn">exit_to_app </i>
                 </button>
@@ -216,7 +224,11 @@ const Login = () => {
                   type={ "password" }
                 />
               </div>
-              <button className="waves-effect waves-light btn loginpagebtn black-text" type="submit" disabled={ userData?.email?.length === 0 || userData?.password?.length === 0 ? true : false }>
+              <button
+                className="waves-effect waves-light btn loginpagebtn black-text"
+                type="submit"
+                disabled={ userData?.email?.length === 0 || userData?.password?.length === 0 ? true : false }
+              >
                 <div className="loginpagebtntxt">Find Username </div>
                 <i className="material-icons right">nature_people</i>
               </button>
@@ -237,11 +249,15 @@ const Login = () => {
                   onChange={ handleChange } 
                 />
               </div>
-              <button className="waves-effect waves-light btn loginpagebtn black-text" type="submit" disabled={ userData?.email?.length === 0 || userData?.username?.length === 0 ? true : false }>
+              <button
+                className="waves-effect waves-light btn loginpagebtn black-text"
+                type="submit"
+                disabled={ userData?.email?.length === 0 || userData?.username?.length === 0 ? true : false }
+              >
                 <div className="loginpagebtntxt">Forgot Password </div>
                 <i className="material-icons right">network_locked</i>
               </button>
-            </form>         
+            </form>
           ) : forgotUsernameLevels === 7 ? (
             <form className="magiclinkform" onSubmit={ handleOneClickLogin }>
               <div className="loginpageinputs">
@@ -251,9 +267,13 @@ const Login = () => {
                   onChange={ handleChange } 
                 />
               </div>
-              <button className="waves-effect waves-light btn loginpagebtn black-text" type="submit" disabled={(userData?.email?.length === 0 || clicked) ? true : false}>               
+              <button
+                className="waves-effect waves-light btn loginpagebtn black-text"
+                type="submit"
+                disabled={ (userData?.email?.length === 0 || clicked) ? true : false }
+              >
                 <div className="loginpagebtntxt"> { !clicked ? "Magic Login" : "Please wait..." } </div>
-                <img src={require("../img/meteor_rain.png")} className="magiclinkicon" alt={"magic_link_icon"}/>                
+                <img src={require("../img/meteor_rain.png")} className="magiclinkicon" alt={"magic_link_icon"}/>
               </button>
             </form>
           ) : forgotUsernameLevels === 200 ? (
@@ -282,9 +302,8 @@ const Login = () => {
                 You will be redirected in a jiffy...
               </div>
             </div>
-            
           )}
-        </div>        
+        </div>
       </div>
       { error && (
         <Errorcard message={ error } err={ true }/>

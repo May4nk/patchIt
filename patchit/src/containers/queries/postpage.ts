@@ -49,7 +49,7 @@ query Post($postId: Int!) {
 `;
 
 export const SUBSCRIBETOMORECOMMENT = gql`
-subscription Subscription($postId: Int!) {
+subscription NewComment {
   newComment {
     id    
     comment

@@ -11,7 +11,7 @@ import Patdrop from "../components/html/patdrop/Patdrop";
 
 //queries
 import { GETPOST, SUBSCRIBETOMORECOMMENT, GETUSERALLREACTIONS } from "./queries/postpage";
-import { POSTLIKEDISLIKE, UPSERTSAVEDPOST } from "../components/queries/post";
+import { POSTLIKEDISLIKE, UPSERTSAVEDPOST, UPDATEPOST } from "../components/queries/post";
 
 //css & types & constants
 import "./css/main.css";
@@ -19,7 +19,9 @@ import "./css/postpage.css";
 import { parsedimgtype } from "../components/types/posttypes";
 import { commenttype } from "../components/comments/types";
 import { authcontexttype } from "../context/types";
+import { droppertype } from "../components/html/patdrop/types";
 import { sortprofile } from "../constants/patdropconst";
+import { postdblikestype } from "../components/types/posttypes";
 import { 
   commentsubscriptiondatatype,
   commentprevtype,
@@ -42,6 +44,7 @@ const Postpage = () => {
   const [getPost, { data, loading, subscribeToMore }] = useLazyQuery(GETPOST);
   const [likedislikepost] = useMutation(POSTLIKEDISLIKE);
   const [upsertSavedPost] = useMutation(UPSERTSAVEDPOST);
+  const [upsertPost] = useMutation(UPDATEPOST);
   const [getUserReactions, { data: userreactionData, loading: userreactionLoading }] = useLazyQuery(GETUSERALLREACTIONS);
 
 
@@ -49,7 +52,11 @@ const Postpage = () => {
   const postData: postpagetype = !loading ? data?.post : {};
   const parsedimgData:parsedimgtype[] = postData?.type === "IMAGE" ? JSON.parse(postData.content) : [];
   const totalimg:number = parsedimgData.length;
-  const sortdroppers = [{ value: "popular", icn: "whatshot" }, { value: "newest", icn: "delete" }];
+  
+  const sortdroppers: droppertype[] = [
+    { value: "popular", icn: "whatshot" },
+    { value: "newest", icn: "trending_up" }
+  ];
 
   //state
   const [currentImg, setCurrentImg] = useState<number>(0);
@@ -61,24 +68,49 @@ const Postpage = () => {
   const allUserActions: usersavedtype = !userreactionLoading && userreactionData?.listUsers[0];
  
   //handlers
-  const handleLike = () => {
-    if(user) {
-      likedislikepost({
+  const postdblikes: postdblikestype = (userreact: number, type: string, postlikenumber: number) => {
+    likedislikepost({
+      variables: {
+        data: {
+          reaction: userreact,
+          post_id: Number(postData.id),
+          user_id: userId
+        }
+      }  
+    }); 
+    if(type === "+") {
+      upsertPost({
         variables: {
           data: {
-            reaction: 1,
-            post_id: Number(postid),
-            user_id: userId
+            id: postData.id,
+            likes: postData.likes + postlikenumber
           }
-        }  
-      }) 
+        }
+      }); 
+    } else if(type === "-") {
+      upsertPost({
+        variables: {
+          data: {
+            id: postData.id,
+            likes: postData.likes - postlikenumber
+          }
+        }
+      }); 
+    }
+  }
+
+  const handleLike = () => {
+    if(user) {
       if(likeState === "none") {
+        postdblikes(1, "+", 1);
         setPostLikes(postLikes + 1);
         setLikeState("like");
       } else if(likeState === "like") {
+        postdblikes(0, "-", 1);
         setPostLikes(postLikes - 1);
-        setLikeState("none");        
+        setLikeState("none");
       } else if(likeState === "dislike") {
+        postdblikes(1, "+", 2);
         setPostLikes(postLikes + 2);
         setLikeState("like");
       }
@@ -89,22 +121,16 @@ const Postpage = () => {
 
   const handleDislike = () => {
     if(user) {
-      likedislikepost({
-        variables: {
-          data: {
-            reaction: -1,
-            post_id: Number(postid),
-            user_id: userId
-          }
-        }  
-      }) 
       if (likeState === "none") {
+        postdblikes(-1, "-", 1);
         setPostLikes(postLikes - 1);
         setLikeState("dislike");
       } else if (likeState === 'dislike'){
+        postdblikes(0, "+", 1);
         setPostLikes(postLikes + 1);
         setLikeState("none");
       } else if (likeState === "like") {
+        postdblikes(-1, "-", 2);
         setPostLikes(postLikes - 2);
         setLikeState("dislike");
       }
@@ -124,7 +150,7 @@ const Postpage = () => {
             saved: savedState ? false : true
           }
         }
-      });       
+      });
     } else if (savestate === "pin") {
       setPinnedState(!pinnedState);
       upsertSavedPost({
@@ -154,18 +180,19 @@ const Postpage = () => {
   useEffect(() => {
     subscribeToMore({
       document: SUBSCRIBETOMORECOMMENT,
-      updateQuery: (prev: commentprevtype, { subscriptionData }: commentsubscriptiondatatype) => {
+      onError: err => console.log(err),
+      updateQuery: (prev: { post: postpagetype } , { subscriptionData }: commentsubscriptiondatatype) => {
         const subdata: subdatatype = subscriptionData?.data;
         if (!subdata) return prev;
-        const newComment: commenttype[] = subdata?.newComment;        
-        return Object.assign({}, prev, {
+        const newComment: commenttype[] = subdata?.newComment;      
+        return Object.assign({}, prev, { 
           post: {
-            comments: [...prev?.post.comments, ...newComment]     
-          }     
-        });
+            comments: [...newComment, ...prev?.post.comments]
+          }
+        }); 
       }
-    })
-  }, [subscribeToMore]);
+    });
+  }, []);
 
   useEffect(() => {
     if(postid) {
@@ -177,13 +204,12 @@ const Postpage = () => {
         if(data) {
           setPostLikes(data?.post?.likes);
         }
-      });  
+      });
     }
   }, [postid, getPost]);
 
   useEffect(() => {
-    if(userId !== null) {      
-      
+    if(userId !== null) {
       getUserReactions({
         variables: {
           filter: {
@@ -191,6 +217,9 @@ const Postpage = () => {
           }
         }
       });
+      setLikeState("none");
+      setPinnedState(false);
+      setSavedState(false);
 
       const userSaved: usersavedtype["savedposts"] = allUserActions?.savedposts;
       const userReacted: usersavedtype["reactedposts"] = allUserActions?.reactedposts;
@@ -214,7 +243,11 @@ const Postpage = () => {
           setLikeState("dislike");
         }
       }  
-    }
+    } else {
+      setLikeState("none");
+      setPinnedState(false);
+      setSavedState(false);
+    }    
   },[userId, allUserActions, postid, getUserReactions])
 
   if (loading) {
@@ -234,9 +267,9 @@ const Postpage = () => {
                 </Link>
                 { postData?.community_id !== null && (
                   <div className="communityname">
-                    in              
+                    in
                     <Link to={`/c/${ postData?.community_id?.communityname }`}>
-                      <div className="communitynametxt"> 
+                      <div className="communitynametxt">
                         c/{ postData?.community_id?.communityname }
                       </div>
                     </Link>
@@ -257,7 +290,7 @@ const Postpage = () => {
               <img src={ require(`../img/${parsedimgData[currentImg].postSrc}`)} className="postpagepost" alt={"pic"}/>
               { totalimg > 1 && ( 
                 <>
-                  <div className="allimages"> { `${currentImg + 1 } / ${totalimg}` } </div> 
+                  <div className="allimages"> { `${currentImg + 1 } / ${totalimg}` } </div>
                   <i className="material-icons leftimagebutton" onClick={ prevImg }> chevron_left </i>
                   <i className="material-icons rightimagebutton" onClick={ nextImg }> chevron_right </i>
                 </>
@@ -289,7 +322,7 @@ const Postpage = () => {
             </div>
             { user && (
               <div className="postpagepostinfotabs" onClick={() => handleSavingPost("save")}>
-                <i className={`material-icons icnspacechat ${ savedState && "blue-text"}`}> 
+                <i className={`material-icons icnspacechat ${ savedState && "blue-text"}`}>
                   bookmark_outline 
                 </i>
                 Save
@@ -307,7 +340,7 @@ const Postpage = () => {
             </div>
           </div>
           <div className="commentsection">
-            <Commentspace postId={ Number(postData?.id) } comments={postData?.comments}/>
+            <Commentspace postId={ Number(postData?.id) } comments={ postData?.comments } />
           </div>
         </div>
         <div className="contentinfo">

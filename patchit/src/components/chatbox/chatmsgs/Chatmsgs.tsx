@@ -151,6 +151,7 @@ const Chatmsgs = (chatmsgsprops: chatmsgsprops) => {
     subscribeToMoreMessages({
       document: SUBSCRIBETONEWMSG,     
       variables: { filter: { room_id: activeRoom.roomId! }},
+      onError: err => console.log("msg", err),
       updateQuery: (prev: any, { subscriptionData }: any ) => {
         if (!subscriptionData.data) return prev;
         const newChatMessage = subscriptionData.data.newMessage;

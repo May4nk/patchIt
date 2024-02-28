@@ -24,12 +24,3 @@ query Userpreference($userId: Int!) {
   }
 }
 `;
-
-
-export const UPDATEUSER = gql`
-  mutation Mutation($data: InsertUserInput) {
-    updateUser(data: $data) {
-      id
-    }
-  }
-`;

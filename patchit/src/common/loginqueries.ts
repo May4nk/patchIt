@@ -38,7 +38,7 @@ export const LOGINUSER = gql`
       new_user
       role {
         id
-      }
+      }  
     }
   }
 `;

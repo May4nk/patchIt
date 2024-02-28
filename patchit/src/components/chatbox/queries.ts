@@ -36,7 +36,7 @@ query ListUserChatrooms($filter: UserChatroomfilterInput, $sort: [SortInput], $l
 `;
 
 export const SUBSCRIBETONEWMSG = gql `
-  subscription Subscription {
+  subscription NewMessage {
     newMessage {
       id
       message
@@ -84,7 +84,7 @@ export const INSERTUSERCHATROOM = gql`
 `;
 
 export const SUBSCRIBETOUSERCHATROOMS = gql`
-  subscription Subscription($userId: Int!){
+  subscription UserChatroom($userId: Int!){
     newUserChatroom(userId: $userId) {
       id
       room_id {

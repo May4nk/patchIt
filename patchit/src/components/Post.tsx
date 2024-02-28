@@ -44,7 +44,7 @@ const Post = ({ postData, showcommunity } : postprops) => {
 
   //state
   const [currentImg, setCurrentImg] = useState<number>(0);
-  const [postLikes, setPostLikes] = useState<number>(likes);
+  const [postLikes, setPostLikes] = useState<number>(0);
   const [likeState, setLikeState] = useState<string>("none");
   const [joinState, setJoinState] = useState<boolean>(false);
   const [savedState, setSavedState] = useState<boolean>(false);
@@ -92,17 +92,17 @@ const Post = ({ postData, showcommunity } : postprops) => {
     }
   }
   const handleLike = () => {
-    if(user) {        
+    if(user) {
       if(likeState === "none") {
-        postdblikes(1, "+", 1);        
+        postdblikes(1, "+", 1);
         setPostLikes(postLikes + 1);
         setLikeState("like");
       } else if(likeState === "like") {
         postdblikes(0, "-", 1);
         setPostLikes(postLikes - 1);
-        setLikeState("none");        
+        setLikeState("none");
       } else if(likeState === "dislike") {
-        postdblikes(1, "+", 2);        
+        postdblikes(1, "+", 2);
         setPostLikes(postLikes + 2);
         setLikeState("like");
       }
@@ -136,7 +136,7 @@ const Post = ({ postData, showcommunity } : postprops) => {
       let joincommunitybtns = document.querySelectorAll(`.c${community_id.communityname}`);
         joincommunitybtns.forEach((btn) => {
           btn.classList.toggle('none');
-        });                  
+        });
       setJoinState(!joinState);
 
       if(joinState) {
@@ -147,8 +147,8 @@ const Post = ({ postData, showcommunity } : postprops) => {
               community_id: Number(community_id?.id)
             }
           }
-        })      
-      } else {                 
+        })
+      } else {
         joincommunity({
           variables: {
             data: {
@@ -166,16 +166,16 @@ const Post = ({ postData, showcommunity } : postprops) => {
   const handleSavingPost: (savestate: string) => void = (savestate) => {
     if(user) {
       if(savestate === "save") {
-        setSavedState(!savedState);             
+        setSavedState(!savedState);
         upsertSavedPost({
           variables: {
             data: {
               user_id: Number(userId),
               post_id: Number(id),
-              saved: savedState ? false : true                
+              saved: savedState ? false : true
             }
           }
-        });       
+        });
       } else if(savestate === "pin") {
         setPinnedState(!pinnedState);
         upsertSavedPost({
@@ -214,7 +214,7 @@ const Post = ({ postData, showcommunity } : postprops) => {
   const parseImg = (parsedimgData && parsedimgData !== null) && require(`../img/${parsedimgData[currentImg].postSrc }`);
 
   useEffect(() => {
-    if(userId !== null) {      
+    if(userId !== null) {
       getUserReactions({
         variables: {
           filter: {
@@ -222,7 +222,10 @@ const Post = ({ postData, showcommunity } : postprops) => {
           }
         }
       });
-
+      setLikeState("none");
+      setJoinState(false);
+      setPinnedState(false);
+      setSavedState(false);
       const usercommunities: useractiontype["communities"] = allUserActions?.communities;
       const usersaved: useractiontype["savedposts"] = allUserActions?.savedposts;
       const userreaction: useractiontype["reactedposts"] = allUserActions?.reactedposts;
@@ -244,17 +247,26 @@ const Post = ({ postData, showcommunity } : postprops) => {
       }
 
       if(userreaction?.length > 0 ) {
-        if(userreaction?.some((post: reactposttype) => (post?.reaction === 1 && post?.post_id?.id === id))){
+        if(userreaction?.filter((post: reactposttype) => (post?.reaction === 1 && post?.post_id?.id === id)).length > 0){
           setLikeState("like");
         }
 
-        if(userreaction?.some((post: reactposttype) => (post?.reaction === -1 && post?.post_id?.id === id))){
+        if(userreaction?.filter((post: reactposttype) => (post?.reaction === -1 && post?.post_id?.id === id)).length > 0){
           setLikeState("dislike");
-        }        
-      }  
+        }
+      }
+    } else {
+      setLikeState("none");
+      setSavedState(false);
+      setPinnedState(false);
+      setJoinState(false);
     }
-  },[userId, allUserActions, id])
-  
+  },[id, getUserReactions, allUserActions, userId, community_id?.id]);  
+
+  useEffect(() => {
+    setPostLikes(likes);
+  },[likes]);
+    
   return (
     <div className="post hoverable">
       <div className="postcontent">
@@ -264,11 +276,11 @@ const Post = ({ postData, showcommunity } : postprops) => {
               <img src={ require(`../img/${ profilepic }`)} className="headingpic" alt="profile pic" />
             </div>
             <div className="pictitle">
-              { showcommunity ? (                
+              { showcommunity ? (
                 <Link id="communityname" to={`/c/${ community_id?.communityname }`}>
                   c/{ community_id?.communityname } 
-                </Link>                
-              ) : (              
+                </Link>
+              ) : (
                 <Link id="usrname" to={`/u/${ owner?.username }`}>
                   u/{ owner?.username }
                 </Link>
@@ -310,8 +322,8 @@ const Post = ({ postData, showcommunity } : postprops) => {
           <div className="postlink"> 
             <a href={`https://${content}`}> { content } </a>
           </div>
-        ) : type === "POLL" ? ( 
-          <div className="postpoll"> 
+        ) : type === "POLL" ? (
+          <div className="postpoll">
             {content && (
               <Postpoll polldata={ content }/>
             )}
@@ -324,7 +336,7 @@ const Post = ({ postData, showcommunity } : postprops) => {
               </div>
             )}
           </div>
-        )}        
+        )}
         { parsedimgData && ( 
           parsedimgData[currentImg]?.postCaption && (
             <div className="post_caption"> 
