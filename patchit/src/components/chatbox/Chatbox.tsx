@@ -50,21 +50,22 @@ const Chatbox = (chatboxprops: chatboxprops) => {
     setActiveRoom({ username: room.username, roomId: room.roomId });
   }
   
-  useEffect(() => {    
-    subscribeToMore({
+  useEffect(() => {      
+    let unsubscribe = subscribeToMore({
       document: SUBSCRIBETOUSERCHATROOMS,
       variables: { userId: Number(userId) },
       updateQuery: (prev: userchatroomprevtype, { subscriptionData }: userchatroomsubscriptiondatatype) => {
         const subdata = subscriptionData.data;        
         if(!subdata) return prev;
-        const newChatroom: userchatroomtype[] = subdata.newUserChatroom;    
-        console.log(prev, "prev");        
-        return Object.assign({}, prev, {
+        const newChatroom: userchatroomtype[] = subdata.newUserChatroom;        
+        return {
           listSpecificUserChatrooms: [ ...newChatroom, ...prev?.listSpecificUserChatrooms ]
-        });
+        };
       },            
-    })  
-  },[])
+    });    
+
+    if(unsubscribe) return () => unsubscribe();
+  },[subscribeToMore, userId])
 
   useEffect(() => {
     if(showChatbox) {

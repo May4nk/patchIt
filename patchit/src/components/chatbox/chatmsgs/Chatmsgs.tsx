@@ -148,21 +148,20 @@ const Chatmsgs = (chatmsgsprops: chatmsgsprops) => {
   },[usernameSearch]);
  
   useEffect(() => {
-    subscribeToMoreMessages({
+    let unsubscribe = subscribeToMoreMessages({
       document: SUBSCRIBETONEWMSG,     
       variables: { filter: { room_id: activeRoom.roomId! }},
       onError: err => console.log("msg", err),
       updateQuery: (prev: any, { subscriptionData }: any ) => {
         if (!subscriptionData.data) return prev;
-        const newChatMessage = subscriptionData.data.newMessage;
-        console.log("new", newChatMessage);
-        console.log("re", prev.listMessages);      
+        const newChatMessage = subscriptionData.data.newMessage;                  
         return {
           listMessages: [ ...prev?.listMessages, ...newChatMessage ]
         }
       }
     })
-  },[]);
+    if(unsubscribe) return () => unsubscribe();
+  },[subscribeToMoreMessages, activeRoom]);
 
   useEffect(() => {
     if(activeRoom.roomId.length !== 0) {

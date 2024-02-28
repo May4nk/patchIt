@@ -177,22 +177,25 @@ const Postpage = () => {
     }
   }
 
-  useEffect(() => {
-    subscribeToMore({
+  useEffect(() => {      
+    let unsubscribe = subscribeToMore({
       document: SUBSCRIBETOMORECOMMENT,
       onError: err => console.log(err),
-      updateQuery: (prev: { post: postpagetype } , { subscriptionData }: commentsubscriptiondatatype) => {
+      updateQuery: (prev: { post: postpagetype } , { subscriptionData }: commentsubscriptiondatatype) => {        
         const subdata: subdatatype = subscriptionData?.data;
         if (!subdata) return prev;
         const newComment: commenttype[] = subdata?.newComment;      
         return Object.assign({}, prev, { 
           post: {
-            comments: [...newComment, ...prev?.post.comments]
+            ...prev?.post,
+            comments: [...prev?.post.comments, ...newComment]
           }
-        }); 
+        });
       }
-    });
-  }, []);
+    });    
+
+    if(unsubscribe) return () => unsubscribe();
+  }, [subscribeToMore]);
 
   useEffect(() => {
     if(postid) {
