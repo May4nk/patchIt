@@ -257,19 +257,17 @@ const Profilesetting = () => {
                   { userData.email }
                 </div>
               </div>
-              <div className="usettingitemchange">
-                <div className="waves-effect waves-light black-text blue usettingitembtn" 
-                  onClick={() => {
-                    handleModalState({ 
-                      txt: "Update your Email Address",
-                      btntxt: "update",
-                      placeholder: "Email Address",
-                      toUpdate: "email"
-                    })
-                  }}
-                >
-                  Update
-                </div>
+              <div className="waves-effect waves-light black-text blue usettingitembtn" 
+                onClick={() => {
+                  handleModalState({ 
+                    txt: "Update your Email Address",
+                    btntxt: "update",
+                    placeholder: "Email Address",
+                    toUpdate: "email"
+                  })
+                }}
+              >
+                Update
               </div>
             </div>
             <div className="usettingitems">
@@ -277,10 +275,8 @@ const Profilesetting = () => {
                 <div className="usettingitemtitle"> Change password </div>
                 <div className="usettingitemmetatitle"> Password must be at least 8 characters long </div>
               </div>
-              <div className="usettingitemchange">
-                <div className="waves-effect waves-light black-text blue usettingitembtn">
-                  Update
-                </div>
+              <div className="waves-effect waves-light black-text blue usettingitembtn">
+                Update
               </div>
             </div>
             <div className="usettingitems">
@@ -288,17 +284,15 @@ const Profilesetting = () => {
                 <div className="usettingitemtitle"> Deactivate account </div>
                 <div className="usettingitemmetatitle">{ userData.username }</div>
               </div>
-              <div className="usettingitemchange">
-                <div className="waves-effect waves-light black-text red usettingitembtn" 
-                  onClick={() => handleModalState({
-                    txt: "Please enter 'delete/' followed by your username to confirm.",
-                    btntxt: "deactivate",
-                    placeholder: `delete/${username}`,
-                    toUpdate: "status"
-                  })}
-                >
-                  deactivate
-                </div>
+              <div className="waves-effect waves-light black-text red usettingitembtn" 
+                onClick={() => handleModalState({
+                  txt: "Please enter 'delete/' followed by your username to confirm.",
+                  btntxt: "deactivate",
+                  placeholder: `delete/${username}`,
+                  toUpdate: "status"
+                })}
+              >
+                deactivate
               </div>
             </div>
           </div>
@@ -311,20 +305,16 @@ const Profilesetting = () => {
                 <div className="usettingitemtitle"> Background Pic </div>
                 <div className="usettingitemmetatitle"> Your Profile wall pic. </div>
               </div>
-              <div className="usettingitemchange">
-                <div className="waves-effect waves-light wallpicwrapper">
-                  <img className="wallpic" src={pic} alt="wall_pic" />
-                </div>
+              <div className="waves-effect waves-light wallpicwrapper">
+                <img className="wallpic" src={pic} alt="wall_pic" />
               </div>
             </div>
             <div className="usettingitems">
               <div className="usettingitemlabels">
                 <div className="usettingitemtitle"> Profile Pic </div>
               </div>
-              <div className="usettingitemchange">
-                <div className="waves-effect waves-light picwrapper">
-                  <img className="pic" src={ pic } alt="profile_pic" />
-                </div>
+              <div className="waves-effect waves-light picwrapper">
+                <img className="pic" src={ pic } alt="profile_pic" />
               </div>
             </div>
             <div className="usettingitems">
@@ -334,19 +324,17 @@ const Profilesetting = () => {
                   { userData.about || "A brief description of yourself shown on your profile." } 
                 </div>
               </div>
-              <div className="usettingitemchange">
-                <div className="waves-effect waves-light black-text blue usettingitembtn"
-                  onClick={() => {
-                    handleModalState({
-                      txt: "Tell us about yourself.",
-                      btntxt: "update",
-                      placeholder: "About",
-                      toUpdate: "about"
-                    })
-                  }}
-                >
-                  Update
-                </div>
+              <div className="waves-effect waves-light black-text blue usettingitembtn"
+                onClick={() => {
+                  handleModalState({
+                    txt: "Tell us about yourself.",
+                    btntxt: "update",
+                    placeholder: "About",
+                    toUpdate: "about"
+                  })
+                }}
+              >
+                Update
               </div>
             </div>
             <div className="usettingitems">
@@ -356,10 +344,8 @@ const Profilesetting = () => {
                   People who visit your profile will see your social links. 
                 </div>
               </div>
-              <div className="usettingitemchange">
-                <div className="waves-effect waves-light black-text blue usettingitembtn">
-                  Update
-                </div>
+              <div className="waves-effect waves-light black-text blue usettingitembtn">
+                Update
               </div>
             </div>
             <div className="usettingtitlemeta"> PROFILE CATEGORY </div>
@@ -370,19 +356,17 @@ const Profilesetting = () => {
                   This content is NSFW (may contain nudity, pornography, profanity or inappropriate content for those under 18).
                 </div>
               </div>
-              <div className="usettingitemchange">
-                <div className="switch">
-                  <label>
-                    <input
-                      type="checkbox"
-                      className="blue-text"
-                      name="nsfw"
-                      checked={ profileState.nsfw }
-                      onChange={ (e: any) => handleChange(e, "profile") }
-                    />
-                    <span className="lever"></span>
-                  </label>
-                </div>
+              <div className="switch">
+                <label>
+                  <input
+                    type="checkbox"
+                    className="blue-text"
+                    name="nsfw"
+                    checked={ profileState.nsfw }
+                    onChange={ (e: any) => handleChange(e, "profile") }
+                  />
+                  <span className="lever"></span>
+                </label>
               </div>
             </div>
             <div className="usettingtitlemeta"> ADVANCED </div>
@@ -393,19 +377,17 @@ const Profilesetting = () => {
                   Followers will be notified about posts you make to your profile and see them in their home feed.
                 </div>
               </div>
-              <div className="usettingitemchange">
-                <div className="switch">
-                  <label>
-                    <input 
-                      type="checkbox"
-                      className="blue-text"
-                      name="allowppltofollow"
-                      checked={ profileState.allowppltofollow }
-                      onChange={ (e: any) => handleChange(e, "profile") }
-                    />
-                    <span className="lever"></span>
-                  </label>
-                </div>
+              <div className="switch">
+                <label>
+                  <input 
+                    type="checkbox"
+                    className="blue-text"
+                    name="allowppltofollow"
+                    checked={ profileState.allowppltofollow }
+                    onChange={ (e: any) => handleChange(e, "profile") }
+                  />
+                  <span className="lever"></span>
+                </label>
               </div>
             </div>
             <div className="usettingitems">
@@ -415,19 +397,17 @@ const Profilesetting = () => {
                   Posts to this profile can appear in c/popular or home feed of users who are following you.
                 </div>
               </div>
-              <div className="usettingitemchange">
-                <div className="switch">
-                  <label>
-                    <input 
-                      type="checkbox"
-                      className="blue-text"
-                      name="contentvisiblity"
-                      checked={ profileState.contentvisiblity }
-                      onChange={ (e: any) => handleChange(e, "profile") }
-                    />
-                    <span className="lever"></span>
-                  </label>
-                </div>
+              <div className="switch">
+                <label>
+                  <input 
+                    type="checkbox"
+                    className="blue-text"
+                    name="contentvisiblity"
+                    checked={ profileState.contentvisiblity }
+                    onChange={ (e: any) => handleChange(e, "profile") }
+                  />
+                  <span className="lever"></span>
+                </label>
               </div>
             </div>
           </div>
@@ -442,10 +422,8 @@ const Profilesetting = () => {
                   Blocked people can’t send you chat requests or private messages.
                 </div>
               </div>
-              <div className="usettingitemchange">
-                <div className="waves-effect waves-light black-text blue usettingitembtn">
-                  Update
-                </div>
+              <div className="waves-effect waves-light black-text blue usettingitembtn">
+                Update
               </div>
             </div>
             <div className="usettingitems">
@@ -455,10 +433,8 @@ const Profilesetting = () => {
                   Posts from muted communities won't show up in your feeds or recommendations.
                 </div>
               </div>
-              <div className="usettingitemchange">
-                <div className="waves-effect waves-light black-text blue usettingitembtn">
-                  Change
-                </div>
+              <div className="waves-effect waves-light black-text blue usettingitembtn">
+                Change
               </div>
             </div>
             <div className="usettingtitlemeta"> privacy </div>
@@ -466,19 +442,17 @@ const Profilesetting = () => {
               <div className="usettingitemlabels">
                 <div className="usettingitemtitle"> Show up in search result </div>
               </div>
-              <div className="usettingitemchange">
-                <div className="switch">
-                  <label>
-                    <input
-                      type="checkbox"
-                      className="blue-text"
-                      checked={ privacyState.searchshowprofile }
-                      name="searchshowprofile"
-                      onChange={ (e: any) => handleChange(e, "privacy") }
-                    />
-                    <span className="lever"></span>
-                  </label>
-                </div>
+              <div className="switch">
+                <label>
+                  <input
+                    type="checkbox"
+                    className="blue-text"
+                    checked={ privacyState.searchshowprofile }
+                    name="searchshowprofile"
+                    onChange={ (e: any) => handleChange(e, "privacy") }
+                  />
+                  <span className="lever"></span>
+                </label>
               </div>
             </div>
             <div className="usettingtitlemeta"> advanced security </div>
@@ -486,19 +460,17 @@ const Profilesetting = () => {
               <div className="usettingitemlabels">
                 <div className="usettingitemtitle"> Use two-factor authentication </div>
               </div>
-              <div className="usettingitemchange">
-                <div className="switch">
-                  <label>
-                    <input 
-                      type="checkbox"
-                      className="blue-text"
-                      name="auth_twofactor"
-                      checked={ privacyState.auth_twofactor }
-                      onChange={ (e: any) => handleChange(e, "privacy") }
-                    />
-                    <span className="lever"></span>
-                  </label>
-                </div>
+              <div className="switch">
+                <label>
+                  <input 
+                    type="checkbox"
+                    className="blue-text"
+                    name="auth_twofactor"
+                    checked={ privacyState.auth_twofactor }
+                    onChange={ (e: any) => handleChange(e, "privacy") }
+                  />
+                  <span className="lever"></span>
+                </label>
               </div>
             </div>
           </div>
@@ -513,19 +485,17 @@ const Profilesetting = () => {
                  Enable to view adult and NSFW (not safe for work) content in your feed and search results.
                 </div>
               </div>
-              <div className="usettingitemchange">
-                <div className="switch">
-                  <label>
-                    <input
-                      type="checkbox"
-                      className="blue-text"
-                      name="show_nsfw"
-                      checked={feedsState.show_nsfw}
-                      onChange={(e: any) => handleChange(e, "feeds")}
-                    />
-                    <span className="lever"></span>
-                  </label>
-                </div>
+              <div className="switch">
+                <label>
+                  <input
+                    type="checkbox"
+                    className="blue-text"
+                    name="show_nsfw"
+                    checked={feedsState.show_nsfw}
+                    onChange={(e: any) => handleChange(e, "feeds")}
+                  />
+                  <span className="lever"></span>
+                </label>
               </div>
             </div>
           </div>
@@ -537,19 +507,17 @@ const Profilesetting = () => {
               <div className="usettingitemlabels">
                 <div className="usettingitemtitle"> Chat requests </div>
               </div>
-              <div className="usettingitemchange">
-                <div className="switch blue-text">
-                  <label>
-                    <input 
-                      type="checkbox"
-                      className="blue-text"
-                      name="chatreq"
-                      checked={notificationsState.chatreq}
-                      onChange={(e: any) => handleChange(e, "notifications")}
-                    />
-                    <span className="lever"></span>
-                  </label>
-                </div>
+              <div className="switch blue-text">
+                <label>
+                  <input 
+                    type="checkbox"
+                    className="blue-text"
+                    name="chatreq"
+                    checked={notificationsState.chatreq}
+                    onChange={(e: any) => handleChange(e, "notifications")}
+                  />
+                  <span className="lever"></span>
+                </label>
               </div>
             </div>
             <div className="usettingtitlemeta"> Activity </div>
@@ -557,19 +525,17 @@ const Profilesetting = () => {
               <div className="usettingitemlabels">
                 <div className="usettingitemtitle"> Mention of u/username </div>
               </div>
-              <div className="usettingitemchange">
-                <div className="switch blue-text">
-                  <label>
-                    <input
-                      type="checkbox"
-                      className="blue-text"
-                      name="mentionusername"
-                      checked={notificationsState.mentionusername}
-                      onChange={(e: any) => handleChange(e, "notifications")}
-                    />
-                    <span className="lever"></span>
-                  </label>
-                </div>
+              <div className="switch blue-text">
+                <label>
+                  <input
+                    type="checkbox"
+                    className="blue-text"
+                    name="mentionusername"
+                    checked={notificationsState.mentionusername}
+                    onChange={(e: any) => handleChange(e, "notifications")}
+                  />
+                  <span className="lever"></span>
+                </label>
               </div>
             </div>
             <div className="usettingitems">
@@ -579,19 +545,17 @@ const Profilesetting = () => {
                   Any activity (upvotes, downvotes, comments) on your done post.
                 </div>
               </div>
-              <div className="usettingitemchange">
-                <div className="switch blue-text">
-                  <label>
-                    <input 
-                      type="checkbox"
-                      className="blue-text"
-                      name="activityonpost"
-                      checked={notificationsState.activityonpost}
-                      onChange={(e: any) => handleChange(e, "notifications")}
-                    />
-                    <span className="lever"></span>
-                  </label>
-                </div>
+              <div className="switch blue-text">
+                <label>
+                  <input 
+                    type="checkbox"
+                    className="blue-text"
+                    name="activityonpost"
+                    checked={ notificationsState.activityonpost }
+                    onChange={ (e: any) => handleChange(e, "notifications") }
+                  />
+                  <span className="lever"></span>
+                </label>
               </div>
             </div>
             <div className="usettingitems">
@@ -601,19 +565,17 @@ const Profilesetting = () => {
                   Any activity (upvotes, replies) on your done comment.
                 </div>
               </div>
-              <div className="usettingitemchange">
-                <div className="switch blue-text">
-                  <label>
-                    <input 
-                      type="checkbox"
-                      className="blue-text"
-                      name="activityoncmnt"
-                      checked={notificationsState.activityoncmnt}
-                      onChange={(e: any) => handleChange(e, "notifications")}
-                    />
-                    <span className="lever"></span>
-                  </label>
-                </div>
+              <div className="switch blue-text">
+                <label>
+                  <input 
+                    type="checkbox"
+                    className="blue-text"
+                    name="activityoncmnt"
+                    checked={ notificationsState.activityoncmnt }
+                    onChange={ (e: any) => handleChange(e, "notifications") }
+                  />
+                  <span className="lever"></span>
+                </label>
               </div>
             </div>
             <div className="usettingitems">
@@ -623,19 +585,17 @@ const Profilesetting = () => {
                  Any activity (upvotes, downvotes, comments) on your followed post.
                 </div>
               </div>
-              <div className="usettingitemchange">
-                <div className="switch blue-text">
-                  <label>
-                    <input 
-                      type="checkbox"
-                      className="blue-text"
-                      name="activityonpostfollowed"
-                      checked={notificationsState.activityonpostfollowed}
-                      onChange={(e: any) => handleChange(e, "notifications")}
-                    />
-                    <span className="lever"></span>
-                  </label>
-                </div>
+              <div className="switch blue-text">
+                <label>
+                  <input 
+                    type="checkbox"
+                    className="blue-text"
+                    name="activityonpostfollowed"
+                    checked={ notificationsState.activityonpostfollowed }
+                    onChange={ (e: any) => handleChange(e, "notifications") }
+                  />
+                  <span className="lever"></span>
+                </label>
               </div>
             </div>
             <div className="usettingitems">
@@ -645,38 +605,34 @@ const Profilesetting = () => {
                   Any activity (new posts, new rules, new pinned posts, new announcements) in your followed community.
                 </div>
               </div>
-              <div className="usettingitemchange">
-                <div className="switch blue-text">
-                  <label>
-                    <input 
-                      type="checkbox"
-                      className="blue-text"
-                      name="communityfollowed"
-                      checked={notificationsState.communityfollowed}
-                      onChange={(e: any) => handleChange(e, "notifications")}
-                    />
-                    <span className="lever"></span>
-                  </label>
-                </div>
+              <div className="switch blue-text">
+                <label>
+                  <input 
+                    type="checkbox"
+                    className="blue-text"
+                    name="communityfollowed"
+                    checked={notificationsState.communityfollowed}
+                    onChange={(e: any) => handleChange(e, "notifications")}
+                  />
+                  <span className="lever"></span>
+                </label>
               </div>
             </div>
             <div className="usettingitems">
               <div className="usettingitemlabels">
                 <div className="usettingitemtitle"> Patcoins you receive </div>
               </div>
-              <div className="usettingitemchange">
-                <div className="switch blue-text">
-                  <label>
-                    <input 
-                      type="checkbox"
-                      className="blue-text"
-                      name="patcoinreceived"
-                      checked={notificationsState.patcoinreceived}
-                      onChange={(e: any) => handleChange(e, "notifications")}
-                    />
-                    <span className="lever"></span>
-                  </label>
-                </div>
+              <div className="switch blue-text">
+                <label>
+                  <input 
+                    type="checkbox"
+                    className="blue-text"
+                    name="patcoinreceived"
+                    checked={ notificationsState.patcoinreceived }
+                    onChange={ (e: any) => handleChange(e, "notifications") }
+                  />
+                  <span className="lever"></span>
+                </label>
               </div>
             </div>
             <div className="usettingtitlemeta"> Updates </div>
@@ -685,38 +641,34 @@ const Profilesetting = () => {
                 <div className="usettingitemtitle"> Birthday </div>
                 <div className="usettingitemmetatitle"> Any follower or community birth/created date. </div>
               </div>
-              <div className="usettingitemchange">
-                <div className="switch blue-text">
-                  <label>
-                    <input 
-                      type="checkbox"
-                      className="blue-text"
-                      name="birthday"
-                      checked={notificationsState.birthday}
-                      onChange={(e: any) => handleChange(e, "notifications")}
-                    />
-                    <span className="lever"></span>
-                  </label>
-                </div>
+              <div className="switch blue-text">
+                <label>
+                  <input 
+                    type="checkbox"
+                    className="blue-text"
+                    name="birthday"
+                    checked={ notificationsState.birthday }
+                    onChange={ (e: any) => handleChange(e, "notifications") }
+                  />
+                  <span className="lever"></span>
+                </label>
               </div>
             </div>
             <div className="usettingitems">
               <div className="usettingitemlabels">
                 <div className="usettingitemtitle"> Patch announcements </div>
               </div>
-              <div className="usettingitemchange">
-                <div className="switch blue-text">
-                  <label>
-                    <input 
-                      type="checkbox"
-                      className="blue-text"
-                      name="announcements"
-                      checked={notificationsState.announcements}
-                      onChange={(e: any) => handleChange(e, "notifications")}
-                    />
-                    <span className="lever"></span>
-                  </label>
-                </div>
+              <div className="switch blue-text">
+                <label>
+                  <input 
+                    type="checkbox"
+                    className="blue-text"
+                    name="announcements"
+                    checked={ notificationsState.announcements }
+                    onChange={ (e: any) => handleChange(e, "notifications") }
+                  />
+                  <span className="lever"></span>
+                </label>
               </div>
             </div>
           </div>
@@ -728,7 +680,7 @@ const Profilesetting = () => {
                 <div className="usettingitemtitle"> Who can send you chat request </div>
               </div>
               <div className="usettingitemdrop">
-                <Patdrop profile={privacyDropperprofile} droppers={privacyDroppers} />
+                <Patdrop profile={ privacyDropperprofile } droppers={ privacyDroppers } />
               </div>
             </div>
           </div>

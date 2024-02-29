@@ -1,6 +1,14 @@
 import { posttype } from "../../types/posttype";
 
-type parenttype = { id: number, comment: string, status: string };
+type parenttype = { 
+  id: number;
+  comment: string;
+  status: string;
+  user_id: {
+    username: string;
+    profile_pic: string;
+  } 
+};
 
 export interface reactedposttype {
   reaction: number;

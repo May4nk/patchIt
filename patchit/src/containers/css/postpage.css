@@ -225,3 +225,35 @@
   margin-top: 1rem;
 }
 
+.pollwrapper {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.postpagepolloptions {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.3rem 1rem;
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: rgba(255,255,255,0.6);
+  margin: 0.3rem 0;
+  cursor: pointer;
+}
+
+.postpagepolloptions:hover {
+  border-color: white;
+  color: white;
+}
+
+.pollrating {
+  color: rgba(255,255,255,0.3);
+  font-weight: 430;
+}

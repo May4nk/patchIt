@@ -10,4 +10,4 @@ export * from "./savedpost.js";
 export * from "./comments.js";
 export * from "./userchatrooms.js";
 export * from "./userpreferences.js";
-
+export * from "./communitypreferences.js";

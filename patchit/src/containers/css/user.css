@@ -51,10 +51,43 @@
 }
                     
 .cmntoverviewcontent {
-  background: black;
+  background: rgba(0, 0, 0, 0.336);
   width: 100%;
   padding: 0.5rem;
   border-radius: 0.5rem;
+}
+
+.cmntoverviewcontentparent {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  flex-direction: column;
+  font-size: 0.9rem;  
+}
+
+.parentcmntwrapper {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  font-size: 0.8rem;
+}
+
+.parentcmntpicwrapper {
+  height: 1.5rem;
+  width: 1.5rem;
+  border-radius: 50%;
+  margin-right: 0.5rem;
+}
+
+.parentcmntpic {
+  height: 100%;
+  width: 100%;
+  border-radius: 50%;
+}
+
+.parentcmnt {
+  color: rgba(255,255,255,0.7);
+  margin: 0.2rem 0.7rem;
 }
 
 .zeropost {

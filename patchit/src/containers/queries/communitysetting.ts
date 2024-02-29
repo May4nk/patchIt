@@ -30,3 +30,11 @@ query Communitypreference($communityName: String!) {
   }
 }
 `;
+
+export const UPSERTCOMMUNITYPREFERENCE = gql`
+mutation UpsertCommunityPreference($data: InsertCommunityPreferencesInput) {
+  upsertCommunityPreference(data: $data) {
+    id 
+  }
+}
+`;

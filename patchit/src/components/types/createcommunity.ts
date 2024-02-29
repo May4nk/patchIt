@@ -21,3 +21,8 @@ export interface categorytype {
   categoryicon: string;
   categoryname: string;
 }
+
+export interface upsertcommunitytype {
+  id: number;
+  communityname: string;
+}

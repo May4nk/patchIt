@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { useLazyQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client";
 import { useAuth } from "../../common/hooks/useAuth";
 
+//components
 import Chatlist from "./chatlist/Chatlist";
 import Chatmsgs from "./chatmsgs/Chatmsgs";
 
-import { GETUSERCHATROOMS, USERCHATROOM } from "./queries";
-import { SUBSCRIBETOUSERCHATROOMS } from "./queries";
+import { GETUSERCHATROOMS, SUBSCRIBETOUSERCHATROOMS } from "./queries"; //query
 
+//css & types
 import "./css/chatbox.css";
 import { authcontexttype } from "../../context/types.js";
 import { 
@@ -17,7 +18,6 @@ import {
   userchatroomsubscriptiondatatype, 
   userchatroomtype 
 } from "./types.js";
-
 
 const Chatbox = (chatboxprops: chatboxprops) => {
   const { showChatbox, setShowChatbox } = chatboxprops;
@@ -31,62 +31,61 @@ const Chatbox = (chatboxprops: chatboxprops) => {
   const [activeRoom, setActiveRoom] = useState<activeroomtype>({ username: "", roomId: "" });
   
   //queries
-  const [getUserchatrooms, { data, subscribeToMore }] = useLazyQuery(GETUSERCHATROOMS);
+  const { data, subscribeToMore } = useQuery(GETUSERCHATROOMS, {
+    variables: {
+      userId: userId!
+    }
+  });
   
   //handlers
   const handleNew: (room: boolean) => void = (room = false) => {
     if(room) {
-      setCreateRoom(true);     
+      setCreateRoom(true);
     } else {
       setCreateRoom(false);
     }
-    setChatLevel(1); 
+    setChatLevel(1);
     setActiveRoom({ username: "", roomId: "" });
   }
 
-  const handleActiveRoom: (room: activeroomtype) => void = (room) => {
+  const handleActiveRoom: (e: any, room: activeroomtype) => void = (e: any, room: activeroomtype) => {
+    let active = document.querySelector(".activechatter");
+    if( active!== null) {
+      active.classList.remove("activechatter");
+    }
+    e.currentTarget.classList.add("activechatter");
     setCreateRoom(false);
     setChatLevel(0);
     setActiveRoom({ username: room.username, roomId: room.roomId });
   }
   
-  useEffect(() => {      
+  useEffect(() => {
     let unsubscribe = subscribeToMore({
       document: SUBSCRIBETOUSERCHATROOMS,
       variables: { userId: Number(userId) },
       updateQuery: (prev: userchatroomprevtype, { subscriptionData }: userchatroomsubscriptiondatatype) => {
-        const subdata = subscriptionData.data;        
+        const subdata = subscriptionData.data;
         if(!subdata) return prev;
-        const newChatroom: userchatroomtype[] = subdata.newUserChatroom;        
+        const newChatroom: userchatroomtype[] = subdata.newUserChatroom;
         return {
           listSpecificUserChatrooms: [ ...newChatroom, ...prev?.listSpecificUserChatrooms ]
         };
-      },            
-    });    
+      },
+    });
 
     if(unsubscribe) return () => unsubscribe();
-  },[subscribeToMore, userId])
-
-  useEffect(() => {
-    if(showChatbox) {
-      getUserchatrooms({
-        variables: {
-          "userId": userId!
-        }
-      });      
-    }
-  },[showChatbox])
+  },[subscribeToMore, userId]);
 
   return (
     <div className={ show }>
       <div className="chatbox">
         <div className="chatlist">
           <Chatlist 
-            chatrooms={ data?.listSpecificUserChatrooms } 
-            handleActiveRoom={ handleActiveRoom } 
+            chatrooms={ data?.listSpecificUserChatrooms }
+            handleActiveRoom={ handleActiveRoom }
             activeRoom={ activeRoom }
             handleNew={ handleNew } 
-            createRoom={ createRoom }             
+            createRoom={ createRoom }
           />
         </div>
         <div className="chatmsgs">

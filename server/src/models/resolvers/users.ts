@@ -46,7 +46,8 @@ export const userResolvers = {
     reactedposts: async({ id }: { id: number }): Promise<postlikedislikestype[]> => {
       try{ 
         const allUsersReaction: postlikedislikestype[] = await listAll<postlikedislikestype, { user_id: number }>("post_like_dislikes", { filter: { "user_id": id }});
-        return allUsersReaction;
+        const allUserDoneReaction: postlikedislikestype[] = allUsersReaction.filter((post: postlikedislikestype) => post.reaction !== 0);
+        return allUserDoneReaction;
       } catch(err) {
         throw err;
       }
@@ -90,7 +91,8 @@ export const userResolvers = {
     savedposts: async({ id }: { id: number }): Promise<savedposttype[]> => {
       try{ 
         const allUsersSavedPosts: savedposttype[] = await listAll<savedposttype, { user_id: number }>("saved", { filter: { "user_id": id }});
-        return allUsersSavedPosts;
+        const allUsersDoneSaved: savedposttype[] = allUsersSavedPosts.filter((post: savedposttype) => post.pinned === true || post.saved === true);
+        return allUsersDoneSaved;
       } catch(err) {
         throw err;
       }

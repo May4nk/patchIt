@@ -69,7 +69,7 @@ const Post = ({ postData, showcommunity } : postprops) => {
           post_id: Number(id),
           user_id: userId
         }
-      }  
+      }
     }); 
     if(type === "+") {
       upsertPost({
@@ -88,7 +88,7 @@ const Post = ({ postData, showcommunity } : postprops) => {
             likes: likes - postlikenumber
           }
         }
-      }); 
+      });
     }
   }
   const handleLike = () => {
@@ -112,7 +112,7 @@ const Post = ({ postData, showcommunity } : postprops) => {
   }
 
   const handleDislike = () => {
-    if(user) {      
+    if(user) {
       if (likeState === "none") {
         postdblikes(-1, "-", 1);
         setPostLikes(postLikes - 1);
@@ -131,14 +131,13 @@ const Post = ({ postData, showcommunity } : postprops) => {
     }
   };
 
-  const handleJoinCommunity:() => void = () => {  
-    if(userId !== null) {      
-      let joincommunitybtns = document.querySelectorAll(`.c${community_id.communityname}`);
-        joincommunitybtns.forEach((btn) => {
-          btn.classList.toggle('none');
-        });
+  const handleJoinCommunity:() => void = () => {
+    if(userId !== null) {
+      let joincommunitybtns = document.querySelectorAll(`.c${community_id?.communityname}`);
+      joincommunitybtns.forEach((btn) => {
+        btn.classList.toggle("none");
+      });
       setJoinState(!joinState);
-
       if(joinState) {
         leavecommunity({
           variables: {
@@ -203,13 +202,7 @@ const Post = ({ postData, showcommunity } : postprops) => {
     }
   }
   
-  const profilepic = showcommunity ? 
-    (community_id.profile_pic?.length > 0 && community_id?.profile_pic !== null)
-      ? community_id?.profile_pic?.substr(12, ) 
-      : "a.jpg"
-    : (owner?.profile_pic?.length > 0 && owner?.profile_pic !== null)
-      ? owner?.profile_pic?.substr(12, ) 
-      : "loading_logo.png";
+  const profilepic = "a.jpg";
 
   const parseImg = (parsedimgData && parsedimgData !== null) && require(`../img/${parsedimgData[currentImg].postSrc }`);
 
@@ -230,7 +223,7 @@ const Post = ({ postData, showcommunity } : postprops) => {
       const usersaved: useractiontype["savedposts"] = allUserActions?.savedposts;
       const userreaction: useractiontype["reactedposts"] = allUserActions?.reactedposts;
 
-      if(usercommunities?.length > 0) {          
+      if(usercommunities?.length > 0) {
         if(usercommunities?.some((community: communitytype) => community?.community_id?.id === community_id?.id)){
           setJoinState(true);
         }
@@ -243,7 +236,7 @@ const Post = ({ postData, showcommunity } : postprops) => {
 
         if(usersaved?.some((post: savedposttype) => (post?.pinned && post?.post_id?.id === id))) {
           setPinnedState(true);
-        }       
+        }
       }
 
       if(userreaction?.length > 0 ) {
@@ -261,36 +254,47 @@ const Post = ({ postData, showcommunity } : postprops) => {
       setPinnedState(false);
       setJoinState(false);
     }
-  },[id, getUserReactions, allUserActions, userId, community_id?.id]);  
+  },[id, getUserReactions, allUserActions, userId, community_id?.id]);
 
   useEffect(() => {
     setPostLikes(likes);
   },[likes]);
-    
+  
   return (
     <div className="post hoverable">
       <div className="postcontent">
-        <div className="postheader"> 
+        <div className="postheader">
           <div className="posttitle">
-            <div className="headingpicwrapper">  
+            <div className="headingpicwrapper">
               <img src={ require(`../img/${ profilepic }`)} className="headingpic" alt="profile pic" />
             </div>
             <div className="pictitle">
               { showcommunity ? (
-                <Link id="communityname" to={`/c/${ community_id?.communityname }`}>
-                  c/{ community_id?.communityname } 
-                </Link>
+                community_id?.communityname ? (
+                  <Link id="communityname" to={`/c/${ community_id?.communityname }`}>
+                    c/{ community_id?.communityname }
+                  </Link>
+                ) : (
+                  <Link id="usrname" to={`/u/${ owner?.username }`}>
+                    u/{ owner?.username }
+                  </Link>
+                )
               ) : (
                 <Link id="usrname" to={`/u/${ owner?.username }`}>
                   u/{ owner?.username }
                 </Link>
               )}
-              <span className="metapictitle">  &nbsp;.&nbsp;{ `${postedDate}/${postedMonth}/${postedYear} `} </span>
+              <span className="metapictitle">
+                &nbsp;.&nbsp;{ `${postedDate}/${postedMonth}/${postedYear} `}
+              </span>
             </div>
             { showcommunity && (
                !joinState && (
                 <div className="joincommunity">
-                  <div className={`waves-effect waves-light joincommunitybtn black-text c${community_id?.communityname}`} onClick={ handleJoinCommunity }>
+                  <div
+                    className={`waves-effect waves-light joincommunitybtn black-text c${community_id?.communityname}`}
+                    onClick={ handleJoinCommunity }
+                  >
                     join
                   </div>
                 </div>
@@ -298,7 +302,7 @@ const Post = ({ postData, showcommunity } : postprops) => {
             )}
           </div>
           <a href={`/post/${id}`} className="linktoclick">
-            <div className="headingtitle"> 
+            <div className="headingtitle">
               { title }
             </div>
           </a>
@@ -306,20 +310,20 @@ const Post = ({ postData, showcommunity } : postprops) => {
         { type === "IMAGE" ? (
           <div className="postimage">
             <img className="posts" src={parseImg} alt={"post_img"} />
-            { totalimg && ( 
+            { totalimg && (
               <div className="imagectrl">
-                <div className="totalimg"> {`${currentImg + 1 }/${totalimg}`} </div> 
-                <i className="material-icons leftimagebutton" onClick={ prevImg }> 
+                <div className="totalimg"> {`${currentImg + 1 }/${totalimg}`} </div>
+                <i className="material-icons leftimagebutton" onClick={ prevImg }>
                   chevron_left 
                 </i>
-                <i className="material-icons rightimagebutton" onClick={ nextImg }> 
-                  chevron_right 
+                <i className="material-icons rightimagebutton" onClick={ nextImg }>
+                  chevron_right
                 </i>
               </div>
             )}
           </div>
-        ) : type === "LINK" ? ( 
-          <div className="postlink"> 
+        ) : type === "LINK" ? (
+          <div className="postlink">
             <a href={`https://${content}`}> { content } </a>
           </div>
         ) : type === "POLL" ? (
@@ -332,12 +336,12 @@ const Post = ({ postData, showcommunity } : postprops) => {
           <div className="postblog">
             {(content && content !== null) && (
               <div className="posts"> 
-                { content?.length > 353 ? `${content?.substring(0,353)}...` : content } 
+                { content?.length > 353 ? `${content?.substring(0,353)}...` : content }
               </div>
             )}
           </div>
         )}
-        { parsedimgData && ( 
+        { parsedimgData && (
           parsedimgData[currentImg]?.postCaption && (
             <div className="post_caption"> 
               { parsedimgData[currentImg]?.postCaption }
@@ -358,7 +362,7 @@ const Post = ({ postData, showcommunity } : postprops) => {
             <i className="material-icons tiny">chat_bubble_outline</i>
             <div className="footertxt">{ comments?.length || 0 }</div>
           </Link>
-          { user && ( 
+          { user && (
             <>
               <div className="footersave waves-light waves-effect" onClick={() => handleSavingPost("save")}>
                 <i className={`material-icons tiny ${ savedState && "blue-text"}`}>

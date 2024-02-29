@@ -145,10 +145,7 @@ const Infoabout = (infoaboutprops: infoaboutprops) => {
           )}                  
           <div className="infoaboutheading"> 
             <i className="material-icons infoicn tiny">sentiment_satisfied</i>       
-            Me
-            { userName === data?.username && (
-              <i className="material-icons editcommunityprop tiny">edit</i>       
-            )}
+            Me            
           </div>
           <div className="infoaboutcontent">
             { data?.about || "A guy with some powers."}

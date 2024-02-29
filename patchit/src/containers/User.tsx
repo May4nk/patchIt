@@ -28,20 +28,20 @@ const pic: string = require("../img/loginpagepic.jpg");
 const Userpage = () => {
   const { uname } = useParams<string>();
   const { user }: authcontexttype = useAuth();
-  const { loggedUser }: loggedusercontexttype = useLogged();  
+  const { loggedUser }: loggedusercontexttype = useLogged();
   const loggedInUsername = user && user["username"];
   const isNew:boolean = (user && loggedUser ) && loggedUser["new_user"] ? true : false;
-  const allTabnames:string[] = ["overview", "posts", "comments", ...(user && (uname === loggedInUsername)) ? ["reactions", "saved"]: []];  
+  const allTabnames:string[] = ["posts", "comments", ...(user && (uname === loggedInUsername)) ? ["reactions", "saved"]: []];
   
   //state
-  const [userOption, setUserOption] = useState<string>("overview");
+  const [userOption, setUserOption] = useState<string>("posts");
   const [sortby, setSortby] = useState<string>("likes");
 
   //queries
   const [getUser, { data, loading, error }] = useLazyQuery(GETUSER);
   const [getSignedUser, { data: signedupuserData, loading: signedupuserLoading, error: signedupuserError }] = useLazyQuery(GETSIGNEDUPUSER);
 
-  const uData = !user ? !loading && data?.user : !signedupuserLoading && signedupuserData?.user;
+  const uData = !user ? !loading && data?.user : !signedupuserLoading && signedupuserData?.user;  
 
   //handler
   const handleUserOptions: (uoption: string) => void = (uoption) => {
@@ -49,8 +49,9 @@ const Userpage = () => {
     setUserOption(uoption);
     document.querySelector(`.tab${uoption}`)?.classList?.add("selected");
   }
-
+ 
   useEffect(() => {
+    handleUserOptions("posts");
     if(user) {
       getSignedUser({
         variables: {
@@ -64,11 +65,7 @@ const Userpage = () => {
         }
       });
     }
-  },[uname, user])
- 
-  useEffect(() => {
-    handleUserOptions("overview");
-  },[]);
+  },[uname, user]);
   
   if (loading || signedupuserLoading) {
     return <Loadingpage />
@@ -76,7 +73,7 @@ const Userpage = () => {
     return <Loadingpage err ={ error?.message || signedupuserError?.message }/>
   } else {
     return (
-      <>        
+      <>
         <div className="useroverview">  
           { allTabnames.map((usroption: string, idx: number) => (
             <Htab tabname={ usroption } key={ idx } handleClick={() => handleUserOptions(usroption) } />
@@ -84,65 +81,33 @@ const Userpage = () => {
           <Newusersetup newUser={ isNew } />
         </div>
         <div className="flexy">
-          <div className="contentpost">           
+          <div className="contentpost">
             <div className="postsort">
               <Sortpanel sort={ sortby } setSort={ setSortby } />
             </div>
             { !loading ? (
               <>
-                { userOption === "overview" ? (
-                  uData?.posts.length > 0 ? (
-                    uData?.posts.map((post: posttype) => (
-                      <div key={ post.id }>
-                        <Post 
-                          postData={ post } 
-                          showcommunity={ post.community_id === null ? false : true} 
-                        />
-                      </div>
-                    ))
-                  ) : (
-                    <Zeropostcard 
-                      title={ "Start unlocking your powers!!!" }
-                      openstate={ false }
-                      content={[
-                        {
-                          title: "Create", 
-                          content: "First create a post",
-                          unlock: "blur_on",
-                          btntxt: "create post",
-                          link: "/post/new"                         
-                        },
-                        {
-                          title: "Consistency", 
-                          content: "Create posts for consecutive 5 days",
-                          unlock: "people_outline",
-                          btntxt: "create post",
-                          link: "/post/new"                         
-                        }
-                      ]} 
-                    />
-                  )
-                ) : userOption === "posts" ? (
+                { userOption === "posts" ? (
                   uData?.posts.length > 0 ? (
                     uData?.posts.map((post: posttype, idx: number) => (
                       <div key={ idx }>
-                        <Post 
+                        <Post
                           postData={ post } 
-                          showcommunity={ post.community_id === null ? false : true} 
+                          showcommunity={ true }
                         />
                       </div>
                     ))
                   ) : (
-                    <Zeropostcard 
+                    <Zeropostcard
                       title={ "No post Done yet!!" }
                       openstate={ false }
                       content={[
                         {
-                          title: "Create", 
+                          title: "Create",
                           content: "Create a post",
                           unlock: "blur_on",
                           btntxt: "create post",
-                          link: "/post/new"                         
+                          link: "/post/new"
                         }
                       ]} 
                     />
@@ -157,7 +122,7 @@ const Userpage = () => {
                               <img className="cmntoverviewpostpic" src={ pic } alt={"comment_ppic"}/>
                             </div>
                             <Link to={`/c/${cmnt?.post_id?.community_id?.communityname}`} className="cmntoverviewpostname"> 
-                              c/{ cmnt?.post_id?.community_id?.communityname } 
+                              c/{ cmnt?.post_id?.community_id?.communityname }
                             </Link>
                             . 2hours ago
                           </div>
@@ -165,21 +130,40 @@ const Userpage = () => {
                             { cmnt?.post_id?.title}
                           </Link>
                           <div className="cmntoverviewcontent"> 
-                            { cmnt?.comment}
+                            { cmnt?.parent_id ? (
+                              <>
+                                <div className= "cmntoverviewcontentparent">
+                                  <div className="parentcmntwrapper">
+                                    <div className="parentcmntpicwrapper">
+                                      <img src={ pic } className="parentcmntpic" alt={"user_pic"}/>
+                                    </div>
+                                    u/{ cmnt?.parent_id?.user_id?.username }
+                                  </div>
+                                  <div className="parentcmnt">
+                                    { cmnt?.parent_id?.comment }
+                                  </div>
+                                </div>
+                                <div className="cmntoverviewcontent">
+                                  { cmnt?.comment }
+                                </div>
+                              </>
+                            ) : (
+                              cmnt?.comment
+                            )}
                           </div>
                         </div>
                       ))
                     ) : (
-                      <Zeropostcard 
+                      <Zeropostcard
                         title={ "No comments done yet!!" }
                         openstate={ false }
                         content={[
                           {
-                            title: "Post something to comment on it", 
+                            title: "Post something to comment on it",
                             unlock: "center_focus_weak",
                             content: "Create here",
                             btntxt: "create post",
-                            link: "/post/new"                         
+                            link: "/post/new"
                           },
                         ]} 
                       />
@@ -194,7 +178,7 @@ const Userpage = () => {
                         <div key={ idx }>
                           <Post 
                             postData={ post.post_id } 
-                            showcommunity={ post.post_id.community_id === null ? false : true} 
+                            showcommunity={ post.post_id.community_id === null ? false : true }
                           />
                         </div>
                       ))
@@ -204,7 +188,7 @@ const Userpage = () => {
                         openstate={ false }
                         content={[
                           {
-                            title: "Don't wanna save? Create one", 
+                            title: "Don't wanna save? Create one",
                             unlock: "center_focus_weak"
                           },
                         ]} 
@@ -218,30 +202,30 @@ const Userpage = () => {
                     uData?.reactedposts.length > 0 ? (
                       uData?.reactedposts.map((post : reactedposttype, idx: number) => (
                         <div key={ idx }>
-                          <Post                           
+                          <Post
                             postData={ post.post_id } 
-                            showcommunity={ post.post_id.community_id === null ? false : true} 
+                            showcommunity={ post.post_id.community_id === null ? false : true }
                           />
                         </div>
                       ))
                     ) : (
-                      <Zeropostcard 
+                      <Zeropostcard
                         title={ "Not reacted to any posts/comments yet!!" }
                         openstate={ false }
                         content={[
                           {
-                            title: "Seems you don't like/dislike anything...", 
+                            title: "Seems you don't like/dislike anything...",
                             content: "First create a post",
                             unlock: "mood_on",
                             btntxt: "create post",
                             link: "/post/new"
                           },
-                        ]}                     
+                        ]}
                       />
                     )
                   ) : (
                     <Loadingpage />
-                  )      
+                  )
                 )}
               </>
             ) : (
@@ -256,12 +240,12 @@ const Userpage = () => {
             )}
             { !loading ? (
               uData?.ownedCommunities.length > 0 && (
-                <Infosection communitypatcherdata={ uData?.ownedCommunities } />             
+                <Infosection communitypatcherdata={ uData?.ownedCommunities } />
               )
             ) : (
               <Loadingpage />
             )}
-          </div>          
+          </div>
         </div>
       </>
     );

@@ -18,23 +18,6 @@ query ListSpecificUserChatrooms($userId: Int!) {
 }
 `;
 
-export const USERCHATROOM = gql`
-query ListUserChatrooms($filter: UserChatroomfilterInput, $sort: [SortInput], $limit: Int) {
-  listUserChatrooms(filter: $filter, sort: $sort, limit: $limit) {
-    users {
-      id
-      room_id {
-        id
-        room_code
-      }
-      user_id {
-        username
-      }
-    }
-  }
-}
-`;
-
 export const SUBSCRIBETONEWMSG = gql `
   subscription NewMessage {
     newMessage {

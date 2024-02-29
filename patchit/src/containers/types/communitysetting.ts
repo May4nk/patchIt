@@ -12,6 +12,7 @@ export interface communitystatetype {
   about: string;
   description: string;
   privacy: string;
+  theme: string;
 }
 
 export interface notificationsstatetype { 

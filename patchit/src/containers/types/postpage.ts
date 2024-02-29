@@ -8,6 +8,7 @@ interface usertype {
 
 export type reactedposttype = { reaction: number; post_id: { id: number } };
 export type savedposttype = { saved: boolean; pinned: boolean; post_id: { id: number } };
+export type polltype = { poll: string };
 
 export interface comments {
   id: number;
@@ -47,8 +48,4 @@ export interface commentsubtype {
 
 export interface commentsubscriptiondatatype {
   subscriptionData: commentsubtype;
-}
-
-export interface commentprevtype {
-  post: { comments: comments[] };
 }

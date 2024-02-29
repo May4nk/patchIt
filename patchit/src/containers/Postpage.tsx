@@ -23,13 +23,13 @@ import { droppertype } from "../components/html/patdrop/types";
 import { sortprofile } from "../constants/patdropconst";
 import { postdblikestype } from "../components/types/posttypes";
 import { 
-  commentsubscriptiondatatype,
-  commentprevtype,
+  commentsubscriptiondatatype,  
   subdatatype,
   postpagetype,
   usersavedtype,
   reactedposttype,
-  savedposttype
+  savedposttype,
+  polltype
 } from "./types/postpage";
 
 //image
@@ -287,31 +287,45 @@ const Postpage = () => {
           <div className="postpageheading">
             { postData?.title }
           </div>
-          { postData?.type === "IMAGE" && (
-            <>
+          { postData?.type === "IMAGE" ? (            
             <div className="postpagepostwrapper">
               <img src={ require(`../img/${parsedimgData[currentImg].postSrc}`)} className="postpagepost" alt={"pic"}/>
               { totalimg > 1 && ( 
                 <>
-                  <div className="allimages"> { `${currentImg + 1 } / ${totalimg}` } </div>
+                  <div className="allimages"> { `${currentImg + 1 } / ${totalimg}` } </div>                  
                   <i className="material-icons leftimagebutton" onClick={ prevImg }> chevron_left </i>
                   <i className="material-icons rightimagebutton" onClick={ nextImg }> chevron_right </i>
                 </>
               )}
-            { parsedimgData[currentImg]?.postCaption && (
-              <div className="postpage_caption"> 
-                { parsedimgData[currentImg]?.postCaption }
-              </div>
-            )}
-            </div>
-            </>
-          )}
-          { postData?.type === "BLOG" && (
+              { parsedimgData[currentImg]?.postCaption && (
+                <div className="postpage_caption"> 
+                  { parsedimgData[currentImg]?.postCaption }
+                </div>
+              )}
+            </div>            
+          ) : postData?.type === "BLOG" ? (
             postData?.content && (
               <div className="postpageblog">
                 { postData?.content }
               </div>
             )
+          ) : postData?.type === "POLL" ? (
+            postData?.content && (
+              <div className="pollwrapper">
+                { JSON.parse(postData?.content).map((poll: polltype, idx: number) => (
+                  <div className="postpagepolloptions" key={ idx }>
+                    { poll.poll }
+                    <div className="pollrating">
+                      0 %
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )                          
+          ) : postData?.type === "LINK" && (
+            <a href={ postData?.content }> 
+              { postData?.content }
+            </a>
           )}
           <div className="postpagepostinfo">
             <div className="postpagepostinfotabs">

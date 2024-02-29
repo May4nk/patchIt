@@ -143,7 +143,13 @@ const Chatmsgs = (chatmsgsprops: chatmsgsprops) => {
 
   useEffect(() => {
     if(usernameSearch.length !== 0) { 
-      getUser();
+      getUser({
+        variables: {
+          filter: {
+            "status": "ACTIVE",
+          }
+        }
+      });
     }
   },[usernameSearch]);
  

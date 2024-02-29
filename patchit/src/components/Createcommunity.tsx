@@ -3,17 +3,25 @@ import { useMutation, useLazyQuery } from "@apollo/client";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../common/hooks/useAuth";
 
-import Askinput from "./html/Askinput"; //component
+//component
+import Askinput from "./html/Askinput"; 
 import Patdrop from "./html/patdrop/Patdrop";
 
 //query&mutations
-import { COMMUNITIESNAME, CREATECOMMUNITY, GETCATEGORIES }  from "./queries/createcommunity"; 
+import { COMMUNITIESNAME, CREATECOMMUNITY, GETCATEGORIES }  from "./queries/createcommunity";
+import { UPSERTCOMMUNITYPREFERENCE } from "../containers/queries/communitysetting";
 
 //css
 import "./css/createcommunity.css";
-import { categorytype, communities, createCommunityprops, createcommunitydatatype } from "./types/createcommunity";
 import { authcontexttype } from "../context/types";
 import { droppertype, profiletype } from "./html/patdrop/types";
+import { 
+  categorytype,
+  communities,
+  createCommunityprops,
+  createcommunitydatatype,
+  upsertcommunitytype
+} from "./types/createcommunity";
 
 const CreateCommunity = (createCommunityprops: createCommunityprops) => {
   const { showCreateCommunity, setShowCreateCommunity } = createCommunityprops;
@@ -24,10 +32,10 @@ const CreateCommunity = (createCommunityprops: createCommunityprops) => {
   const userId: number|null = user && Number(user["id"] || user["user_id"]);
     
   //state
-  const [createCommunityData, setCreateCommunityData] = useState<createcommunitydatatype>({ 
-    communityname: "", 
-    owner: userId!, 
-    privacy: "", 
+  const [createCommunityData, setCreateCommunityData] = useState<createcommunitydatatype>({
+    communityname: "",
+    owner: userId!,
+    privacy: "",
     description: "",
     category: null
   });
@@ -36,6 +44,7 @@ const CreateCommunity = (createCommunityprops: createCommunityprops) => {
 
   //mutation
   const [createCommunity] = useMutation(CREATECOMMUNITY);
+  const [upsertCommunityPreference] = useMutation(UPSERTCOMMUNITYPREFERENCE);
   const [getCommunitiesNames, { data, loading }] = useLazyQuery(COMMUNITIESNAME);
   const [getCategories, { data: categoryData, loading: categoryLoading }] = useLazyQuery(GETCATEGORIES);
   
@@ -61,7 +70,7 @@ const CreateCommunity = (createCommunityprops: createCommunityprops) => {
           state: "clicked",
           event: () => setCreateCommunityData({ ...createCommunityData, category: category?.categoryname })
         }
-      )) : []    
+      )) : []
   ];  
   
   const handleFocus: () => void = () => {
@@ -74,23 +83,29 @@ const CreateCommunity = (createCommunityprops: createCommunityprops) => {
         setError(`Community with name ${ checkcommunityname[0].communityname } already exist, please choose another name.`)
       } else {
         setError("");
-      } 
+      }
     } else {
       setError("Community name should be 4-17 letters")
-    } 
+    }
   }
 
   const handleDefault: () => void = () => {
-    setCreateCommunityData({ communityname: "", owner: userId!, privacy: "", description: "", category: "" });
+    setCreateCommunityData({ 
+      communityname: "",
+      owner: userId!,
+      privacy: "PUBLIC",
+      description: "",
+      category: null
+    });
   }
 
   const handleClose: () => void = () => {
     handleDefault();
-    setShowCreateCommunity(false);    
+    setShowCreateCommunity(false);
   }
   
   const handleSubmit = (e: any) => {
-    e.preventDefault();    
+    e.preventDefault();
     if(error.length === 0) {
       setCreateCommunityData({
         ...createCommunityData,
@@ -100,17 +115,24 @@ const CreateCommunity = (createCommunityprops: createCommunityprops) => {
         variables: {
           data: createCommunityData
         },
-        onCompleted: () => {
-          setShowCreateCommunity(false);
+        onCompleted: ({ upsertCommunity }: { upsertCommunity: upsertcommunitytype } ) => {
+          upsertCommunityPreference({
+            variables: {
+              data: {
+                community_name: upsertCommunity.communityname
+              }
+            }
+          })
           handleDefault();
-          navigate(`c/${ createCommunityData.communityname }`);
+          setShowCreateCommunity(false);
+          navigate(`c/${ upsertCommunity.communityname }`);
         },
         onError: (err) => {
           setShowError(true);
         }
-      })                      
+      })
     }
-  }
+  }  
 
   useEffect(() => {
     if(showCreateCommunity) {
@@ -130,7 +152,7 @@ const CreateCommunity = (createCommunityprops: createCommunityprops) => {
       <div className="overlay">
         <form className="communityform" onSubmit={ handleSubmit }>
           <div className="communityformtitle">
-            <div className="formtitle blue-text">Create Community </div>
+            <div className="formtitle blue-text"> Create Community </div>
             <i className="material-icons white-text closeicn" onClick={ handleClose }> close </i>
           </div>
           <div className="communityformname">
@@ -164,7 +186,7 @@ const CreateCommunity = (createCommunityprops: createCommunityprops) => {
             />
           </div>
           <div className="createcommunitycategory">
-            <Patdrop profile={ createCommunityProfile } droppers={ createCommunityDroppers }/>
+            <Patdrop profile={ createCommunityProfile } droppers={ createCommunityDroppers } />
           </div>
           <div className="formnameinfo">
             Choose category to make your community more visible.
@@ -173,7 +195,15 @@ const CreateCommunity = (createCommunityprops: createCommunityprops) => {
             <div className="formname"> Community Type </div>
             <div className="communitytype">
               <label htmlFor="public">
-                <input className="with-gap blue" name="privacy" value="PUBLIC" onChange={ handleChange} type="radio" id="public"  required/>
+                <input
+                  className="with-gap blue-text"
+                  name="privacy"
+                  value="PUBLIC"
+                  onChange={ handleChange }
+                  type="radio"
+                  id="public"
+                  required
+                />
                 <span className="communitytypename"> Public </span>
                 <span className="formnameinfo">
                   (Anyone can view, post, and comment to this community)
@@ -182,8 +212,16 @@ const CreateCommunity = (createCommunityprops: createCommunityprops) => {
             </div>
             <div className="communitytype">
               <label htmlFor="private">
-                <input className="with-gap" name="privacy" value="PRIVATE" type="radio" onChange={ handleChange } id="private" required/>
-                <span className="communitytypename">Private</span>
+                <input
+                  className="with-gap"
+                  name="privacy"
+                  value="PRIVATE"
+                  type="radio"
+                  onChange={ handleChange }
+                  id="private"
+                  required
+                />
+                <span className="communitytypename"> Private </span>
                 <span className="formnameinfo">
                   (Only community members can view, post, and comment to this community)
                 </span>
@@ -191,8 +229,16 @@ const CreateCommunity = (createCommunityprops: createCommunityprops) => {
             </div>
             <div className="communitytype">
               <label htmlFor="restricted">
-                <input className="with-gap blue" name="privacy" value="restricted" type="radio" onChange={ handleChange } id="restricted" required/>
-                <span className="communitytypename">Restricted</span>
+                <input
+                  className="with-gap blue"
+                  name="privacy"
+                  value="restricted"
+                  type="radio"
+                  onChange={ handleChange }
+                  id="restricted"
+                  required
+                />
+                <span className="communitytypename"> Restricted </span>
                 <span className="formnameinfo">
                   (Anyone can view but only members can post to this community)
                 </span>
@@ -202,7 +248,7 @@ const CreateCommunity = (createCommunityprops: createCommunityprops) => {
           <div className="communityformbtnwrapper">
             <button className="waves-effect waves-light communityformbtn" type="submit" disabled={ error.length === 0 ? false : true }>
               Submit
-            </button>        
+            </button>
           </div>
         </form>
       </div>

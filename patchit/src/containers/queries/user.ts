@@ -37,6 +37,10 @@ const CORE_FIELDS = gql`
       parent_id {
         id
         comment
+        user_id {
+          username
+          profile_pic
+        }
         status
       }
     }
@@ -48,6 +52,11 @@ const CORE_FIELDS = gql`
       status
       content
       created_at
+      owner {
+        id
+        username
+        profile_pic
+      }
       community_id {
         id
         communityname

@@ -8,7 +8,7 @@ const Chatprofiles = (chatprofileprops: chatprofileprops) => {
   const { handleActiveRoom, chatroom } = chatprofileprops;
    
   return(
-    <div className="chatters" onClick={() => handleActiveRoom({ username: chatroom?.user_id.username, roomId: chatroom?.room_id.room_code })}>        
+    <div className="chatters" onClick={(e: any) => handleActiveRoom(e, { username: chatroom?.user_id.username, roomId: chatroom?.room_id.room_code })}>
       <div className="chatterspicwrapper">
         <img src={ pic } className="chatterspic" alt="chatter_pic" />
       </div>           
