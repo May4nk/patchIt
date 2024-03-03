@@ -70,7 +70,7 @@ const Chatbox = (chatboxprops: chatboxprops) => {
         if(!subdata) return prev;
         const newChatroom: userchatroomtype[] = subdata.newUserChatroom;
         return {
-          listSpecificUserChatrooms: [ ...newChatroom, ...prev?.listSpecificUserChatrooms ]
+          listUserChatrooms: [ ...newChatroom, ...prev?.listUserChatrooms ]
         };
       },
     });

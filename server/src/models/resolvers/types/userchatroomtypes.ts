@@ -15,3 +15,10 @@ export interface userchatroomfiltertype {
   status: string;
 }
 
+export interface rawuserchatroomtype {
+  id: number;  
+  room_id: number;
+  user_id: number;
+  status: string;
+  created_at: string;
+}

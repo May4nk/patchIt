@@ -39,7 +39,7 @@ export interface userchatroomsubscriptiondatatype {
 }
 
 export interface userchatroomprevtype {
-  listSpecificUserChatrooms: userchatroomtype[];
+  listUserChatrooms: userchatroomtype[];
 }
 
 // chatlist ----------------------------------------------

@@ -1,6 +1,6 @@
 import db from "../../db.js";
 import { listAll, findOne, filtersorttype } from "../../common/queries.js";
-import { userchatroomfiltertype, userchatroomtype } from "./types/userchatroomtypes.js";
+import { userchatroomfiltertype, userchatroomtype, rawuserchatroomtype } from "./types/userchatroomtypes.js";
 import { usertype } from "./types/usertypes.js";
 import { chatroomtype } from "./types/chatroomtypes.js";
 
@@ -44,9 +44,9 @@ export const userchatroomResolvers = {
      }
     },
     users: async({ room_id }: { room_id: string }): Promise<usertype[]> => {
-      const userRooms: userchatroomtype[] = await listAll<userchatroomtype, { room_id: string }>("user_chatrooms", { filter: {"room_id": room_id }});
+      const userRooms: rawuserchatroomtype[] = await listAll<rawuserchatroomtype, { room_id: string }>("user_chatrooms", { filter: {"room_id": room_id }});
 
-      const chatroomUsers: usertype[] = await Promise.all(userRooms.map(async (room: userchatroomtype) => {
+      const chatroomUsers: usertype[] = await Promise.all(userRooms.map(async (room: rawuserchatroomtype) => {
         const userById: usertype = await findOne<usertype, { id: number }>("users", { "id": room.user_id });
         return userById
       }));

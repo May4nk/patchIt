@@ -47,9 +47,9 @@ export const dateFormatter: (datestr: string) => string = (datestr: string) => {
     }  
   } else if(postedDate.getDate() < currentDate.getDate()){
     if(postedDate.getDate() - currentDate.getDate() < 30) {
-      return `${currentDate.getDay() - postedDate.getDay()} days ago`
+      return `${postedDate.getDay() - currentDate.getDay()} days ago`
     } else {
-      return `${Math.floor(currentDate.getDay() - postedDate.getDay()/30)} months ago`
+      return `${Math.floor((postedDate.getDay() - currentDate.getDay())/30)} months ago`
     }
   } else {
     return "many months ago"

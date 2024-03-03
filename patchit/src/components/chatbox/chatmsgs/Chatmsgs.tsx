@@ -313,7 +313,7 @@ const Chatmsgs = (chatmsgsprops: chatmsgsprops) => {
             { activeRoom.username }
           </div>
           <div className="aboutuserabout">
-            jessica secret admirer
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Perspiciatis aperiam.
           </div>
           <div className="aboutchatuseroptions">
             <div className="aboutchatuseroption waves-effect waves-light" 
