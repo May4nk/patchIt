@@ -1,6 +1,6 @@
 import db from "../../db.js";
 import { listAll, findOne, filtersorttype } from "../../common/queries.js";
-import { userchatroomfiltertype, userchatroomtype, userchatroomcomparetype } from "./types/userchatroomtypes.js";
+import { userchatroomfiltertype, userchatroomtype } from "./types/userchatroomtypes.js";
 import { usertype } from "./types/usertypes.js";
 import { chatroomtype } from "./types/chatroomtypes.js";
 
@@ -13,19 +13,6 @@ export const userchatroomResolvers = {
       } catch(err) {
         throw err;
       }
-    },
-    listSpecificUserChatrooms: async (parent: undefined, { userId }: { userId: number }): Promise<userchatroomcomparetype[]> => {
-
-      const userRooms: userchatroomtype[] = await listAll<userchatroomtype, { user_id: number }>("user_chatrooms", { filter: {"user_id": userId}});
-      const allSpecificUserChatrooms: userchatroomcomparetype[] = await db("user_chatrooms")
-        .select("*")
-        .havingIn("room_id", userRooms.map(({ room_id }) => room_id))
-        .groupBy("id");
-
-      const allUserChatrooms: userchatroomcomparetype[] = allSpecificUserChatrooms.filter((chatrooms: userchatroomcomparetype) => chatrooms.user_id !== userId);     
-      
-      return allUserChatrooms;
-
     },
     userChatroom: async (parent: undefined, { roomId }: { roomId: string }): Promise<userchatroomtype> => {
       try {
@@ -56,9 +43,15 @@ export const userchatroomResolvers = {
         throw err;
      }
     },
-    users: async({ room_id }: { room_id: string }): Promise<userchatroomtype[]> => {
-      const userRooms: userchatroomtype[] = await listAll<userchatroomtype, { room_id: string }>("user_chatrooms", {filter: {"room_id": room_id}});
-      return userRooms;
+    users: async({ room_id }: { room_id: string }): Promise<usertype[]> => {
+      const userRooms: userchatroomtype[] = await listAll<userchatroomtype, { room_id: string }>("user_chatrooms", { filter: {"room_id": room_id }});
+
+      const chatroomUsers: usertype[] = await Promise.all(userRooms.map(async (room: userchatroomtype) => {
+        const userById: usertype = await findOne<usertype, { id: number }>("users", { "id": room.user_id });
+        return userById
+      }));
+      
+      return chatroomUsers;
     }
   }
 }

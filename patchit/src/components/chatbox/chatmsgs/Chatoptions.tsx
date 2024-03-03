@@ -1,34 +1,20 @@
 import React, { useRef } from "react";
-import { useMutation } from "@apollo/client";
-
-import { DELETECHATROOM } from "../queries";
 
 import "../css/chatmsgs.css";
 
 interface chatoptionsprops {
   showChatoptions: boolean;
   setShowChatOptions: any;
-  roomId: string;
+  handleDelete: () => void;
 }
 
 const Chatoptions = (chatoptionsprops: chatoptionsprops) => {
-  const { showChatoptions, setShowChatOptions, roomId } = chatoptionsprops;
+  const { showChatoptions, setShowChatOptions, handleDelete } = chatoptionsprops;
   
   const thisRef = useRef<HTMLDivElement>(null);
-  const [deleteChatroom] = useMutation(DELETECHATROOM);
 
-  //handler
-  const handleDelete:() => void = () => {
-    deleteChatroom({
-      variables: {
-        data: {
-          room_code: roomId
-        }
-      }
-    })
-  }
-
-  const closeDrop = (e: any) => {   
+  //handler  
+  const closeDrop = (e: any) => {
     if(thisRef.current && showChatoptions && !thisRef.current.contains(e.target)){
       setShowChatOptions(false)
     }
@@ -45,7 +31,7 @@ const Chatoptions = (chatoptionsprops: chatoptionsprops) => {
       <div className="chatroomoptionwrapper">
         <div className="chatroomoptions waves-effect waves-light" onClick={ handleDelete }>
           Delete
-          <i className="material-icons chatroomoptionicn"> 
+          <i className="material-icons chatroomoptionicn">
             delete
           </i>
         </div>

@@ -1,8 +1,8 @@
 import { gql } from "@apollo/client";
 
 export const GETUSERCHATROOMS = gql`
-query ListSpecificUserChatrooms($userId: Int!) {
-  listSpecificUserChatrooms(userId: $userId) {
+query ListUserChatrooms($sort: [SortInput], $limit: Int, $filter: UserChatroomfilterInput) {
+  listUserChatrooms(sort: $sort, limit: $limit, filter: $filter){
     id
     room_id {
       id
@@ -13,7 +13,13 @@ query ListSpecificUserChatrooms($userId: Int!) {
       email
       profile_pic
       username
-    }  
+    }   
+    users {
+      id
+      username
+      email
+      profile_pic
+    }
   }
 }
 `;

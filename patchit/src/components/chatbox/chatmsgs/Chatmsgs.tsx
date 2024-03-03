@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { useMutation, useLazyQuery, useQuery } from "@apollo/client";
 
 import Askinput from "../../html/Askinput";
@@ -6,10 +7,10 @@ import Message from "./Message";
 import Chatoptions from "./Chatoptions";
 
 import { GETALLUSERS } from "../../../api/queries/queries";
-import { INSERTMSG, CREATECHATROOM, INSERTUSERCHATROOM, SUBSCRIBETONEWMSG, GETALLMSGS} from "../queries";
+import { INSERTMSG, CREATECHATROOM, INSERTUSERCHATROOM, SUBSCRIBETONEWMSG, GETALLMSGS, DELETECHATROOM } from "../queries";
 
 import "../css/chatmsgs.css";
-import { chatmsgsprops, message } from "../types";
+import { chatgroupusertype, chatmsgsprops, message, roomtype } from "../types";
 const pic = require("../../../img/unnamed.jpg");
 
 const Chatmsgs = (chatmsgsprops: chatmsgsprops) => {
@@ -21,16 +22,20 @@ const Chatmsgs = (chatmsgsprops: chatmsgsprops) => {
     setShowChatbox, 
     userId 
   } = chatmsgsprops;    
+
+  const navigate = useNavigate();
  
   const [usernameSearch, setUsernameSearch] = useState<string>("");
-  const [showGroup, setShowGroup] = useState(false);
-  const [chatgroupUsers, setChatgroupUsers] = useState<any[]>([]);
+  const [showGroup, setShowGroup] = useState<boolean>(false);
+  const [chatgroupUsers, setChatgroupUsers] = useState<chatgroupusertype[]>([]);
   const [message, setMessage] = useState<message>({ user_id: userId!, message: "", room_id: activeRoom.roomId! });
   const [showChatoptions, setShowChatOptions] = useState<boolean>(false);
+  const [roomName, setRoomName] = useState<string>("");
  
-  const [createChatroom] = useMutation(CREATECHATROOM);
-  const [insertUserChatroom] = useMutation(INSERTUSERCHATROOM);
   const [insertMessage] = useMutation(INSERTMSG);
+  const [createChatroom] = useMutation(CREATECHATROOM);
+  const [deleteChatroom] = useMutation(DELETECHATROOM);
+  const [insertUserChatroom] = useMutation(INSERTUSERCHATROOM);
   const [getUser, { data: allUsersData }] = useLazyQuery(GETALLUSERS);
   
   const { data: roomMsgsData, subscribeToMore: subscribeToMoreMessages } = useQuery(GETALLMSGS,{
@@ -42,6 +47,15 @@ const Chatmsgs = (chatmsgsprops: chatmsgsprops) => {
   });
   
   //handlers
+  const handleDelete:() => void = () => {
+    deleteChatroom({
+      variables: {
+        data: {
+          room_code: activeRoom.roomId
+        }
+      }
+    })
+  }
   const handleDefaultState = (def:boolean = true) => {
     if(!def){
       setShowChatbox(false);
@@ -99,9 +113,9 @@ const Chatmsgs = (chatmsgsprops: chatmsgsprops) => {
             room_code: `${userId}-${chatgroupUsers[0].id}`,
           }
         },
-        onError: (err: any) => {          
-          if(err.message.includes("Chatroom already Exist")) {
-            const room_code = err.message.substring(err.message.indexOf(":"));
+        onError: ({ message }: { message: string }) => {          
+          if(message.includes("Chatroom already Exist")) {
+            const room_code = message.substring(message.indexOf(":"));
             handleActiveRoom({ username: usernameSearch, roomId: room_code.substring(2,)});
           };
         },
@@ -122,6 +136,33 @@ const Chatmsgs = (chatmsgsprops: chatmsgsprops) => {
           }
         }
       });          
+    } else {
+      if(roomName.length !== 0) {
+        const roomUsers = chatgroupUsers.map((user): any => { return { user_id: user.id, room_id: roomName }});      
+        createChatroom({
+          variables: {
+            data: {
+              room_code: roomName,
+            }
+          },          
+          onCompleted: ({ insertChatroom }: { insertChatroom: roomtype }) => {
+            console.log(insertChatroom)
+            if(insertChatroom) {
+              const room_code = insertChatroom.room_code;
+              insertUserChatroom({
+                variables: {
+                  data: [ 
+                    { user_id: userId, room_id: room_code },
+                    ...roomUsers
+                  ]             
+                }                       
+              });     
+              setChatgroupUsers([]);
+              setUsernameSearch("");
+            }
+          }
+        });
+      }
     }
   }  
   
@@ -184,11 +225,17 @@ const Chatmsgs = (chatmsgsprops: chatmsgsprops) => {
         { chatLevel === 1 ? (
           createRoom ? "Create Room" : "Create Chat" 
         ) : activeRoom.roomId.length !== 0 ? (
-          activeRoom.username
+          <div className="chatuserpage" onClick={() => setChatLevel(200)}>
+            { activeRoom.username }
+          </div>
         ) : ( "" )}
         <div className="chattitleicnwrapper">
           { activeRoom.roomId.length !== 0 && (            
-            <Chatoptions showChatoptions={ showChatoptions } setShowChatOptions={ setShowChatOptions } roomId={ activeRoom.roomId }/>
+            <Chatoptions 
+              showChatoptions={ showChatoptions }
+              setShowChatOptions={ setShowChatOptions }
+              handleDelete={ handleDelete }
+            />
           )}
           <i className="material-icons tiny chattitleicn" onClick={ () => handleDefaultState(false) }> 
             clear 
@@ -198,7 +245,11 @@ const Chatmsgs = (chatmsgsprops: chatmsgsprops) => {
       { chatLevel === 1 ? (
         <>
           <div className="createroom">
-            <Askinput placeholder={ "Search User" } onChange={ (e) => setUsernameSearch(e.target.value) } value={ usernameSearch }  />
+            <Askinput
+              placeholder={ "Search User" }
+              onChange={(e) => setUsernameSearch(e.target.value)}
+              value={ usernameSearch }
+            />
           </div>          
           { usernameSearch.length === 0 && (
             !createRoom ? (           
@@ -211,13 +262,25 @@ const Chatmsgs = (chatmsgsprops: chatmsgsprops) => {
               </div>    
             )          
           )}
-          { (createRoom && chatgroupUsers.length > 0) && (
-            <div className="selectedGroupUsers">
-              { chatgroupUsers.map((groupUser, idx): any => (
-                <div className="groupUser waves-light waves-effect" onClick={() => handleRemoveSelectedUser(groupUser.id) } key={ idx }>
-                  { groupUser.username }
-                </div>
-              ))}
+          {(createRoom && chatgroupUsers.length > 0) && (
+            <div className="roomcreation">
+              <div className="groupname">
+                <Askinput
+                  placeholder={ "Room Name" }
+                  value={ roomName }
+                  onChange={(e: any) => setRoomName(e.target.value)}
+                />
+              </div>
+              <div className="selectedGroupUsers">              
+                { chatgroupUsers.map((groupUser, idx: number): any => (
+                  <div className="groupUser waves-light waves-effect"
+                    onClick={() => handleRemoveSelectedUser(groupUser.id) } 
+                    key={ idx }
+                  >
+                    { groupUser.username }
+                  </div>
+                ))}
+              </div>
             </div>
           )}
           <div className="suggestedusername">
@@ -241,6 +304,35 @@ const Chatmsgs = (chatmsgsprops: chatmsgsprops) => {
             </div>
           </div>
         </> 
+      ) : chatLevel === 200 ? (
+        <div className="aboutchatuser">
+          <div className="aboutchatuserpicwrapper">
+            <img src={ pic } alt="userpic" className="aboutchatuserpic" />
+          </div>
+          <div className="aboutuserabout">
+            { activeRoom.username }
+          </div>
+          <div className="aboutuserabout">
+            jessica secret admirer
+          </div>
+          <div className="aboutchatuseroptions">
+            <div className="aboutchatuseroption waves-effect waves-light" 
+              onClick={ () => navigate(`/u/${ activeRoom.username }`)}
+            > 
+              <i className="material-icons aboutchatuseroptionicn"> perm_identity</i>
+              profile
+            </div>
+            <div className="aboutchatuseroption blue-text waves-effect waves-light" onClick={() => setChatLevel(0)}>
+              <i className="material-icons aboutchatuseroptionicn"> chat </i>
+              chat
+            </div>
+            <div className="aboutchatuseroption red-text waves-effect waves-light" onClick={ handleDelete }>
+              <i className="material-icons aboutchatuseroptionicn"> delete_forever </i>
+              delete 
+            </div>
+          </div>
+          
+        </div>
       ) : activeRoom?.roomId.length !== 0 ? (
         <>
           <div className="chat">

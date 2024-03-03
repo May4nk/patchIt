@@ -7,7 +7,7 @@ export async function up(knex: Knex): Promise<void> {
       return knex.schema.createTable("roles", function(table: Knex.TableBuilder) {
         table.increments("id").unique().notNullable().primary();
         table.string("role").unique().notNullable();
-        table.date("created_at").notNullable().defaultTo(knex.fn.now());
+        table.timestamp("created_at").notNullable().defaultTo(knex.fn.now());
       });
     }
   });
@@ -18,7 +18,7 @@ export async function up(knex: Knex): Promise<void> {
         table.increments("id").unique().notNullable();
         table.string("categoryname").unique().notNullable().primary();
         table.string("categoryicon").defaultTo(null);
-        table.date("created_at").notNullable().defaultTo(knex.fn.now());
+        table.timestamp("created_at").notNullable().defaultTo(knex.fn.now());
       });
     }
   });
@@ -40,7 +40,7 @@ export async function up(knex: Knex): Promise<void> {
         table.string("profile_pic").defaultTo(false);
         table.boolean("verified");
         table.integer("role").references("id").inTable("roles").defaultTo(9005).onDelete("CASCADE");
-        table.date("created_at").notNullable().defaultTo(knex.fn.now());
+        table.timestamp("created_at").notNullable().defaultTo(knex.fn.now());
         table.timestamp("updated_at");
       });
     }
@@ -52,7 +52,7 @@ export async function up(knex: Knex): Promise<void> {
         table.increments("id").unique().notNullable().primary();
         table.string("name").notNullable().unique();
         table.string("description");
-        table.date("created_at").notNullable().defaultTo(knex.fn.now());
+        table.timestamp("created_at").notNullable().defaultTo(knex.fn.now());
         table.timestamp("updated_at");
       });
     }
@@ -72,7 +72,7 @@ export async function up(knex: Knex): Promise<void> {
         table.string("theme");
         table.enu("status", ["ACTIVE", "INACTIVE"]).defaultTo("ACTIVE").notNullable();
         table.enu("privacy", ["PUBLIC", "PRIVATE", "RESTRICTED"]).defaultTo("PUBLIC").notNullable();
-        table.date("created_at").notNullable().defaultTo(knex.fn.now());
+        table.timestamp("created_at").notNullable().defaultTo(knex.fn.now());
         table.timestamp("updated_at");
       });
     }
@@ -90,8 +90,8 @@ export async function up(knex: Knex): Promise<void> {
         table.enu("type", ["BLOG", "IMAGE", "LINK", "POLL"]).defaultTo("BLOG").notNullable();
         table.enu("status", ["ACTIVE", "INACTIVE"]).defaultTo("ACTIVE").notNullable();
         table.enu("privacy", ["PUBLIC", "PRIVATE"]).defaultTo("PUBLIC").notNullable();
-        table.date("created_at").notNullable().defaultTo(knex.fn.now());
-        table.date("updated_at");
+        table.timestamp("created_at").notNullable().defaultTo(knex.fn.now());
+        table.timestamp("updated_at");
       });
     }
   });
@@ -102,7 +102,7 @@ export async function up(knex: Knex): Promise<void> {
         table.increments("id").unique().notNullable().primary();
         table.integer("user_id").references("id").inTable("users").onDelete("CASCADE");
         table.integer("community_id").references("id").inTable("communities").onDelete("CASCADE");
-        table.date("created_at").notNullable().defaultTo(knex.fn.now());
+        table.timestamp("created_at").notNullable().defaultTo(knex.fn.now());
       });
     }
   });
@@ -113,7 +113,7 @@ export async function up(knex: Knex): Promise<void> {
         table.increments("id").unique().notNullable().primary();
         table.integer("post_id").references("id").inTable("posts").onDelete("CASCADE");
         table.integer("tag_id").references("id").inTable("tags").onDelete("CASCADE");
-        table.date("created_at").notNullable().defaultTo(knex.fn.now());
+        table.timestamp("created_at").notNullable().defaultTo(knex.fn.now());
       });
     }
   });
@@ -124,7 +124,7 @@ export async function up(knex: Knex): Promise<void> {
         table.increments("id").unique().notNullable();
         table.string("room_code").notNullable().primary();
         table.enu("status", ["ACTIVE","INACTIVE"]).defaultTo("ACTIVE").notNullable();
-        table.date("created_at").notNullable().defaultTo(knex.fn.now());
+        table.timestamp("created_at").notNullable().defaultTo(knex.fn.now());
       });
     }
   });
@@ -136,7 +136,7 @@ export async function up(knex: Knex): Promise<void> {
         table.integer("user_id").references("id").inTable("users").onDelete("CASCADE");
         table.string("room_id").references("room_code").inTable("chatrooms").onDelete("CASCADE");
         table.string("message").notNullable();
-        table.date("created_at").notNullable().defaultTo(knex.fn.now());
+        table.timestamp("created_at").notNullable().defaultTo(knex.fn.now());
       });
     }
   });
@@ -148,7 +148,7 @@ export async function up(knex: Knex): Promise<void> {
         table.integer("user_id").references("id").inTable("users").onDelete("CASCADE");
         table.string("room_id").references("room_code").inTable("chatrooms").onDelete("CASCADE");
         table.enu("status", ["ACTIVE","INACTIVE"]).defaultTo("ACTIVE").notNullable();
-        table.date("created_at").notNullable().defaultTo(knex.fn.now());
+        table.timestamp("created_at").notNullable().defaultTo(knex.fn.now());
       });
     }
   });
@@ -162,7 +162,7 @@ export async function up(knex: Knex): Promise<void> {
         table.integer("parent_id").references("id").inTable("comments").onDelete("CASCADE");
         table.string("comment").notNullable();
         table.enu("status", ["DELETED","ACTIVE"]).defaultTo("ACTIVE").notNullable();
-        table.date("created_at").notNullable().defaultTo(knex.fn.now());
+        table.timestamp("created_at").notNullable().defaultTo(knex.fn.now());
       });
     }
   });
@@ -174,7 +174,7 @@ export async function up(knex: Knex): Promise<void> {
         table.integer("user_id").references("id").inTable("users").onDelete("CASCADE");
         table.integer("post_id").references("id").inTable("posts").onDelete("CASCADE");
         table.integer("reaction").defaultTo(1).notNullable();
-        table.date("created_at").notNullable().defaultTo(knex.fn.now());
+        table.timestamp("created_at").notNullable().defaultTo(knex.fn.now());
       });
     }
   });
@@ -187,7 +187,7 @@ export async function up(knex: Knex): Promise<void> {
         table.integer("post_id").references("id").inTable("posts").onDelete("CASCADE");
         table.boolean("pinned").defaultTo(false);
         table.boolean("saved").defaultTo(false);
-        table.date("created_at").notNullable().defaultTo(knex.fn.now());
+        table.timestamp("created_at").notNullable().defaultTo(knex.fn.now());
       });
     }
   });
@@ -198,7 +198,7 @@ export async function up(knex: Knex): Promise<void> {
         table.increments("id").unique().notNullable().primary();
         table.integer("user_id").references("id").inTable("users").onDelete("CASCADE").unique();
         table.string("token").notNullable();
-        table.date("created_at").notNullable().defaultTo(knex.fn.now());
+        table.timestamp("created_at").notNullable().defaultTo(knex.fn.now());
       });
     }
   });

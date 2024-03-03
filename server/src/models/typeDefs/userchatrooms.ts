@@ -3,7 +3,7 @@ export const userchatroomTypeDefs = `
     id: Int!
     room_id: Chatroom
     user_id: User
-    users: [UserChatroom]
+    users: [User]
     status: String
     created_at: String
   }

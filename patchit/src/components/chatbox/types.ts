@@ -1,4 +1,4 @@
-interface roomtype {
+export interface roomtype {
   id: string;
   room_code: string;
 }
@@ -76,3 +76,5 @@ export interface message {
   message: string;
   room_id: string;
 }
+
+export type chatgroupusertype = { id: number, username: string };

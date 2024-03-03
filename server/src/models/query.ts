@@ -89,7 +89,6 @@ const Query = `
     listMessages(filter: MessagesfilterInput, sort: [SortInput], limit: Int ): [Message!]
     listChatrooms(filter: ChatroomsfilterInput, sort: [SortInput], limit: Int ): [Chatroom!]
     listUserChatrooms(filter: UserChatroomfilterInput, sort: [SortInput], limit: Int ): [UserChatroom]!
-    listSpecificUserChatrooms(userId: Int!):[UserChatroom]!
     listPostLikeDislikes(filter: PostlikedislikefilterInput, sort: [SortInput], limit: Int ): [Postlikedislike!]
     listUsersCommunity(filter: UserCommunityfilterInput, sort: [SortInput], limit: Int ): [UserCommunity!]!
     listComments(filter: CommentfilterInput, sort: [SortInput], limit: Int ): [Comment!]!

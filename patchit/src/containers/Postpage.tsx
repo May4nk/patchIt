@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../common/hooks/useAuth";
+import { dateFormatter } from "../common/helpers";
 
 //component
 import Inforecommended from "../components/infosection/Inforecommended";
@@ -280,7 +281,7 @@ const Postpage = () => {
                 )}
               </div>
               <div className="created">
-                2hrs ago
+                { dateFormatter(postData?.created_at) }
               </div>
             </div>
           </div>

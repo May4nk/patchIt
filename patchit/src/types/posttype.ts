@@ -26,3 +26,7 @@ export interface posttype {
   community_id: communitytype;
   created_at: string;
 }
+
+export interface homeposttype {
+  community_id: { posts: posttype[] };
+}

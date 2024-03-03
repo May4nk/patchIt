@@ -33,7 +33,9 @@ const Chatbox = (chatboxprops: chatboxprops) => {
   //queries
   const { data, subscribeToMore } = useQuery(GETUSERCHATROOMS, {
     variables: {
-      userId: userId!
+      filter: {
+        user_id: userId!
+      }
     }
   });
   
@@ -81,7 +83,7 @@ const Chatbox = (chatboxprops: chatboxprops) => {
       <div className="chatbox">
         <div className="chatlist">
           <Chatlist 
-            chatrooms={ data?.listSpecificUserChatrooms }
+            chatrooms={ data?.listUserChatrooms }
             handleActiveRoom={ handleActiveRoom }
             activeRoom={ activeRoom }
             handleNew={ handleNew } 

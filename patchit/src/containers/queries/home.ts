@@ -11,6 +11,7 @@ query ListUsersCommunity($filter: UserCommunityfilterInput, $sort: [SortInput]) 
         content
         likes
         status
+        created_at
         owner {
           id
           username
@@ -19,7 +20,10 @@ query ListUsersCommunity($filter: UserCommunityfilterInput, $sort: [SortInput]) 
         community_id {
           id
           communityname
-          profile_pic      
+          profile_pic
+        }
+        comments {
+          id
         }
       }
     }

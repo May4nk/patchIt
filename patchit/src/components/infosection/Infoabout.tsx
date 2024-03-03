@@ -21,7 +21,6 @@ const Infoabout = (infoaboutprops: infoaboutprops) => {
   const userId: number|null = user && Number(user["id"] || user["user_id"]);
   const userName: string|null = user && user["username"];
   const userRole: number|null = user && (user["role"] ? user["role"]?.id : user["role_id"]);
-  //const joindate = (data && userdata) ? new Date(Number(data?.created_at)) : new Date();
 
   const [inCommunity, setInCommunity] = useState<boolean>(false);
 

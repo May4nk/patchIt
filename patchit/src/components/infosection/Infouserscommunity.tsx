@@ -18,7 +18,7 @@ const Infouserscommunity = (infouserscommunityprops: infouserscommunityprops) =>
       <div className="userscommunitytitle"> Handler of patch </div>
       <div className="userscommunitycontent">
         { communitypatcherdata.map((patchdata: communitypatcherdatatype, idx: number) => (          
-          <Link to={`/c/${ patchdata.communityname }${ userId === patchdata.owner.id ? "/settings" : "/" }`} className="waves-light waves-effect userscommunitycontenttitle" key={idx}>
+          <Link to={`/c/${ patchdata.communityname }${ userId === patchdata.owner.id ? "/settings" : "" }`} className="waves-light waves-effect userscommunitycontenttitle" key={idx}>
             { patchdata.communityname }
           </Link>
         ))}

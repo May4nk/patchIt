@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { useLazyQuery, useMutation } from "@apollo/client";
+import { useQuery, useMutation } from "@apollo/client";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../common/hooks/useAuth";
 
 import Htabs from "../components/html/Htabs";
 import Patdrop from "../components/html/patdrop/Patdrop";
 import Askinput from "../components/html/Askinput";
+import Loadingpage from "../components/Loadingpage";
 
 import { GETCOMMUNITYPREFERENCE, UPSERTCOMMUNITYPREFERENCE } from "./queries/communitysetting"; //queries
 
@@ -26,8 +27,13 @@ const Communitysetting = () => {
   const navigate = useNavigate();
   const { cname } = useParams();
   const { user }: authcontexttype = useAuth();
+  const userId: number|null = user && Number(user["id"] || user["user_id"]);
 
-  const [getCommuntySetting, { data, loading }] = useLazyQuery(GETCOMMUNITYPREFERENCE);
+  const { data, loading, error } = useQuery(GETCOMMUNITYPREFERENCE, {
+    variables: {
+      communityName: cname!
+    }
+  });
   const [updateCommunitySettings] = useMutation(UPSERTCOMMUNITYPREFERENCE);
 
   const csettings = !loading && data?.communitypreference;
@@ -35,6 +41,7 @@ const Communitysetting = () => {
   //states
   const [userOption, setUserOption] = useState<string>("account");
   const [updateState, setUpdateState] = useState<boolean>(false);
+  const [customError, setCustomError] = useState<string>("");
   const [profileState, setProfileState] = useState<profilestatetype>({nsfw: false,});
   const [privacyState, setPrivacyState] = useState<privacystatetype>({allowppltofollow: false,});
   const [communityState, setCommunityState] = useState<communitystatetype>({
@@ -139,309 +146,309 @@ const Communitysetting = () => {
   }, [csettings]);
 
   useEffect(() => {
-    if(cname) {
-      getCommuntySetting({
-        variables: {
-          communityName: cname!
-        }
-      });
-    }
-  },[cname]);
-
-  useEffect(() => {
     if (!user) {
       navigate("/home");
     } else {
-      handleUserOptions("profile");
+      if(data?.communitypreference?.community_name?.owner?.id !== userId) {
+        setCustomError("One more attempt of this and your Id will be banned. Keep trying...")
+      } else {
+        handleUserOptions("profile");             
+      }
     }
   }, [user]);
 
   let pic: string = require("../img/a.jpg");
 
-  return (
-    <>
-      <div className="useroverviewtitle">
-        <i className="material-icons white-text uoverviewicn"> settings </i>
-        Community Preferences
-      </div>
-      <div className="useroverview">
-        { communitySettingTabs.map((tab: string, idx: number) => (
-          <Htabs
-            tabname={ tab }
-            handleClick={ () => handleUserOptions(tab) }
-            key={ idx }
-          />
-        ))}
-        {updateState && (
-          <div className="usettingupdatechangesbtn waves-effect waves-light black-text grey" onClick={handleUpdateChanges}>
-            Update
-          </div>
-        )}
-      </div>
-      <div className="flexy">
-        { userOption === "profile" ? (
-          <div className="usetting">
-            <div className="usettingtitle"> Customize profile </div>
-            <div className="usettingtitlemeta"> PROFILE INFO </div>
-            <div className="usettingitems">
-              <div className="usettingitemlabels">
-                <div className="usettingitemtitle"> Background Pic </div>
-                <div className="usettingitemmetatitle"> Community wall pic. </div>
-              </div>
-              <div className="waves-effect waves-light wallpicwrapper">
-                <img className="wallpic" src={ pic } alt="wall_pic" />
-              </div>
+  if(loading) {
+    return <Loadingpage />
+  } else if(error || customError) {
+    return <Loadingpage err={error?.message || customError} />
+  } else {
+    return (
+      <>
+        <div className="useroverviewtitle">
+          <i className="material-icons white-text uoverviewicn"> settings </i>
+          Community Preferences
+        </div>
+        <div className="useroverview">
+          { communitySettingTabs.map((tab: string, idx: number) => (
+            <Htabs
+              tabname={ tab }
+              handleClick={ () => handleUserOptions(tab) }
+              key={ idx }
+            />
+          ))}
+          {updateState && (
+            <div className="usettingupdatechangesbtn waves-effect waves-light black-text grey" onClick={handleUpdateChanges}>
+              Update
             </div>
-            <div className="usettingitems">
-              <div className="usettingitemlabels">
-                <div className="usettingitemtitle"> Profile Pic </div>
-              </div>
-              <div className="waves-effect waves-light picwrapper">
-                <img className="pic" src={ pic } alt="profile_pic" />
-              </div>
-            </div>
-            <div className="usettingitems">
-              <div className="usettingitemlabels">
-                <div className="usettingitemtitle"> Description </div>
-                <div className="usettingitemmetatitle"> 
-                  { communityState.description || "Describe your community in one line or so."}
+          )}
+        </div>
+        <div className="flexy">
+          { userOption === "profile" ? (
+            <div className="usetting">
+              <div className="usettingtitle"> Customize profile </div>
+              <div className="usettingtitlemeta"> PROFILE INFO </div>
+              <div className="usettingitems">
+                <div className="usettingitemlabels">
+                  <div className="usettingitemtitle"> Background Pic </div>
+                  <div className="usettingitemmetatitle"> Community wall pic. </div>
+                </div>
+                <div className="waves-effect waves-light wallpicwrapper">
+                  <img className="wallpic" src={ pic } alt="wall_pic" />
                 </div>
               </div>
-              <div className="waves-effect waves-light black-text blue usettingitembtn">
-                Update
-              </div>
-            </div>
-            <div className="usettingitems">
-              <div className="usettingitemlabels">
-                <div className="usettingitemtitle"> About </div>
-                <div className="usettingitemmetatitle"> 
-                  { communityState.about || "Write here all about your community."} 
+              <div className="usettingitems">
+                <div className="usettingitemlabels">
+                  <div className="usettingitemtitle"> Profile Pic </div>
+                </div>
+                <div className="waves-effect waves-light picwrapper">
+                  <img className="pic" src={ pic } alt="profile_pic" />
                 </div>
               </div>
-              <div className="waves-effect waves-light black-text blue usettingitembtn">
-                Update
-              </div>
-            </div>
-            <div className="usettingitems">
-              <div className="usettingitemlabels">
-                <div className="usettingitemtitle"> Social links </div>
-                <div className="usettingitemmetatitle"> People who visit community will see social links. </div>
-              </div>
-              <div className="waves-effect waves-light black-text blue usettingitembtn">
-                Update
-              </div>
-            </div>
-            <div className="usettingitems">
-              <div className="usettingitemlabels">
-                <div className="usettingitemtitle"> Theme </div>
-                <div className="usettingitemmetatitle"> Community theme </div>
-              </div>
-              <div className="usettingitemchange">
-                <Askinput
-                  type={ "color" }
-                  value={ communityState?.theme || "" }
-                  name={ "theme" }
-                  onChange={(e: any) => setCommunityState({ ...communityState, theme: e.target.value })}
-                />
-              </div>
-            </div>
-            <div className="usettingtitlemeta"> PROFILE CATEGORY </div>
-            <div className="usettingitems">
-              <div className="usettingitemlabels">
-                <div className="usettingitemtitle"> NSFW (Not Safe For Work)</div>
-                <div className="usettingitemmetatitle"> 
-                  This content is NSFW (may contain nudity, pornography, profanity or inappropriate content for those under 18) 
+              <div className="usettingitems">
+                <div className="usettingitemlabels">
+                  <div className="usettingitemtitle"> Description </div>
+                  <div className="usettingitemmetatitle"> 
+                    { communityState.description || "Describe your community in one line or so."}
+                  </div>
+                </div>
+                <div className="waves-effect waves-light black-text blue usettingitembtn">
+                  Update
                 </div>
               </div>
-              <div className="switch">
-                <label>
-                  <input
-                    type="checkbox"
-                    className="blue-text"
-                    name="nsfw"
-                    checked={ profileState.nsfw }
-                    onChange={ (e: any) => handleChange(e, "profile") }
-                  />
-                  <span className="lever"></span>
-                </label>
-              </div>
-            </div>
-            <div className="usettingtitlemeta"> ADVANCED </div>
-            <div className="usettingitems">
-              <div className="usettingitemlabels">
-                <div className="usettingitemtitle"> Delete community </div>
-                <div className="usettingitemmetatitle">{ cname }</div>
-              </div>
-              <div className="waves-effect waves-light black-text red usettingitembtn" onClick={handleDeleteAcc}>
-                delete
-              </div>
-            </div>
-          </div>
-        ) : userOption === "privacy" ? (
-          <div className="usetting">
-            <div className="usettingtitle"> Manage Privacy </div>
-            <div className="usettingtitlemeta"> Safety </div>
-            <div className="usettingitems">
-              <div className="usettingitemlabels">
-                <div className="usettingitemtitle"> Blocked users</div>
-                <div className="usettingitemmetatitle"> Blocked people can’t see community. </div>
-              </div>
-              <div className="waves-effect waves-light black-text blue usettingitembtn">
-                Update
-              </div>
-            </div>
-            <div className="usettingtitlemeta"> privacy </div>
-            <div className="usettingitems">
-              <div className="usettingitemlabels">
-                <div className="usettingitemtitle"> Community privacy </div>
-              </div>
-              <div className="usettingitemdrop">
-                <Patdrop profile={ privacyDropperprofile } droppers={ privacyDroppers } />
-              </div>
-            </div> 
-            <div className="usettingitems">
-              <div className="usettingitemlabels">
-                <div className="usettingitemtitle"> Allow people to follow </div>
-                <div className="usettingitemmetatitle"> 
-                  Followers will be notified about posts done in community or see them in their home feed. 
+              <div className="usettingitems">
+                <div className="usettingitemlabels">
+                  <div className="usettingitemtitle"> About </div>
+                  <div className="usettingitemmetatitle"> 
+                    { communityState.about || "Write here all about your community."} 
+                  </div>
+                </div>
+                <div className="waves-effect waves-light black-text blue usettingitembtn">
+                  Update
                 </div>
               </div>
-              <div className="switch">
-                <label>
-                  <input
-                    type="checkbox"
-                    className="blue-text"
-                    name="allowppltofollow"
-                    checked={ privacyState.allowppltofollow }
-                    onChange={ (e: any) => handleChange(e, "profile") }
-                  />
-                  <span className="lever"></span>
-                </label>
-              </div>
-            </div>
-          </div>
-        ) : userOption === "notifications" && (
-          <div className="usetting">
-            <div className="usettingtitle"> Notification Preferences </div>
-            <div className="usettingtitlemeta"> Messages </div>
-            <div className="usettingitems">
-              <div className="usettingitemlabels">
-                <div className="usettingitemtitle"> New user requests </div>
-              </div>
-              <div className="switch blue-text">
-                <label>
-                  <input
-                    type="checkbox"
-                    className="blue-text"
-                    name="newuserreq"
-                    checked={ notificationsState.newuserreq }
-                    onChange={ (e: any) => handleChange(e, "notifications") }
-                  />
-                  <span className="lever"></span>
-                </label>
-              </div>
-            </div>
-            <div className="usettingtitlemeta"> Activity </div>
-            <div className="usettingitems">
-              <div className="usettingitemlabels">
-                <div className="usettingitemtitle"> Post Reports </div>
-                <div className="usettingitemmetatitle"> Any user reports post of community.</div>
-              </div>
-              <div className="switch blue-text">
-                <label>
-                  <input
-                    type="checkbox"
-                    className="blue-text"
-                    name="reportonpost"
-                    checked={ notificationsState.reportonpost }
-                    onChange={ (e: any) => handleChange(e, "notifications") }
-                  />
-                  <span className="lever"></span>
-                </label>
-              </div>
-            </div>
-            <div className="usettingitems">
-              <div className="usettingitemlabels">
-                <div className="usettingitemtitle"> Comment Reports </div>
-                <div className="usettingitemmetatitle"> 
-                  Any user reports comment done on any post of community.
+              <div className="usettingitems">
+                <div className="usettingitemlabels">
+                  <div className="usettingitemtitle"> Social links </div>
+                  <div className="usettingitemmetatitle"> People who visit community will see social links. </div>
+                </div>
+                <div className="waves-effect waves-light black-text blue usettingitembtn">
+                  Update
                 </div>
               </div>
-              <div className="switch blue-text">
-                <label>
-                  <input
-                    type="checkbox"
-                    className="blue-text"
-                    name="reportoncmnt"
-                    checked={ notificationsState.reportoncmnt }
-                    onChange={ (e: any) => handleChange(e, "notifications") }
+              <div className="usettingitems">
+                <div className="usettingitemlabels">
+                  <div className="usettingitemtitle"> Theme </div>
+                  <div className="usettingitemmetatitle"> Community theme </div>
+                </div>
+                <div className="usettingitemchange">
+                  <Askinput
+                    type={ "color" }
+                    value={ communityState?.theme || "" }
+                    name={ "theme" }
+                    onChange={(e: any) => setCommunityState({ ...communityState, theme: e.target.value })}
                   />
-                  <span className="lever"></span>
-                </label>
-              </div>
-            </div>
-            <div className="usettingitems">
-              <div className="usettingitemlabels">
-                <div className="usettingitemtitle"> User Reports </div>
-                <div className="usettingitemmetatitle"> Any user reports another user of community.</div>
-              </div>
-              <div className="switch blue-text">
-                <label>
-                  <input
-                    type="checkbox"
-                    className="blue-text"
-                    name="reportonuser"
-                    checked={ notificationsState.reportonuser }
-                    onChange={ (e: any) => handleChange(e, "notifications") }
-                  />
-                  <span className="lever"></span>
-                </label>
-              </div>
-            </div>
-            <div className="usettingitems">
-              <div className="usettingitemlabels">
-                <div className="usettingitemtitle"> Activity in community </div>
-                <div className="usettingitemmetatitle"> 
-                  Any kind of activity (new posts, new suggested rules, new suggested pinned posts, new rooms) in community.
                 </div>
               </div>
-              <div className="switch blue-text">
-                <label>
-                  <input
-                    type="checkbox"
-                    className="blue-text"
-                    name="activityincommunity"
-                    checked={ notificationsState.activityincommunity }
-                    onChange={ (e: any) => handleChange(e, "notifications") }
-                  />
-                  <span className="lever"></span>
-                </label>
+              <div className="usettingtitlemeta"> PROFILE CATEGORY </div>
+              <div className="usettingitems">
+                <div className="usettingitemlabels">
+                  <div className="usettingitemtitle"> NSFW (Not Safe For Work)</div>
+                  <div className="usettingitemmetatitle"> 
+                    This content is NSFW (may contain nudity, pornography, profanity or inappropriate content for those under 18) 
+                  </div>
+                </div>
+                <div className="switch">
+                  <label>
+                    <input
+                      type="checkbox"
+                      className="blue-text"
+                      name="nsfw"
+                      checked={ profileState.nsfw }
+                      onChange={ (e: any) => handleChange(e, "profile") }
+                    />
+                    <span className="lever"></span>
+                  </label>
+                </div>
+              </div>
+              <div className="usettingtitlemeta"> ADVANCED </div>
+              <div className="usettingitems">
+                <div className="usettingitemlabels">
+                  <div className="usettingitemtitle"> Delete community </div>
+                  <div className="usettingitemmetatitle">{ cname }</div>
+                </div>
+                <div className="waves-effect waves-light black-text red usettingitembtn" onClick={handleDeleteAcc}>
+                  delete
+                </div>
               </div>
             </div>
-            <div className="usettingtitlemeta"> Updates </div>
-            <div className="usettingitems">
-              <div className="usettingitemlabels">
-                <div className="usettingitemtitle"> Birthday </div>
-                <div className="usettingitemmetatitle"> Any community user birthday. </div>
+          ) : userOption === "privacy" ? (
+            <div className="usetting">
+              <div className="usettingtitle"> Manage Privacy </div>
+              <div className="usettingtitlemeta"> Safety </div>
+              <div className="usettingitems">
+                <div className="usettingitemlabels">
+                  <div className="usettingitemtitle"> Blocked users</div>
+                  <div className="usettingitemmetatitle"> Blocked people can’t see community. </div>
+                </div>
+                <div className="waves-effect waves-light black-text blue usettingitembtn">
+                  Update
+                </div>
               </div>
-              <div className="switch blue-text">
-                <label>
-                  <input 
-                    type="checkbox"
-                    className="blue-text"
-                    name="birthday"
-                    checked={ notificationsState.birthday }
-                    onChange={ (e: any) => handleChange(e, "notifications") }
-                  />
-                  <span className="lever"></span>
-                </label>
+              <div className="usettingtitlemeta"> privacy </div>
+              <div className="usettingitems">
+                <div className="usettingitemlabels">
+                  <div className="usettingitemtitle"> Community privacy </div>
+                </div>
+                <div className="usettingitemdrop">
+                  <Patdrop profile={ privacyDropperprofile } droppers={ privacyDroppers } />
+                </div>
+              </div> 
+              <div className="usettingitems">
+                <div className="usettingitemlabels">
+                  <div className="usettingitemtitle"> Allow people to follow </div>
+                  <div className="usettingitemmetatitle"> 
+                    Followers will be notified about posts done in community or see them in their home feed. 
+                  </div>
+                </div>
+                <div className="switch">
+                  <label>
+                    <input
+                      type="checkbox"
+                      className="blue-text"
+                      name="allowppltofollow"
+                      checked={ privacyState.allowppltofollow }
+                      onChange={ (e: any) => handleChange(e, "profile") }
+                    />
+                    <span className="lever"></span>
+                  </label>
+                </div>
               </div>
             </div>
-          </div>
-        )}
-      </div>
-    </>
-  );
+          ) : userOption === "notifications" && (
+            <div className="usetting">
+              <div className="usettingtitle"> Notification Preferences </div>
+              <div className="usettingtitlemeta"> Messages </div>
+              <div className="usettingitems">
+                <div className="usettingitemlabels">
+                  <div className="usettingitemtitle"> New user requests </div>
+                </div>
+                <div className="switch blue-text">
+                  <label>
+                    <input
+                      type="checkbox"
+                      className="blue-text"
+                      name="newuserreq"
+                      checked={ notificationsState.newuserreq }
+                      onChange={ (e: any) => handleChange(e, "notifications") }
+                    />
+                    <span className="lever"></span>
+                  </label>
+                </div>
+              </div>
+              <div className="usettingtitlemeta"> Activity </div>
+              <div className="usettingitems">
+                <div className="usettingitemlabels">
+                  <div className="usettingitemtitle"> Post Reports </div>
+                  <div className="usettingitemmetatitle"> Any user reports post of community.</div>
+                </div>
+                <div className="switch blue-text">
+                  <label>
+                    <input
+                      type="checkbox"
+                      className="blue-text"
+                      name="reportonpost"
+                      checked={ notificationsState.reportonpost }
+                      onChange={ (e: any) => handleChange(e, "notifications") }
+                    />
+                    <span className="lever"></span>
+                  </label>
+                </div>
+              </div>
+              <div className="usettingitems">
+                <div className="usettingitemlabels">
+                  <div className="usettingitemtitle"> Comment Reports </div>
+                  <div className="usettingitemmetatitle"> 
+                    Any user reports comment done on any post of community.
+                  </div>
+                </div>
+                <div className="switch blue-text">
+                  <label>
+                    <input
+                      type="checkbox"
+                      className="blue-text"
+                      name="reportoncmnt"
+                      checked={ notificationsState.reportoncmnt }
+                      onChange={ (e: any) => handleChange(e, "notifications") }
+                    />
+                    <span className="lever"></span>
+                  </label>
+                </div>
+              </div>
+              <div className="usettingitems">
+                <div className="usettingitemlabels">
+                  <div className="usettingitemtitle"> User Reports </div>
+                  <div className="usettingitemmetatitle"> Any user reports another user of community.</div>
+                </div>
+                <div className="switch blue-text">
+                  <label>
+                    <input
+                      type="checkbox"
+                      className="blue-text"
+                      name="reportonuser"
+                      checked={ notificationsState.reportonuser }
+                      onChange={ (e: any) => handleChange(e, "notifications") }
+                    />
+                    <span className="lever"></span>
+                  </label>
+                </div>
+              </div>
+              <div className="usettingitems">
+                <div className="usettingitemlabels">
+                  <div className="usettingitemtitle"> Activity in community </div>
+                  <div className="usettingitemmetatitle"> 
+                    Any kind of activity (new posts, new suggested rules, new suggested pinned posts, new rooms) in community.
+                  </div>
+                </div>
+                <div className="switch blue-text">
+                  <label>
+                    <input
+                      type="checkbox"
+                      className="blue-text"
+                      name="activityincommunity"
+                      checked={ notificationsState.activityincommunity }
+                      onChange={ (e: any) => handleChange(e, "notifications") }
+                    />
+                    <span className="lever"></span>
+                  </label>
+                </div>
+              </div>
+              <div className="usettingtitlemeta"> Updates </div>
+              <div className="usettingitems">
+                <div className="usettingitemlabels">
+                  <div className="usettingitemtitle"> Birthday </div>
+                  <div className="usettingitemmetatitle"> Any community user birthday. </div>
+                </div>
+                <div className="switch blue-text">
+                  <label>
+                    <input 
+                      type="checkbox"
+                      className="blue-text"
+                      name="birthday"
+                      checked={ notificationsState.birthday }
+                      onChange={ (e: any) => handleChange(e, "notifications") }
+                    />
+                    <span className="lever"></span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </>
+    );
+  }
 }
 
 export default Communitysetting;

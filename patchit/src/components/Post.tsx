@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../common/hooks/useAuth";
+import { dateFormatter } from "../common/helpers";
 
 import Postpoll from "./Postpoll"; //component
 
@@ -17,6 +18,7 @@ import {
 
 //css & types
 import "./css/post.css";
+import { authcontexttype } from "../context/types";
 import { 
   postprops,
   parsedimgtype,
@@ -26,7 +28,6 @@ import {
   reactposttype,
   postdblikestype
 } from "./types/posttypes";
-import { authcontexttype } from "../context/types";
 
 const Post = ({ postData, showcommunity } : postprops) => {
   
@@ -37,10 +38,6 @@ const Post = ({ postData, showcommunity } : postprops) => {
   const userId:number|null = user && Number(user["id"] || user["user_id"]);
   const parsedimgData:parsedimgtype[] = type === "IMAGE" && JSON.parse(content!);
   const totalimg:number|boolean = parsedimgData?.length > 1 && parsedimgData?.length;
-  const postdate: Date = new Date(Number(created_at));
-  const postedDate: number = postdate.getDate();
-  const postedMonth: number = postdate.getMonth()+1;
-  const postedYear: number = postdate.getFullYear();
 
   //state
   const [currentImg, setCurrentImg] = useState<number>(0);
@@ -201,8 +198,6 @@ const Post = ({ postData, showcommunity } : postprops) => {
       setCurrentImg(currentImg + 1)
     }
   }
-  
-  const profilepic = "a.jpg";
 
   const parseImg = (parsedimgData && parsedimgData !== null) && require(`../img/${parsedimgData[currentImg].postSrc }`);
 
@@ -266,7 +261,7 @@ const Post = ({ postData, showcommunity } : postprops) => {
         <div className="postheader">
           <div className="posttitle">
             <div className="headingpicwrapper">
-              <img src={ require(`../img/${ profilepic }`)} className="headingpic" alt="profile pic" />
+              <img src={ require(`../img/a.jpg`)} className="headingpic" alt="profile pic" />
             </div>
             <div className="pictitle">
               { showcommunity ? (
@@ -285,7 +280,7 @@ const Post = ({ postData, showcommunity } : postprops) => {
                 </Link>
               )}
               <span className="metapictitle">
-                &nbsp;.&nbsp;{ `${postedDate}/${postedMonth}/${postedYear} `}
+                &nbsp;.&nbsp;{ `${dateFormatter(created_at)} `}
               </span>
             </div>
             { showcommunity && (

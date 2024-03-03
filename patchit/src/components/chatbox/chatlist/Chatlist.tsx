@@ -1,17 +1,26 @@
 import React from "react";
 import Chatprofiles from "./Chatprofiles";
+import { useAuth } from "../../../common/hooks/useAuth";
 
-import { chatlistprops } from "../types.js";
 import "../css/chatlist.css";
+import { chatlistprops } from "../types.js";
+import { authcontexttype } from "../../../context/types.js";
 
 
 const Chatlist = (chatlistprops: chatlistprops) => {
   const { chatrooms, handleActiveRoom, handleNew, createRoom, activeRoom } = chatlistprops;
+
+  const { user }: authcontexttype = useAuth(); 
+  const userId: number | null = user && Number(user["id"] || user["user_id"]); 
+
+  const chatters = chatrooms?.map((room: any) => { 
+    return { users : room.users.filter((usr: any) => usr.id !== userId ), room: room.room_id 
+  }});   
   
   return(
     <div className="lchatcontainer">
       <div className="rooms">
-        { chatrooms?.map((chatroom: any, idx: number) => (                   
+        { chatters?.map((chatroom: any, idx: number) => (                   
           <Chatprofiles handleActiveRoom={ handleActiveRoom } chatroom={ chatroom } key={ idx } />
         ))}
       </div>

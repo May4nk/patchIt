@@ -30,4 +30,29 @@ export const Randomcred = (credtype: arbitrarycredtype) => {
 
   return arbitraryCred[credtype];
 }
+
+
+export const dateFormatter: (datestr: string) => string = (datestr: string) => {
+  const postedDate: Date = new Date(Number(datestr));
+  const currentDate = new Date();
+  if(postedDate.getDate() === currentDate.getDate()) {
+    if(postedDate.getHours() === currentDate.getHours()){
+      if(currentDate.getMinutes() === postedDate.getMinutes()){
+        return "just now"
+      } else {
+        return `${currentDate.getMinutes() - postedDate.getMinutes()} minutes ago`
+      }
+    } else {
+      return `${currentDate.getHours() - postedDate.getHours()} hours ago`
+    }  
+  } else if(postedDate.getDate() < currentDate.getDate()){
+    if(postedDate.getDate() - currentDate.getDate() < 30) {
+      return `${currentDate.getDay() - postedDate.getDay()} days ago`
+    } else {
+      return `${Math.floor(currentDate.getDay() - postedDate.getDay()/30)} months ago`
+    }
+  } else {
+    return "many months ago"
+  } 
+}
   

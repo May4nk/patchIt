@@ -70,21 +70,38 @@
   border-radius: 50%;
 }
 
+.roomcreation {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  width: 96%;
+  border: 0.1rem solid rgba(255, 255, 255, 0.3);
+  margin: 0.3rem 0;
+  background: black;
+  border-radius: 0.5rem;
+  max-height: 21%;
+}
+
+.groupname {
+  height: 1.3rem;
+  width: 100%;
+  margin: 0.3rem 0;
+  color: transparent
+}
+
 .selectedGroupUsers {
-  max-height: 19%;  
+  max-height: 100%;  
   color: rgba(255,255,255,0.6);
-  width: 94%;
+  width: 100%;
   display: flex;
   justify-content: flex-start;
   align-items: flex-start;
   overflow-y: auto;
   flex-wrap: wrap;
-  margin: 0.7rem;
   font-size: 0.7rem;
-  border: 0.1rem solid rgba(255, 255, 255, 0.3);
-  background: black;
   padding: 0.5rem;
-  border-radius: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.031);
 }
 
 .groupUser {
@@ -145,7 +162,7 @@
 
 .createroom {
   width: 96%;
-  height: 2.3rem;
+  height: 2.5rem;
   margin-top: 1.5rem;
   color: rgba(255,255,255,0.3);
   background: black;
@@ -368,4 +385,71 @@
 .chatroomoptions:hover {
   cursor: pointer;
   color: #ef9a9a;
-}       
+}    
+
+.chatuserpage {
+  cursor: pointer;
+}
+
+.aboutchatuser {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+}
+
+.aboutchatuserpicwrapper {
+  margin: 5% 0 1% 0;
+  height: 10rem;
+  width: 30%;
+  border-radius: 50%;
+}
+
+.aboutchatuserpic {
+  height: 100%;
+  width: 100%;
+  border-radius: 50%;
+}
+
+.aboutuserabout { 
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.aboutchatuseroptions {
+  display: flex;
+  margin-top: 2%;
+  justify-content: center;
+  align-items: flex-start;
+  flex-direction: column;
+  width: 100%;
+}
+
+.aboutchatuseroption {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  font-weight: 410;
+  padding: 0.5rem;
+  text-transform: capitalize;
+  width: 100%;
+  color: rgba(255, 255, 255, 0.8);
+  border-radius: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.aboutchatuseroptionicn {
+  line-height: 25px !important;
+  margin: 0 0.5rem;
+  font-size: 1rem !important;
+  height: auto !important;
+}
+
+.aboutchatuseroption:hover {
+  background: rgba(0, 0, 0, 0.418);
+  cursor: pointer;
+  color: white;
+}

@@ -14,7 +14,7 @@ import { GETALLPOSTFORHOME } from "./queries/home";
 
 //css & types
 import "./css/main.css";
-import { posttype } from "../types/posttype";
+import { homeposttype, posttype } from "../types/posttype";
 import { authcontexttype } from "../context/types";
 
 const Home = () => {
@@ -28,7 +28,7 @@ const Home = () => {
   const [ getPosts , { data: postData, loading: postLoading }] = useLazyQuery(GETALLPOSTS);
 
   const pdata = userId !== null
-    ? !homePostLoading && homePostData?.listUsersCommunity.map((posts: any) => posts.community_id?.posts).flat(1)
+    ? !homePostLoading && homePostData?.listUsersCommunity.map((posts: homeposttype) => posts.community_id?.posts).flat(1)
     : !postLoading && postData?.listPosts;
   
   useEffect(() => {
