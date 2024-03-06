@@ -23,6 +23,10 @@
   color: white;
 }
 
+.sidenavcomponenticon {
+  font-size: 1.1vw;
+}
+
 .componentname{        
   margin-left: 0.7rem;  
   font-weight: 500;

@@ -17,7 +17,7 @@ const Notificationdrop = ({ showNotificationdrop, setShowNotificationdrop, data,
 
   return (
     <div className="notificationdrop" ref={ thisRef }>   
-      <i className="material-icons" onClick={() => setShowNotificationdrop(!showNotificationdrop)}>
+      <i className="material-icons loginuseraccessbtnsicn" onClick={() => setShowNotificationdrop(!showNotificationdrop)}>
         { icn }
       </i>
       { showNotificationdrop && (

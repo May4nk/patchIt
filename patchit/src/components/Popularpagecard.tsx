@@ -40,7 +40,7 @@ const Popularpagecard = ({ data }: popularcardprops) => {
             { title.length > 70 ? title.slice(0,70)+"..." : title }
           </div>
           <div className="topcontentblogcontent"> 
-            { content && content.trimStart() }
+            {content && (content.length > 350 ? content.slice(0,355)+"..." : content)}
           </div>
         </div>
       )}

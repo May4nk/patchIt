@@ -1,15 +1,23 @@
 .contenttitle {
-  font-size: 1em; 
-  margin-top: 0.5em;
-  padding-left: 1.7em;
+  margin-top: 0.5rem;
+  padding-left: 1.7rem;
   color: grey;
+  font-size: 1vw;
 }
 
 .contentfilter {
   display: flex;
   width: 98%;
-  height: 13em;
-  flex-direction: row;
-  justify-content: space-between;
+  min-height: 13rem;  
+  justify-content: flex-start;
+}
+
+@media  ( min-width: 600px) and (max-width: 800px) {
+  .contentfilter {
+    display: flex;
+    width: 98%;
+    min-height: 10rem;  
+    justify-content: flex-start;
+  }
 }
 

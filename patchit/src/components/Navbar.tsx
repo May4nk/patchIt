@@ -103,7 +103,7 @@ const Navbar = () => {
   return(
     <nav className="navbar">
       <div className="navhead">
-          <a href={ user ? "/home" : "/" } className="logo"> 
+          <a href={ user ? "/home" : "/" } className="logowrapper"> 
             <img src={ logo } className="logo" alt={"patch_logo"}/>
           </a>          
       </div>
@@ -119,7 +119,7 @@ const Navbar = () => {
         <div className="loginuseraccessbtns">
           <div className="loginusericns">
             <a href={"/c/popular"}> 
-              <i className="material-icons" title="popular"> whatshot </i> 
+              <i className="material-icons loginuseraccessbtnsicn" title="popular"> whatshot </i> 
             </a>
           </div>
           <div className="loginusericns">
@@ -127,19 +127,19 @@ const Navbar = () => {
           </div>
           <div className="loginusersec"> </div>
           <div className="loginusericns">
-            <i className="material-icons" title="chat" onClick={ () => setShowChat(true) }> forum </i>
+            <i className="material-icons loginuseraccessbtnsicn" title="chat" onClick={ () => setShowChat(true) }> forum </i>
             <Chatbox showChatbox={ showChat } setShowChatbox={ setShowChat } />
           </div>
           <div className="loginusericns">
             <Patcoindrop showPatcoindrop={ showPatcoindrop } setShowpatcoindrop={ setShowpatcoindrop } icn={ "blur_on" } data={"blah"}/>
           </div>      
           <div className="loginusericns">          
-            <i className="material-icons" title="create community" onClick={ () => setCreateCommunity(true) }> people_outline </i>
+            <i className="material-icons loginuseraccessbtnsicn" title="create community" onClick={ () => setCreateCommunity(true) }> people_outline </i>
             <CreateCommunity setShowCreateCommunity={ setCreateCommunity } showCreateCommunity={ createCommunity } />        
           </div>
           <div className="loginusericns">
             <Link to={ cname ? `/c/${cname}/submit` : "post/new" }>
-              <i className="material-icons" title="create post"> add_to_photos </i>
+              <i className="material-icons loginuseraccessbtnsicn" title="create post"> add_to_photos </i>
             </Link>
           </div>
         </div>

@@ -29,8 +29,8 @@ const Sortpanel = (sortpanelprops: sortpanelprops) => {
   const anonymouslogin = useLoginvia("anonymousLogin");
 
   const sortpanelDroppers = [
-    { value: "Newest", icn: "timeline", event: () => setSort("created_at"), state: "clicked" },
-    { value: "Popular", icn: "trending_up", event: () => setSort("likes"), state: "clicked" }
+    { value: "New", icn: "timeline", event: () => setSort("created_at"), state: "clicked" },
+    { value: "Hot", icn: "trending_up", event: () => setSort("likes"), state: "clicked" }
   ]
   
   const [getAllPinnedPost, { data, loading }] = useLazyQuery(GETUSERPINNEDPOST);
@@ -73,12 +73,14 @@ const Sortpanel = (sortpanelprops: sortpanelprops) => {
                 )
               )}
             </div>
-            <Link to={"/post/new"} className="waves-effect sortpanelbtn waves-light">
-              <i className="material-icons sortpanelbtnicn">add</i>
-              Post
-            </Link>
-            <div className="sortpanelsortoptions">
-              <Patdrop profile={ sortprofile } droppers={ sortpanelDroppers } />
+            <div className="sortpaneloptions">
+              <Link to={"/post/new"} className="waves-effect sortpanelbtn waves-light">
+                <i className="material-icons sortpanelbtnicn">add</i>
+                Post
+              </Link>
+              <div className="sortpanelsortoptions">
+                <Patdrop profile={ sortprofile } droppers={ sortpanelDroppers } />
+              </div>
             </div>
           </>
         ) : (

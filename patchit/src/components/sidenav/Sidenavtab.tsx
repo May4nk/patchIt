@@ -40,7 +40,7 @@ const Sidenavtab = (sidenavtabprops: sidenavtabprops) => {
   return(
     <div className="sidenavcomponents" onClick={ handleOpen }>
       <div className="sidenavcomponentheader waves-effect waves-light">
-        <i className="material-icons tiny">{ icon }</i>
+        <i className="material-icons sidenavcomponenticon">{ icon }</i>
         <span className="componentname">{ colname }</span>  
       </div>
       {( open && data?.listCommunities.length > 0 ) && (
