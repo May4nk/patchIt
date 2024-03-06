@@ -6,7 +6,7 @@ export async function up(knex: Knex): Promise<void> {
     if(!exists) {
       return knex.schema.createTable("roles", function(table: Knex.TableBuilder) {
         table.increments("id").unique().notNullable().primary();
-        table.string("role").unique().notNullable();
+        table.text("role").unique().notNullable();
         table.timestamp("created_at").notNullable().defaultTo(knex.fn.now());
       });
     }
@@ -16,8 +16,8 @@ export async function up(knex: Knex): Promise<void> {
     if(!exists) {
       return knex.schema.createTable("categories", function(table: Knex.TableBuilder) {
         table.increments("id").unique().notNullable();
-        table.string("categoryname").unique().notNullable().primary();
-        table.string("categoryicon").defaultTo(null);
+        table.text("categoryname").unique().notNullable().primary();
+        table.text("categoryicon").defaultTo(null);
         table.timestamp("created_at").notNullable().defaultTo(knex.fn.now());
       });
     }
@@ -27,17 +27,17 @@ export async function up(knex: Knex): Promise<void> {
     if(!exists) {
       return knex.schema.createTable("users", function(table: Knex.TableBuilder) {
         table.increments("id").unique().notNullable().primary();
-        table.string("email").notNullable().unique();
-        table.string("username").notNullable().unique();
-        table.string("password").notNullable();
+        table.text("email").notNullable().unique();
+        table.text("username").notNullable().unique();
+        table.text("password").notNullable();
         table.enu("status", ["ACTIVE","INACTIVE"]).defaultTo("ACTIVE").notNullable();
         table.enu("privacy", ["PUBLIC","PRIVATE"]).defaultTo("PUBLIC").notNullable();
         table.date("dob");
-        table.string("country");
-        table.string("about");
+        table.text("country");
+        table.text("about");
         table.boolean("new_user").defaultTo(true);
-        table.string("background_pic");
-        table.string("profile_pic").defaultTo(false);
+        table.text("background_pic");
+        table.text("profile_pic").defaultTo(false);
         table.boolean("verified");
         table.integer("role").references("id").inTable("roles").defaultTo(9005).onDelete("CASCADE");
         table.timestamp("created_at").notNullable().defaultTo(knex.fn.now());
@@ -50,8 +50,8 @@ export async function up(knex: Knex): Promise<void> {
     if(!exists) {
       return knex.schema.createTable("tags", function(table: Knex.TableBuilder) {
         table.increments("id").unique().notNullable().primary();
-        table.string("name").notNullable().unique();
-        table.string("description");
+        table.text("name").notNullable().unique();
+        table.text("description");
         table.timestamp("created_at").notNullable().defaultTo(knex.fn.now());
         table.timestamp("updated_at");
       });
@@ -62,14 +62,14 @@ export async function up(knex: Knex): Promise<void> {
     if(!exists) {
       return knex.schema.createTable("communities", function(table: Knex.TableBuilder) {
         table.increments("id").unique().notNullable().primary();
-        table.string("communityname").notNullable().unique();
+        table.text("communityname").notNullable().unique();
         table.integer("owner").references("id").inTable("users").onDelete("CASCADE");
-        table.string("description");
-        table.string("about");
-        table.string("background_pic");
-        table.string("category").references("categoryname").inTable("categories").onDelete("CASCADE");
-        table.string("profile_pic");
-        table.string("theme");
+        table.text("description");
+        table.text("about");
+        table.text("background_pic");
+        table.text("category").references("categoryname").inTable("categories").onDelete("CASCADE");
+        table.text("profile_pic");
+        table.text("theme");
         table.enu("status", ["ACTIVE", "INACTIVE"]).defaultTo("ACTIVE").notNullable();
         table.enu("privacy", ["PUBLIC", "PRIVATE", "RESTRICTED"]).defaultTo("PUBLIC").notNullable();
         table.timestamp("created_at").notNullable().defaultTo(knex.fn.now());
@@ -82,8 +82,8 @@ export async function up(knex: Knex): Promise<void> {
     if(!exists) {
       return knex.schema.createTable("posts", function(table: Knex.TableBuilder) {
         table.increments("id").unique().notNullable().primary();
-        table.string("title").notNullable();
-        table.string("content");
+        table.text("title").notNullable();
+        table.text("content");
         table.integer("likes").notNullable().defaultTo(0);
         table.integer("owner").references("id").inTable("users").onDelete("NO ACTION");
         table.integer("community_id").references("id").inTable("communities").onDelete("CASCADE");
@@ -122,7 +122,7 @@ export async function up(knex: Knex): Promise<void> {
     if(!exists) {
       return knex.schema.createTable("chatrooms", function(table: Knex.TableBuilder) {
         table.increments("id").unique().notNullable();
-        table.string("room_code").notNullable().primary();
+        table.text("room_code").notNullable().primary();
         table.enu("status", ["ACTIVE","INACTIVE"]).defaultTo("ACTIVE").notNullable();
         table.timestamp("created_at").notNullable().defaultTo(knex.fn.now());
       });
@@ -134,8 +134,8 @@ export async function up(knex: Knex): Promise<void> {
       return knex.schema.createTable("chat", function(table: Knex.TableBuilder) {
         table.increments("id").unique().notNullable().primary();
         table.integer("user_id").references("id").inTable("users").onDelete("CASCADE");
-        table.string("room_id").references("room_code").inTable("chatrooms").onDelete("CASCADE");
-        table.string("message").notNullable();
+        table.text("room_id").references("room_code").inTable("chatrooms").onDelete("CASCADE");
+        table.text("message").notNullable();
         table.timestamp("created_at").notNullable().defaultTo(knex.fn.now());
       });
     }
@@ -146,7 +146,7 @@ export async function up(knex: Knex): Promise<void> {
       return knex.schema.createTable("user_chatrooms", function(table: Knex.TableBuilder) {
         table.increments("id").unique().notNullable().primary();
         table.integer("user_id").references("id").inTable("users").onDelete("CASCADE");
-        table.string("room_id").references("room_code").inTable("chatrooms").onDelete("CASCADE");
+        table.text("room_id").references("room_code").inTable("chatrooms").onDelete("CASCADE");
         table.enu("status", ["ACTIVE","INACTIVE"]).defaultTo("ACTIVE").notNullable();
         table.timestamp("created_at").notNullable().defaultTo(knex.fn.now());
       });
@@ -160,7 +160,7 @@ export async function up(knex: Knex): Promise<void> {
         table.integer("user_id").references("id").inTable("users").onDelete("CASCADE");
         table.integer("post_id").references("id").inTable("posts").onDelete("CASCADE");
         table.integer("parent_id").references("id").inTable("comments").onDelete("CASCADE");
-        table.string("comment").notNullable();
+        table.text("comment").notNullable();
         table.enu("status", ["DELETED","ACTIVE"]).defaultTo("ACTIVE").notNullable();
         table.timestamp("created_at").notNullable().defaultTo(knex.fn.now());
       });
@@ -197,7 +197,7 @@ export async function up(knex: Knex): Promise<void> {
       return knex.schema.createTable("tokens", function(table: Knex.TableBuilder) {
         table.increments("id").unique().notNullable().primary();
         table.integer("user_id").references("id").inTable("users").onDelete("CASCADE").unique();
-        table.string("token").notNullable();
+        table.text("token").notNullable();
         table.timestamp("created_at").notNullable().defaultTo(knex.fn.now());
       });
     }
@@ -232,7 +232,7 @@ export async function up(knex: Knex): Promise<void> {
     if(!exists) {
       return knex.schema.createTable("community_preferences", function(table: Knex.TableBuilder) {
         table.increments("id").unique().notNullable().primary();
-        table.string("community_name").references("communityname").inTable("communities").onDelete("CASCADE").notNullable().unique();
+        table.text("community_name").references("communityname").inTable("communities").onDelete("CASCADE").notNullable().unique();
         table.boolean("nsfw").defaultTo(false);
         table.boolean("allowppltofollow").defaultTo(true);
         table.boolean("newuserreq").defaultTo(true);

@@ -12,22 +12,30 @@ const Popularpagecard = ({ data }: popularcardprops) => {
 
   const { id, content, type, title } = data;
 
+  let cardContent = 
+    type === "IMAGE" ?
+      JSON.parse(content)[0].postSrc
+    : type === "POLL" ?
+      JSON.parse(content)
+    : (type === "BLOG" || type === "LINK") &&
+      content;
+
   return(
     <Link to={`/post/${id}`} className="topcontentbox hoverable">     
       { type === "IMAGE" ? (
         <>
-          <img src={require(`../img/${ JSON.parse(content)[0].postSrc}`)} className="topcontentpix" alt="sample_pic"/> 
+          <img src={ require(`../img/${ cardContent }`) } className="topcontentpix" alt="sample_pic"/> 
           <div className="topcontenttext">
-            { title.length > 70 ? title.slice(0,73)+"..." : title }
+            { title?.length > 70 ? title.slice(0,73)+"..." : title }
           </div>
         </>
       ):  type === "POLL" ? (
         <div className="topcontentblog">
           <div className="topcontentblogtitle">
-            { title.length > 70 ? title.slice(0,70)+"..." : title }
+            { title?.length > 70 ? title.slice(0,70)+"..." : title }
           </div>
           <div className="topcontentpoll"> 
-            {JSON.parse(content).map((polls: any, idx: number) => (
+            { cardContent.map((polls: any, idx: number) => (
               <div className="topcontentpolltext" key={idx}>
                 { polls.poll }
               </div>
@@ -37,10 +45,10 @@ const Popularpagecard = ({ data }: popularcardprops) => {
       ) : (type === "BLOG" || type === "LINK") && (
         <div className="topcontentblog">
           <div className="topcontentblogtitle">
-            { title.length > 70 ? title.slice(0,70)+"..." : title }
+            { title?.length > 70 ? title.slice(0,70)+"..." : title }
           </div>
           <div className="topcontentblogcontent"> 
-            {content && (content.length > 350 ? content.slice(0,355)+"..." : content)}
+            { cardContent?.length > 350 ? cardContent?.slice(0,355)+"..." : cardContent }
           </div>
         </div>
       )}
