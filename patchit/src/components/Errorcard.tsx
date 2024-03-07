@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 //css
 import "./css/errorcard.css";
@@ -7,15 +7,13 @@ interface errorcardprops {
   msg? : boolean;
   title? : string;
   message? : string;
-  code? : number;
-  type? : string;
   msgshowtime? : number;
   err? : boolean;
 }
 
 const Errorcard = (errorcardprops: errorcardprops) => {
   //props
-  const { msg, title, message, code, type, msgshowtime, err } = errorcardprops;
+  const { msg, title, message, msgshowtime, err } = errorcardprops;
   
   const [showError, setShowError] = useState(false);
 
@@ -31,7 +29,7 @@ const Errorcard = (errorcardprops: errorcardprops) => {
         setShowError(false);
       },msgshowtime || 3000)
     }
-  },[showError])
+  },[showError, msgshowtime])
 
   return (
     <div className={ showError ? "block": "none"}>

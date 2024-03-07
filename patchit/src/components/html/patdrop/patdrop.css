@@ -14,7 +14,7 @@
 .patdrophiddenitems {
   position: relative;
   top: 0.5rem;
-  max-height: 27rem;
+  max-height: 29vw;
   width: 100%;
   z-index: 5;
   overflow-y: auto;

@@ -25,11 +25,13 @@
 .zeropostcardheadertitle {
   width: 100%;
   font-weight: 500;
+  font-size: 1.1vw !important;
   text-transform: capitalize;
 }
 
 .zeropostcardicn {
   margin-left: auto;
+  font-size: 1.7vw;
 }
 
 .zeropostcardcontent {
@@ -72,11 +74,12 @@
   animation-duration: 4s;
   animation-iteration-count: 2;
   color: #2196F3;
+  font-size: 1.7vw !important;
 }
 
 .zeropostcardheadingcontent {
   color: grey;
-  font-size: 0.8rem;
+  font-size: 0.9vw;
   text-transform: capitalize;
 }       
 
@@ -85,7 +88,7 @@
   background: #232c31;
   color: white;
   margin-top: 0.5rem;
-  font-size: 0.8rem;
+  font-size: 0.9vw;
   display: flex;
   justify-content: center;
   align-items: center;

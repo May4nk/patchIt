@@ -41,8 +41,8 @@
 }
 
 .popularcommunitypicwrapper {
-  height: 2rem;
-  width: 2rem;
+  height: 2.3vw;
+  width: 2.3vw;
   border-radius: 50%;
   margin-right: 0.5rem;
 }
@@ -63,7 +63,7 @@
               
 .popularcommunitytitle {
   font-weight: 500;
-  font-size: 0.9rem;
+  font-size: 1vw;
 }
 
 .popularcommunityfooter {
@@ -76,11 +76,12 @@
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  font-size: 0.7rem;
+  font-size: 0.8vw;
   font-weight: 500;
   margin-right: 0.7rem;
 }
 
 .popularcommunityfootericn {
   margin-right: 0.3rem;
+  font-size: 0.9vw !important;
 }

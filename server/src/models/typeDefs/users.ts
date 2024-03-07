@@ -12,6 +12,7 @@ export const userTypeDefs = `
     dob: String
     country: String
     about: String
+    privacy: String
     new_user: Boolean
     profile_pic: String
     token: String
@@ -46,6 +47,7 @@ export const userTypeDefs = `
     country: String
     about: String
     status: String
+    privacy: String
     password: String   
     new_user: Boolean
     role: Int
@@ -61,6 +63,7 @@ export const userTypeDefs = `
     role: Int
     country: String
     status: String
+    privacy: String
     new_user: Boolean
     profile_pic: String
     background_pic: String

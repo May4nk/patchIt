@@ -119,7 +119,7 @@ const Login = () => {
           </div>
         ) : forgotUsernameLevels === 1 ? (
           <div className="loginpagemetatitle">
-            By power of email, you can have your username to login
+            By access of your email, you can have your username to login
           </div>
         ) : forgotUsernameLevels === 2 ? (
           <div className="loginpagemetatitle">

@@ -11,7 +11,7 @@
 ::placeholder {
   color: rgba(255,255,255,0.4);
   opacity: 0.7;
-  font-size: 1vw;
+  font-size: 2.1vh;
 }
 
 .inputprefix {
@@ -20,7 +20,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 1.1vw !important;
+  font-size: 2.7vh !important;
 }
 
 .askinputtab {
@@ -45,7 +45,7 @@
 .askinputtabicn {
   height: 100% !important;
   line-height: 23px !important;
-  font-size: 1vw !important;
+  font-size: 1vh !important;
   display: flex !important;
   justify-content: center;
   align-items: center;
@@ -66,6 +66,7 @@
   margin-right: 0.5rem;
   font-size: 100% !important;
   display: flex;
+  font-size: 1.1vw;
   justify-content: center;
   align-items: center;
   cursor: pointer;
@@ -81,7 +82,7 @@ input.askinput {
   height: 100% !important;
   box-sizing: border-box !important;
   padding: 0 0.5rem !important;
-  font-size: 1vw !important;
+  font-size: 2.5vh !important;
   margin-bottom: 0 !important;
   border-radius: 0.3rem;
   color: rgba(255,255,255,0.8);
@@ -93,6 +94,6 @@ input:focus {
 }
 
 .inputlength {
-  font-size: 0.8rem;
-  margin-right: 0.5rem;
+  font-size: 0.9vw;
+  margin-right: 0.5vw;
 }

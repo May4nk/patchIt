@@ -20,7 +20,7 @@
 }
 
 .loginbox {
-  max-width: 27%;
+  width: 29vw;
   background-color: rgb(0,0,0,0.9);
   box-shadow: 5px 5px #0d0c0c;
   display: flex;
@@ -36,6 +36,7 @@
   margin-left: auto;
   cursor: pointer;
   color: grey;
+  font-size: 1.7vw;
 }
 
 .closeicn:hover {
@@ -43,8 +44,8 @@
 }
 
 .logincardlogowrapper {
-  height: 5.5rem;
-  width: 5.5rem;
+  height: 6vw;
+  width: 6vw;
   margin: 0rem 2rem 3rem 1rem;
 }
 
@@ -104,7 +105,7 @@
 .forgotpass {
   color: grey;
   margin: -7%;
-  font-size: 0.9em;
+  font-size: 0.9vw;
   margin: 0.1rem 0;
 }
 
@@ -116,18 +117,22 @@
 .policy {
   margin-top: 7%;
   color: grey;
-  font-size: 0.7rem;
+  font-size: 0.7vw;
 }
 
 .tc {
-  font-size: 0.9rem;
+  font-size: 0.9vw;
   color: grey;
-  margin: 1rem 0rem 0.5rem 0rem;
+  margin: 1rem 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .policytxt {
   margin: 1rem 0;
-  font-size: 0.9em !important;  
+  font-size: 0.83vw !important;
 }
 
 #mybtn, #magicbtn {
@@ -136,7 +141,7 @@
   font-weight: 500;
   width: 53%;
   text-transform: capitalize !important;
-  font-size: 0.9rem;  
+  font-size: 1vw !important;  
   background-color: #2196F3;
   color: black;
   padding: 0.3rem;
@@ -158,7 +163,7 @@
 
 .signup {
   color: grey;
-  font-size: 0.8rem;
+  font-size: 0.9vw;
 }
 
 .magicloginscreen {
@@ -187,6 +192,7 @@
   justify-content: center;
   align-items: center;
   margin: 1rem 0;
+  font-size: 1.1vw;
 }
 
 .otherformlogin {
@@ -198,7 +204,7 @@
 
 .loginotherform {
   border-radius: 1.5rem;
-  padding: 0.3rem 0.5rem; 
+  padding: 0.2vw 0.7vw;
   border: 0.1rem solid rgba(255,255,255,0.1);
   margin: 0 0.3rem;
   background: black;
@@ -209,19 +215,18 @@
   justify-content: flex-start;
   align-items: center;
   cursor: pointer;
-  height: 1.8rem;
 }
 
 .loginformslogo {
-  height: 100% !important;
-  width: 100% !important;
+  height: 1vw !important;
+  width: 1vw !important;
   line-height: 23px !important;
   margin-right: 0.1rem;
 }
 
 .magiclinkicon {
-  height: 100%;
-  width: 18%;
+  height: 1vw;
+  width: 1vw;
   margin-right: 0.5rem;
 }
 
@@ -239,7 +244,7 @@
   color: rgba(255,255,255,0.5);
   font-weight: 500;
   padding-left: 0.2rem;
-  font-size: 0.9rem;
+  font-size: 0.8vw;
   text-decoration: underline;
 }
 

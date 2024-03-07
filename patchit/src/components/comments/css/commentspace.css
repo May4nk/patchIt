@@ -4,7 +4,7 @@
   flex-direction: column;
   align-items: flex-start;
   justify-content: flex-start;
-  padding: 0.5rem;
+  padding: 0.5vw;
 }
 
 .commentspaceadd {
@@ -15,12 +15,12 @@
   border: 0.1px solid #607d8b;
   border-radius: 1.5rem;
   padding: 0.3rem 0.7rem;
-  font-size: 0.9rem;
+  font-size: 0.9vw;
 }
 
 .commentspaceaddicn {
   margin-right: 0.5rem;
-  font-size: 1.3rem;
+  font-size: 1.3vw;
 }
 
 .commentspaceadd:hover {
@@ -31,20 +31,20 @@
 
 .newcommentwrapper {
   width: 100%;
-  height: 9rem;
+  height: 11vw;
   display: flex;
   justify-content: center;
   align-items: center;
   background: black;
   flex-direction: column;
-  margin-top: 1rem;
+  margin-top: 1vw;
   border-radius: 0.5rem;
   color: white;
   padding: 0.5rem;
 }
 
 .parentComment {
-  font-size: 0.8rem;
+  font-size: 0.9vw;
   color: rgba(255,255,255,0.7);
   display: flex;
   align-items: center;
@@ -61,12 +61,12 @@
 .newcomment {
   color: #cfd8dc;
   border: 0;
-  height: 4.5rem;
+  height: 6vw;
   width: 100%;
   background: black;
   border-radius: 0.5rem;
   padding: 0.1rem;
-  font-size: 0.9rem;
+  font-size: 0.9vw;
   font-weight: 450;
   resize: none;
 }
@@ -84,13 +84,14 @@
   justify-content: center;
   align-items: center;
   font-weight: 500;
-  font-size: 0.9rem;
+  font-size: 0.9vw;
   margin-right: 0.7rem;
   color: #859da8;
   cursor: pointer;
-  padding: 0.1rem 0.7rem;
-  border-radius: 1rem;
+  padding: 0.1vw 0.7vw;
+  border-radius: 1vw;
   background: rgba(79, 75, 75, 0.1);
+  text-transform: capitalize;
 }
 
 .newcommentactionbtnpost:hover {

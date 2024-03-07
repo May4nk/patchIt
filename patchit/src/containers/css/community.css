@@ -1,75 +1,58 @@
-.afterprofiletopbar {
-  margin-bottom: 1rem;
-}
-
-.afterprofilebackground {
-  height: 13rem;
-  width: 100%;
-}
-
-.afterprofilebackgroundpic {
-  height: 100%;
-  width: 100%;
-}
-
-.afterprofileintersection {
-  width: 100%;
+.profileabout {
   display: flex;
+  width: 100%;
   justify-content: center;
   align-items: flex-start;
   flex-direction: column;
-  padding: 0 12%;
+  padding: 1rem 0;
+  color: white;
 }
 
-.profileintersectioncontainer {
+.profileintersection {
   display: flex;
+  width: auto;
   justify-content: flex-start;
-  width: 100%;
-  height: 100%;
+  align-items: center;
 }
 
-.afterprofilepicwrapper {
+.profilepicborder {
   border-radius: 50%;
-  height: 6rem;
-  width: 6rem;
-  margin-top: -1.3rem;
+  height: 5vw;
+  width: 5vw;
+  background: white;
 }
 
-.afterprofilepic {
+.profilepic {
   border-radius: 50%;
-  border: 0.1rem solid;
+  border: 0.1rem solid rgba(255,255,255,0.8);
   height: 100%;
   width: 100%;
 }
 
-.afterprofilename {
+.profilename {
   display: flex;
   flex-direction: column;
-  width: 30%;
+  width: auto;
 }
 
-.aftername {
-  font-size: 1.7rem;
+.name {
+  font-size: 1.5vw;
   padding-left: 0.7rem;
-  color: white;
-  font-weight: 550;
+  font-weight: 600;
 }
 
-.afterchannelname {
+.channelname {
+  font-size: 0.9vw;
   padding-left: 0.7rem;
   color: grey;
   font-weight: 500;
-  margin-bottom: 0.1rem;
+  width: auto;
 }
 
-.mycontainerparent, .mycontainer {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
+.communityinfo {
+  margin-top: 1rem;
+  font-size: 0.9vw;
+  font-weight: 450;
+  color: rgba(255,255,255,0.7);
 }
 
-.mycontainer {
-  flex-direction: column;
-  flex-basis: 81%;
-}

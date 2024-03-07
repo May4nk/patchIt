@@ -8,8 +8,8 @@
 .userpicwrapper {
   border: 1px solid grey;
   border-radius: 50%;
-  height: 3.3rem;
-  width: 3.3rem;
+  height: 3.5vw;
+  width: 3.5vw;
 }
 
 .userpic {
@@ -35,7 +35,7 @@
 }
 
 .username {
-  font-size: 1rem;
+  font-size: 1vw;
   font-weight: 600;
   color: rgba(255,255,255,0.6);
   cursor: pointer;
@@ -49,7 +49,7 @@
   display: flex;
   justify-content: flex-start;
   align-items: center;
-  font-size: 0.7rem;
+  font-size: 0.8vw;
   font-weight: 500;
 }
 
@@ -57,7 +57,7 @@
   color: rgba(255,255,255,0.7);
   padding: 0 0.3rem;
   cursor: pointer;
-  font-size: 0.8rem;
+  font-size: 0.9vw;
 }        
 
 .communitynametxt:hover{
@@ -67,8 +67,9 @@
 
 .created {
   align-self: flex-end;
-  font-size: 0.8rem;
-  font-size: 500;  
+  font-size: 0.9vw;
+  font-weight: 500;
+  color: rgba(255,255,255,0.3);
 }
 
 .postpageheading {
@@ -99,7 +100,7 @@
   right: 0.3rem;
   background: rgba(255,255,255,0.5);
   border-radius: 0.5rem;
-  font-size: 0.7rem;
+  font-size: 0.8vw;
   padding: 0.1rem 0.3rem;
   color: black;
   font-weight: 500;
@@ -110,7 +111,7 @@
   bottom: 50%;
   border-radius: 50%;
   background: rgba(255,255,255,0.1);
-  font-size: 1.6rem;
+  font-size: 1.7vw;
 }
 
 .leftimagebutton {
@@ -124,7 +125,7 @@
 .postpage_caption {
   position: absolute;
   color: rgba(255,255,255,0.7);
-  background: rgba(0,0,0,0.1);
+  background: rgba(0,0,0,0.2);
   border-radius: 1.5rem;
   margin-top: -2rem;
   z-index: 1;
@@ -157,26 +158,22 @@
 }
 
 .postpagepostinfotabs {
+  color: white;
   display: flex;
-  margin-right: 0.5rem;
-  background: rgba(0,0,0,0.2);
-  border-radius: 1rem;
-  padding: 0.3rem 0.7rem;
-  color: rgba(255,255,255,0.7);
-  cursor: pointer;
   justify-content: center;
   align-items: center;
-  font-size: 0.9rem;
+  font-size: 1vw;
+  background: #28272740;
+  padding: 0.3vw 0.7vw;
+  border-radius: 1vw;
+  margin: 0 0.3rem;
+  cursor: pointer;
 }
-
-.postpagepostinfotabs:hover {
-  color: rgba(255,255,255,0.9);
-}        
 
 .icnspaceup, .icnspacedown {
   padding-right: 0.7rem;
   color: grey;
-  font-size: 1.3rem;
+  font-size: 1.5vw;
 }
 
 .icnspacedown {
@@ -192,10 +189,14 @@
   color: #f44336;
 }
 
-.icnspacechat {
+.icnspacesave {
   color: grey;
   padding-right: 0.3rem;
-  font-size: 1.3rem;
+  font-size: 1.5vw;
+}
+
+.icnspacesave:hover {
+  color: #2196F3;
 }
 
 .postpagesortby {
@@ -214,7 +215,7 @@
 }
 
 .postpagesortbytrim {
-  font-size: 0.8rem;
+  font-size: 0.9vw;
   font-weight: 450;
   color: white;
   margin: 0 0.3rem;
@@ -241,7 +242,7 @@
   padding: 0.3rem 1rem;
   border: 1px solid rgba(255,255,255,0.2);
   border-radius: 0.5rem;
-  font-size: 0.9rem;
+  font-size: 1vw;
   font-weight: 500;
   color: rgba(255,255,255,0.6);
   margin: 0.3rem 0;

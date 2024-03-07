@@ -84,7 +84,7 @@ const Sortpanel = (sortpanelprops: sortpanelprops) => {
             </div>
           </>
         ) : (
-          <>
+          <div className="nologinsort">
             <div className={`waves-effect sortpanelbtn waves-light ${sort === "created_at" && "blue black-text"}`} onClick={() => handleSort("created_at")}>
               <i className="material-icons sortpanelbtnicn">timeline</i>
               New
@@ -97,7 +97,7 @@ const Sortpanel = (sortpanelprops: sortpanelprops) => {
               <i className="material-icons sortpanelbtnicn">perm_identity</i>
               Anonymous Browsing
             </div>
-          </>
+          </div>
         )}       
     </div>
   );

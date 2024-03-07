@@ -7,7 +7,7 @@
   margin-bottom: -0.3rem;
   margin-left: 1rem;
   width: 100%;
-  font-size: 0.9rem;
+  font-size: 0.9vw;
   font-weight: 500;
   text-transform: uppercase;
 }
@@ -25,7 +25,7 @@
   justify-content: flex-start;
   align-items: center;
   width: 100%;
-  border: 1px;
+  border: 0.1rem;
   color: rgba(255,255,255,0.7);
   padding: 0.7rem; 
   margin: 0.3rem 0;
@@ -49,8 +49,8 @@
 }
 
 .searchbyheaderpicwrapper {
-  height: 2rem;
-  width: 2rem;
+  height: 2.3vw;
+  width: 2.3vw;
   border-radius: 50%;
 }
 
@@ -63,16 +63,19 @@
 .searchbyheadercommunity {
   margin: 0rem 0.3rem;
   font-weight: 500;
+  font-size: 1.1vw;
 }
 
 .searchbyheaderposttime {
-  font-weight: 400;
-  font-size: 0.8rem;
+  font-weight: 500;
+  font-size: 0.9vw;
+  color: rgba(255,255,255,0.3);
 }
 
 .searchbypostbody {
   font-weight: 450;
   margin: 0.5rem;
+  font-size: 1.1vw;
 } 
                     
 .searchbypostfooter {
@@ -80,7 +83,7 @@
   justify-content: flex-start;
   align-items: center; 
   margin-left: 0.5rem;
-  font-size: 0.7rem;
+  font-size: 0.8vw;
 }
 
 .searchbypostpicwrapper {
@@ -97,8 +100,8 @@
 }
 
 .searchbycardpicwrapper {
-  height: 3.5rem;
-  width: 3.5rem;
+  height: 3.7vw;
+  width: 3.7vw;
   border-radius: 50%;
 }
 
@@ -116,18 +119,19 @@
   width: 100%;
   margin-left: 1rem;
 }
-                   
-.searchbycardcontentheader {  
+
+.searchbycardcontentheader {
   font-weight: 500;
+  font-size: 1.1vw;
 }
 
 .searchbycardcontentabout {
-  font-size: 0.7rem;
+  font-size: 0.9vw;
   color: rgba(255,255,255,0.4);
 }
 
 .searchbycardcontentinfo {
-  font-size: 0.7rem; 
+  font-size: 0.8vw; 
   font-weight: 500;
   color: rgba(255,255,255,0.5);
 }       
@@ -150,6 +154,7 @@
 
 .searchbypostcommenttext {
   margin-left: 0.5rem;
+  font-size: 1.1vw;
 }
 
 .searchbypostpcommentheader {

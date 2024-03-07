@@ -18,7 +18,7 @@ export const Randomcred = (credtype: arbitrarycredtype) => {
   }
 
   const password: () => string = () => {
-    const randomPassword: string = Math.random().toString(36).substring(2,19);    
+    const randomPassword: string = Math.random().toString(36).substring(2,19);
     return randomPassword;
   }
   
@@ -31,7 +31,6 @@ export const Randomcred = (credtype: arbitrarycredtype) => {
   return arbitraryCred[credtype];
 }
 
-
 export const dateFormatter: (datestr: string) => string = (datestr: string) => {
   const postedDate: Date = new Date(Number(datestr));
   const currentDate = new Date();
@@ -40,19 +39,18 @@ export const dateFormatter: (datestr: string) => string = (datestr: string) => {
       if(currentDate.getMinutes() === postedDate.getMinutes()){
         return "just now"
       } else {
-        return `${currentDate.getMinutes() - postedDate.getMinutes()} minutes ago`
+        return `${currentDate.getMinutes() - postedDate.getMinutes()} minute${(currentDate.getMinutes() - postedDate.getMinutes()) === 1 ? "" : "s"} ago`
       }
     } else {
-      return `${currentDate.getHours() - postedDate.getHours()} hours ago`
-    }  
+      return `${currentDate.getHours() - postedDate.getHours()} hour${(currentDate.getHours() - postedDate.getHours()) === 1 ? "" : "s"} ago`
+    }
   } else if(postedDate.getDate() < currentDate.getDate()){
-    if(postedDate.getDate() - currentDate.getDate() < 30) {
-      return `${postedDate.getDay() - currentDate.getDay()} days ago`
+    if((currentDate.getDate() - postedDate.getDate()) < 30) {
+      return `${(currentDate.getDate() - postedDate.getDate())} day${((currentDate.getDate() - postedDate.getDate()) === 1 ) ? "" : "s"} ago`
     } else {
-      return `${Math.floor((postedDate.getDay() - currentDate.getDay())/30)} months ago`
+      return `${Math.floor((postedDate.getDate() - currentDate.getDate())/30)} month${Math.floor((postedDate.getDate() - currentDate.getDate())/30) === 1 ? "" : "s"} ago`
     }
   } else {
-    return "many months ago"
-  } 
+    return ""
+  }
 }
-  

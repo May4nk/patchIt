@@ -37,7 +37,7 @@ const Typepostpoll = (posttypepollprops: posttypepollprops) => {
   
   return (
     <div className="polloptions" >
-      <div id="options" className="options">        
+      <div className="options">        
         {inputList.map((poll: polltype, idx: number) => (
           <div className="pollinputs" key={ idx }>     
             <Askinput 

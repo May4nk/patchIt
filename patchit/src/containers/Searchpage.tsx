@@ -7,6 +7,7 @@ import { useLazyQuery } from "@apollo/client";
 import Loadingpage from "../components/Loadingpage";
 import Zeropostcard from "../components/Zeropostcard";
 import Htab from "../components/html/Htabs";
+import { dateFormatter } from "../common/helpers";
 
 //queries
 import { GETALLCOMMENTS, GETCOMMUNITIES, GETUSERS } from "./queries/searchpage";
@@ -165,7 +166,7 @@ const Searchpage = () => {
                             <img className="searchbyheaderpic" src={ pic } alt={ "community_profile_pic" } />                      
                           </div>
                           <div className="searchbyheadercommunity">c/{ comment?.post_id?.community_id?.communityname }</div>
-                          <div className="searchbyheaderposttime">. { comment.created_at } </div>
+                          <div className="searchbyheaderposttime">. { dateFormatter(comment?.created_at) } </div>
                         </div>
                         <div className="searchbypostbody"> 
                           { comment?.post_id?.title }

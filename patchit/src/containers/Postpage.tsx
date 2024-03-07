@@ -42,7 +42,7 @@ const Postpage = () => {
   const userId:number|null = user && Number(user["id"] || user["user_id"]);
   const navigate = useNavigate();
   
-  const [getPost, { data, loading, subscribeToMore }] = useLazyQuery(GETPOST);
+  const [getPost, { data, loading, error,  subscribeToMore }] = useLazyQuery(GETPOST);
   const [likedislikepost] = useMutation(POSTLIKEDISLIKE);
   const [upsertSavedPost] = useMutation(UPSERTSAVEDPOST);
   const [upsertPost] = useMutation(UPDATEPOST);
@@ -256,6 +256,8 @@ const Postpage = () => {
 
   if (loading) {
     return ( <Loadingpage /> )
+  } else if(error) {
+    return (<Loadingpage err={error.message}/>)
   } else {
     return (
       <div className="flexy">
@@ -339,8 +341,8 @@ const Postpage = () => {
               </i>
             </div>
             { user && (
-              <div className="postpagepostinfotabs" onClick={() => handleSavingPost("save")}>
-                <i className={`material-icons icnspacechat ${ savedState && "blue-text"}`}>
+              <div className="postpagepostinfotabs waves-effect waves-light" onClick={() => handleSavingPost("save")}>
+                <i className={`material-icons icnspacesave ${ savedState && "blue-text"}`}>
                   bookmark_outline 
                 </i>
                 Save

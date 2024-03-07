@@ -21,8 +21,8 @@
 .overviewcreatecardpicwrapper {
   border: 0.1rem solid rgba(255,255,255,0.1);
   border-radius: 50%;
-  height: 3.3rem;
-  width: 3.3rem;
+  height: 3.3vw;
+  width: 3.3vw;
 }
 
 .overviewpic {
@@ -34,6 +34,7 @@
 .infocreatecardcommunityname {
   color: rgba(255,255,255,0.7);
   margin-left: 0.7rem;
+  font-size: 1vw;
   font-weight: 600;
 }
 
@@ -41,7 +42,7 @@
   background: #1B1B1CDE !important;
   color: rgba(255,255,255,0.6);
   font-weight: 500;
-  font-size: 0.7rem;
+  font-size: 0.8vw;
 }
 
 .infocreatecardaboutcontent {

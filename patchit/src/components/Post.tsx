@@ -354,19 +354,19 @@ const Post = ({ postData, showcommunity } : postprops) => {
             </i>
           </div>
           <Link to={`/post/${id}`} className="footersave waves-light waves-effect">
-            <i className="material-icons tiny">chat_bubble_outline</i>
+            <i className="material-icons footericn">chat_bubble_outline</i>
             <div className="footertxt">{ comments?.length || 0 }</div>
           </Link>
           { user && (
             <>
               <div className="footersave waves-light waves-effect" onClick={() => handleSavingPost("save")}>
-                <i className={`material-icons tiny ${ savedState && "blue-text"}`}>
+                <i className={`material-icons footericn ${ savedState && "blue-text"}`}>
                   bookmark_border
                 </i>
                 <div className="footertxt"> save </div>
               </div>
               <div className="footerpin waves-light waves-effect" onClick={() => handleSavingPost("pin")}>
-                <i className={`material-icons tiny ${ pinnedState && "blue-text"}`}>
+                <i className={`material-icons footericn ${ pinnedState && "blue-text"}`}>
                   location_on
                 </i>
                 <div className="footertxt"> pin </div>

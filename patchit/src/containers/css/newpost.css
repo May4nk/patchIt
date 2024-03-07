@@ -18,13 +18,13 @@ textarea:focus, select:focus {
 }
 
 .newposttitle {
-  padding: 0.3rem;
+  padding: 0.3vw;
   background: linear-gradient(to left, #26252f00, #2e9cd5);
   color: rgba(0,0,0,0.9);
-  border-radius: 0.3rem 0 0 0.3rem;
+  border-radius: 0.4vw 0 0 0.4vw;
   width: 80%;
   border-right: 0px;
-  font-size: 1.3rem;
+  font-size: 1.3vw;
 }
 
 .choose {
@@ -36,9 +36,9 @@ textarea:focus, select:focus {
 
 .choosecommunity, .chooseprivacy {
   width: 37%;
-  height: 2.5rem;
-  margin-bottom: 0.5rem;
-  background:  #090808e8 !important;
+  height: 3vw;
+  margin-bottom: 0.7vw;
+  background: #090808e8 !important;
   color: grey;
   border-radius: 0.5rem;
 }
@@ -75,18 +75,19 @@ textarea:focus, select:focus {
   display: flex;
   justify-content: flex-start;
   align-items: center;
-  margin-top: 0.5rem;
+  margin-top: 0.7vw;
   color: #ffffff7e;
 }
 
 .typeofpost .htab {
   border-radius: 2rem;
   border: 1px solid transparent;
-  padding: 0.2rem 0.7rem;
+  padding: 0.2vw 0.7vw;
+  font-size: 0.9vw;
 }
 
 .typeofpost .htabicn {
-  font-size: 1.2rem;
+  font-size: 1.2vw;
 }
 
 .active {
@@ -102,7 +103,7 @@ textarea:focus, select:focus {
 }
 
 .newpost{
-  padding: 1rem;
+  padding: 1vw;
   width: 98%;
 }
 
@@ -111,22 +112,18 @@ textarea:focus, select:focus {
 }
 
 .createposttile {
-  height: 2.5rem;
+  height: 2.5vw;
   color: grey;
-  margin-bottom: 1rem;
+  margin-bottom: 1vw;
 }
 
-#postcontent, #aboutpoll {
+#postcontent {
   border: 1px solid grey;
   color: white;
   max-width: 100%;
-  height: 15rem;
-  padding: 0.5rem;
+  height: 15vw;
+  padding: 0.5vw;
   resize: none;
-}
-
-#aboutpoll {
-  height: 9rem;
 }
 
 #url {
@@ -148,12 +145,12 @@ textarea:focus, select:focus {
   justify-content: center;
   align-items: center;
   border-radius: 2rem;
-  padding: 0.1rem 1rem !important;
+  padding: 0.2vw 1vw !important;
   line-height: 25px !important;
   height: 100%;
-  font-size: 0.9rem;
+  font-size: 1.2vw;
   text-transform: capitalize;
-  font-weight: 500;
+  font-weight: 450;
 }
 
 .rulesL {
