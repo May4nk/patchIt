@@ -137,3 +137,14 @@ export const DELETECHATROOM = gql`
     }
   }
 `;
+
+export const GETALLUSERS = gql`
+query ListUsers($filter: UsersfilterInput) {
+  listUsers(filter: $filter) {
+    id
+    username
+    dob
+    status
+  }
+}
+`;

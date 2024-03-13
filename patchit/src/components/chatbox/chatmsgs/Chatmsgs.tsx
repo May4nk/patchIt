@@ -6,8 +6,7 @@ import Askinput from "../../html/Askinput";
 import Message from "./Message";
 import Chatoptions from "./Chatoptions";
 
-import { GETALLUSERS } from "../../../api/queries/queries";
-import { INSERTMSG, CREATECHATROOM, INSERTUSERCHATROOM, SUBSCRIBETONEWMSG, GETALLMSGS, DELETECHATROOM } from "../queries";
+import { INSERTMSG, CREATECHATROOM, INSERTUSERCHATROOM, SUBSCRIBETONEWMSG, GETALLMSGS, DELETECHATROOM, GETALLUSERS } from "../queries";
 
 import "../css/chatmsgs.css";
 import { chatgroupusertype, chatmsgsprops, message, roomtype } from "../types";

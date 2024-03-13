@@ -21,8 +21,8 @@
 }
                       
 .cmntoverviewpostpicwrapper {
-  width: 2rem;
-  height: 2rem;
+  width: 2vw;
+  height: 2vw;
   border-radius: 50%;
 }
 
@@ -33,7 +33,7 @@
 }
 
 .cmntoverviewpostname {
-  font-size: 0.9rem;
+  font-size: 0.9vw;
   color: rgba(255,255,255,0.7);
   padding: 0 0.5rem;
   font-weight: 500;
@@ -50,11 +50,18 @@
   color: rgba(255,255,255,0.7);
 }
                     
-.cmntoverviewcontent {
-  background: rgba(0, 0, 0, 0.336);
-  width: 100%;
+.cmntoverviewcontent, .cmntoverviewmetacontent {
+  background: rgba(0, 0, 0, 0.336);  
   padding: 0.5rem;
-  border-radius: 0.5rem;
+  border-radius: 0.5rem;  
+  font-size: 1vw;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  width: 47vw;
+}
+
+.cmntoverviewmetacontent {
+  width: 46vw; 
 }
 
 .cmntoverviewcontentparent {
@@ -62,7 +69,7 @@
   justify-content: center;
   align-items: flex-start;
   flex-direction: column;
-  font-size: 0.9rem;  
+  font-size: 0.9vw;  
 }
 
 .parentcmntwrapper {
@@ -88,6 +95,10 @@
 .parentcmnt {
   color: rgba(255,255,255,0.7);
   margin: 0.2rem 0.7rem;
+  padding: 0.1rem;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  width: 45vw;
 }
 
 .zeropost {

@@ -143,7 +143,7 @@ const Userpage = () => {
                                     { cmnt?.parent_id?.comment }
                                   </div>
                                 </div>
-                                <div className="cmntoverviewcontent">
+                                <div className="cmntoverviewmetacontent">
                                   { cmnt?.comment }
                                 </div>
                               </>

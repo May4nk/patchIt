@@ -56,7 +56,7 @@
 }
 
 .loginuseraccessbtnsicn {
-  font-size: 1.9vw !important;
+  font-size: 1.6vw !important;
   line-height: 25px !important;
   height: 100% !important;
   display: flex !important;
@@ -99,7 +99,8 @@
   color: white;
   background: black;
   font-weight: 600;
-  width: 9rem;
+  width: 9vw;
+  font-size: 1vw;
 } 
 
 
