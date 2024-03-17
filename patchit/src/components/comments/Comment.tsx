@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 
+import { dateFormatter } from "../../common/helpers";
+
 import Commentlist from "./Commentlist"; //component
 
 //css
@@ -41,7 +43,7 @@ const Comments = (commentprops: commentprops) => {
           { data?.user_id?.username }
         </div>
         <div className="commenttym">
-          .19hrs ago
+          { dateFormatter(data?.created_at) }
         </div>
       </div>
       { open && (

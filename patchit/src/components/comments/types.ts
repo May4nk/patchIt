@@ -6,6 +6,7 @@ export interface commenttype {
   comment: string;
   post_id: { id: number, title: string, community_id: { communityname: string}};
   user_id: { id: number, username: string };
+  created_at: string;
 }
 
 export interface newcommenttype {
