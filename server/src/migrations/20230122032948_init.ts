@@ -57,17 +57,6 @@ export async function up(knex: Knex): Promise<void> {
     }
   });
  
-  await knex.schema.hasTable("tag_community_relation").then(function(exists: boolean) {
-    if(!exists) {
-      return knex.schema.createTable("tag_community_relation", function(table: Knex.TableBuilder) {
-        table.increments("id").unique().notNullable().primary();
-        table.integer("tag_id").references("id").inTable("tags").onDelete("CASCADE");
-        table.integer("community_id").references("id").inTable("communities").onDelete("CASCADE");
-        table.timestamp("created_at").notNullable().defaultTo(knex.fn.now());
-      });
-    }
-  });
-
   await knex.schema.hasTable("communities").then(function(exists: boolean) {
     if(!exists) {
       return knex.schema.createTable("communities", function(table: Knex.TableBuilder) {
@@ -84,6 +73,17 @@ export async function up(knex: Knex): Promise<void> {
         table.enu("privacy", ["PUBLIC", "PRIVATE", "RESTRICTED"]).defaultTo("PUBLIC").notNullable();
         table.timestamp("created_at").notNullable().defaultTo(knex.fn.now());
         table.timestamp("updated_at");
+      });
+    }
+  });
+  
+  await knex.schema.hasTable("tag_community_relation").then(function(exists: boolean) {
+    if(!exists) {
+      return knex.schema.createTable("tag_community_relation", function(table: Knex.TableBuilder) {
+        table.increments("id").unique().notNullable().primary();
+        table.integer("tag_id").references("id").inTable("tags").onDelete("CASCADE");
+        table.integer("community_id").references("id").inTable("communities").onDelete("CASCADE");
+        table.timestamp("created_at").notNullable().defaultTo(knex.fn.now());
       });
     }
   });
