@@ -29,3 +29,8 @@ export interface communitytype extends communitynametypes{
   posts: { id: number }[];
   users: { id: number }[];
 }
+
+export interface tagtype {
+  id: number;
+  name: string;
+}

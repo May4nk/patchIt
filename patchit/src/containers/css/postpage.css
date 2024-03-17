@@ -81,6 +81,32 @@
   max-height: 5rem;
 }
 
+.posttags {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 0rem 0 0.5rem 0;
+}
+
+.posttag {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 0.8vw;
+  border-radius: 2rem;;
+  background: #2232364f;
+  color: rgba(255,255,255,0.6);
+  font-weight: 500;
+  padding: 0.1rem 0.3rem;
+  margin: 0rem 0.3rem;
+  text-transform: capitalize;
+}
+
+.posttagicn {
+  font-size: 1vw !important;
+  margin: 0 0.2rem;
+}
+
 .postpagepostwrapper {
   width: 100%;
   position: relative;

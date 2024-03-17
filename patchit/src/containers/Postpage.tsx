@@ -30,7 +30,8 @@ import {
   usersavedtype,
   reactedposttype,
   savedposttype,
-  polltype
+  polltype,
+  tagtype
 } from "./types/postpage";
 
 //image
@@ -290,6 +291,16 @@ const Postpage = () => {
           <div className="postpageheading">
             { postData?.title }
           </div>
+          { postData?.tags?.length > 0 && (
+            <div className="posttags">
+              { postData?.tags.map((tag: tagtype, idx: number) => (
+                <div className="posttag" key={ idx }>
+                  <i className="material-icons black-text posttagicn">local_offer</i>
+                  { tag.tag_id.name}
+                </div>
+              ))}
+            </div>
+          )} 
           { postData?.type === "IMAGE" ? (            
             <div className="postpagepostwrapper">
               <img src={ require(`../img/${parsedimgData[currentImg].postSrc}`)} className="postpagepost" alt={"pic"}/>

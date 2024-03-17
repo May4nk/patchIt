@@ -29,17 +29,16 @@ const Communitysetting = () => {
   const { user }: authcontexttype = useAuth();
   const userId: number|null = user && Number(user["id"] || user["user_id"]);
 
+  const [updateCommunitySettings] = useMutation(UPSERTCOMMUNITYPREFERENCE);
   const { data, loading, error } = useQuery(GETCOMMUNITYPREFERENCE, {
     variables: {
       communityName: cname!
     }
   });
-  const [updateCommunitySettings] = useMutation(UPSERTCOMMUNITYPREFERENCE);
 
   const csettings = !loading && data?.communitypreference;
-
   //states
-  const [userOption, setUserOption] = useState<string>("account");
+  const [userOption, setUserOption] = useState<string>("profile");
   const [updateState, setUpdateState] = useState<boolean>(false);
   const [customError, setCustomError] = useState<string>("");
   const [profileState, setProfileState] = useState<profilestatetype>({nsfw: false,});
@@ -149,13 +148,13 @@ const Communitysetting = () => {
     if (!user) {
       navigate("/home");
     } else {
-      if(data?.communitypreference?.community_name?.owner?.id !== userId) {
-        setCustomError("One more attempt of this and your Id will be banned. Keep trying...")
+      if((csettings?.community_name?.owner?.id !== userId) || error) {
+        setCustomError(error?.message ||"One more attempt of this and your Id will be banned. Keep trying...");
       } else {
-        handleUserOptions("profile");             
+        handleUserOptions("profile");
       }
     }
-  }, [user]);
+  }, [csettings]);
 
   let pic: string = require("../img/a.jpg");
 

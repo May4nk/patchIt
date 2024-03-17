@@ -50,6 +50,7 @@ import {
   chatroomMutations,
   postlikedislikeMutations,
   userscommunityMutations,
+  posttagMutations,
   savedpostMutations,
   commentMutations,
   userpreferenceMutations,
@@ -112,6 +113,7 @@ const Query = `
     insertChatroom(data: InsertChatroomInput): Chatroom
     insertUserCommunity(data: InsertUserCommunityInput): UserCommunity
     batchInsertUserCommunity(data: [InsertUserCommunityInput!]!): [UserCommunity]!
+    batchInsertPostTags(data: [InsertPostTagsInput!]!): [PostTags]!
     removeUser(data: RemoveUserInput): User
     removePost(data: RemovePostInput): Post
     removeComment(data: RemoveCommentInput): Comment
@@ -123,6 +125,7 @@ const Query = `
     softDeleteChatroom(data: InsertChatroomInput): Chatroom
     removeUserChatroom(data: RemoveUserChatroomInput): UserChatroom
     removeUserCommunity(data: RemoveUserCommunityInput): UserCommunity
+    removePostTag(data: RemovePostTagsInput): PostTags
     removeSavedPost(data: RemoveSavedPostInput): SavedPost
     removeUserPreference(data: RemoveUserPreferencesInput): UserPreferences
     removeCommunityPreference(data: RemoveCommunityPreferencesInput): CommunityPreferences
@@ -136,4 +139,4 @@ const Query = `
 
 export const allTypeDefs = mergeTypeDefs([ Query, userTypeDefs, postTypeDefs, communityTypeDefs, tagTypeDefs, messageTypeDefs, chatroomTypeDefs, userchatroomTypeDefs, postlikedislikeTypeDefs, usercommunityTypeDefs, savedpostTypeDefs, commentTypeDefs, posttagsTypeDefs, tokenTypeDefs, userpreferencesTypeDefs, roleTypeDefs, categoryTypeDefs, communitypreferencesTypeDefs ]);
 
-export const allResolversAndMutations = mergeResolvers([ userResolvers, postResolvers, userscommunityResolvers, postlikedislikeResolvers, savedpostResolvers, tagResolvers, posttagsResolvers, communityResolvers, chatroomResolvers, commentResolvers, messageResolvers, userchatroomResolvers, tokenResolvers, userpreferenceResolvers, communitypreferenceResolvers, roleResolvers, categoryResolvers,  savedpostMutations, userMutations, tagMutations, communityMutations,  postMutations, messageMutations, chatroomMutations, postlikedislikeMutations, userscommunityMutations, commentMutations, userchatroomMutations, userpreferenceMutations, communitypreferenceMutations ]);
+export const allResolversAndMutations = mergeResolvers([ userResolvers, postResolvers, userscommunityResolvers, postlikedislikeResolvers, savedpostResolvers, tagResolvers, posttagsResolvers, communityResolvers, chatroomResolvers, commentResolvers, messageResolvers, userchatroomResolvers, tokenResolvers, userpreferenceResolvers, communitypreferenceResolvers, roleResolvers, categoryResolvers,  savedpostMutations, userMutations, tagMutations, communityMutations,  postMutations, messageMutations, chatroomMutations, postlikedislikeMutations, userscommunityMutations, commentMutations, userchatroomMutations, userpreferenceMutations, communitypreferenceMutations, posttagMutations ]);

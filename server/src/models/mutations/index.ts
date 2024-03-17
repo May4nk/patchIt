@@ -11,3 +11,4 @@ export * from "./comments.js";
 export * from "./userchatrooms.js";
 export * from "./userpreferences.js";
 export * from "./communitypreferences.js";
+export * from "./posttags.js";

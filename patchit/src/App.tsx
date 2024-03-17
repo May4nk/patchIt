@@ -20,7 +20,6 @@ import Communitysetting from "./containers/Communitysetting";
 import Rootlayout from "./layouts/Rootlayout";
 
 const App = () => {
-
   return (
     <>
       <Routes>

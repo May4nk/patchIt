@@ -3,16 +3,16 @@ import React from "react";
 import "./css/tag.css"; //css
 
 interface tagpropstype {
-  title: string;
-  handleClick: (e: any, title: string) => void;
+  info: { id: number, name: string };
+  handleClick: (e: any, tagId: number) => void;
 }
 
 const Tag = (tagpropstype: tagpropstype) => {
-  const { title, handleClick } = tagpropstype;
+  const { info, handleClick } = tagpropstype;
 
   return (
-    <div className="tag waves-effect" onClick={(e: any) => handleClick(e, title)}>
-      <span>{ title }</span>
+    <div className="tag waves-effect waves-light" onClick={(e: any) => handleClick(e, info.id)}>
+      <span>{ info.name }</span>
     </div>
   );
 };

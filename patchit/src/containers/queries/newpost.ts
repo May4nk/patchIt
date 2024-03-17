@@ -36,3 +36,20 @@ export const UPSERTPOST = gql`
     }
   }
 `;
+
+export const ALLTAGS = gql`
+query ListTags {
+  listTags {
+    id
+    name
+  }
+}
+`;
+
+export const INSERTTAGS = gql`
+mutation BatchInsertPostTags($data: [InsertPostTagsInput!]!) {
+  batchInsertPostTags(data: $data) {
+    id
+  }
+}
+`;

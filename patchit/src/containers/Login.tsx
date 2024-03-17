@@ -16,7 +16,6 @@ import "./css/login.css";
 import { userdatatypes } from "./types/logintypes.js";
 import { authcontexttype } from "../context/types.js";
 
-const pic: string = require("../img/loginpagepic.jpg");
 const logo: string = require("../img/logo.png");
 const googlelogo: string = require("../img/logo_google.png");
 const mailpic: string = require("../img/maillogo.png");
@@ -95,10 +94,7 @@ const Login = () => {
   }, [])
 
   return (
-    <div className="loginpage">
-      <div className="loginpagepicwrapper">
-        <img src={pic} className="loginpagepic" alt={"loginpage_pic"} />
-      </div>
+    <div className="loginpage">      
       <div className="loginbody">
         <div className="loginbodyheader">
           {forgotUsernameLevels !== 201 && (

@@ -16,7 +16,6 @@ import "./css/login.css";
 import { allNames } from "../constants/const";
 import { userdatatypes, usertype } from "./types/logintypes.js";
 
-const pic: string = require("../img/loginpagepic.jpg");
 const logo: string = require("../img/logo.png");
 const googlelogo: string = require("../img/logo_google.png");
 
@@ -92,10 +91,7 @@ const Signup = () => {
   }, [userData?.username]);
 
   return (
-    <div className="loginpage">
-      <div className="loginpagepicwrapper">
-        <img src={pic} className="loginpagepic" alt={"signup_pic"} />
-      </div>
+    <div className="loginpage">      
       <div className="signupbody">
         <div className="signupbodyheader">
           <Link to={"/c/popular"}>
@@ -185,7 +181,10 @@ const Signup = () => {
                     onChange={handleChange}
                   />
                 </div>
-                <button className="waves-effect waves-light btn black-text loginpagebtn" type="submit">
+                <button
+                  className="waves-effect waves-light btn black-text loginpagebtn"
+                  type="submit"
+                  disabled={(userData?.username?.length === 0 || userData?.password?.length === 0)? true : false }>
                   <i className="material-icons loginpagebtnicn">exit_to_app</i>
                   <div className="loginpagebtntxt">Sign In</div>
                 </button>

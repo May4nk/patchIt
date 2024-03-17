@@ -14,16 +14,16 @@ import Loadingpage from "../components/Loadingpage";
 import Infocreatecard from "../components/infosection/Infocreatecard";
 import Patdrop from "../components/html/patdrop/Patdrop";
 
-import { UPSERTPOST, ALLCOMMUNITIESNAME, GETONECOMMUNITY } from "./queries/newpost"; //queries & mutations
+import { UPSERTPOST, ALLCOMMUNITIESNAME, GETONECOMMUNITY, ALLTAGS, INSERTTAGS } from "./queries/newpost"; //queries & mutations
 
 //css, types & constants
 import "./css/newpost.css";
 import "./css/main.css";
-import { postdatatypes, postimgtypes, communitynametypes, communitytype } from "./types/newposttypes";
-import { authcontexttype } from "../context/types";
-import { tagnames, newpostrules, postgenres } from "../constants/const"; //constants
 import { droppertype } from "../components/html/patdrop/types";
+import { authcontexttype } from "../context/types";
+import { newpostrules, postgenres } from "../constants/const"; //constants
 import { communityDropperprofile, privacyDropperprofile } from "../constants/patdropconst";
+import { postdatatypes, postimgtypes, communitynametypes, communitytype, tagtype } from "./types/newposttypes";
 
 let pic: string = require("../img/a.jpg");
 
@@ -34,7 +34,9 @@ const Newpost = () => {
   
   //query & mutations
   const [createPost] = useMutation(UPSERTPOST);
-  const [getCommunityData, { loading, data } ] = useLazyQuery(GETONECOMMUNITY);
+  const [insertTags] = useMutation(INSERTTAGS);
+  const [getCommunity, { loading, data } ] = useLazyQuery(GETONECOMMUNITY);
+  const [getTags, { loading: tagLoading, data: tagData } ] = useLazyQuery(ALLTAGS);
   const  { data: communitiesData, loading: communitiesLoading } = useQuery(ALLCOMMUNITIESNAME, {
     variables: {
       filter: {
@@ -48,7 +50,7 @@ const Newpost = () => {
   const [postType, setPostType] = useState<string>("BLOG");
   const [currentpreviewImg, setCurrentpreviewImg] = useState<number>(1);
   const [selectedCommunity, setSelectedCommunity] = useState<string>("");
-  const [postTags, setPostTags] = useState<string[]>([]);
+  const [postTags, setPostTags] = useState<number[]>([]);
   const [inputList, setInputList] = useState<{ poll: string }[]>([{ poll: "" }, { poll: ""}]);
   const [postImg, setPostImg] = useState<postimgtypes[]>([{ id: 0, postCaption: "", postSrc: "", postLink: "" }]);
   const [postData, setPostData] = useState<postdatatypes>({ 
@@ -105,13 +107,13 @@ const Newpost = () => {
     document.querySelector(`.tab${typeofpost.toLowerCase()}`)?.classList?.add("active");
   }
 
-  const handleTags:(e: any, tagname: string) => void = (e: any, tagname: string) => {
+  const handleTags:(e: any, tagId: number) => void = (e: any, tagId: number) => {
     e.currentTarget.classList.toggle("active");
-    if(postTags.includes(tagname)){
-      postTags.splice(postTags.indexOf(tagname),1);
+    if(postTags.includes(tagId)){
+      postTags.splice(postTags.indexOf(tagId),1);
     } else {
-      setPostTags([ ...postTags, tagname ]);
-    }
+      setPostTags([ ...postTags, tagId ]);
+    }  
   }
 
   const handleRemoveCurrentpreviewimg:(imgobjid: number) => void = (imgobjid: number) => {
@@ -145,14 +147,25 @@ const Newpost = () => {
   
   const handleSubmit:(e: any) => void = (e: any) => {
     e.preventDefault();      
-
     if(user) {
       createPost({
         variables: {
           data: postData
         },
-      }).then((data) => {
-        navigate(`/post/${data.data.upsertPost.id}`)
+      }).then(({ data }) => {
+        if(data){
+          const insertedPost = data?.upsertPost;
+          if(postTags.length !== 0) {
+            insertTags({
+              variables: {
+                data: postTags.map((tagId: number) => { 
+                  return { "tag_id": tagId, "post_id": insertedPost.id }
+                })
+              }
+            })
+          }
+          navigate(`/post/${insertedPost?.id}`);
+        }
       });
     } else {
       navigate("/login");
@@ -179,7 +192,7 @@ const Newpost = () => {
   
   useEffect(() => {
     if(selectedCommunity) {
-      getCommunityData({
+      getCommunity({
         variables: {
           communityname: selectedCommunity,
         }
@@ -206,6 +219,7 @@ const Newpost = () => {
       navigate("/c/popular");
     }
     handleposttype("BLOG");
+    getTags();
   },[]); 
  
   return ( 
@@ -240,9 +254,11 @@ const Newpost = () => {
             <form className="newpost" onSubmit={ handleSubmit }>
               <div className="grey-text text-darken-1"> Tags </div>
               <div className="tags">
-                { tagnames.map((tagname: string, idx: number) => (
-                  <Tag title={ tagname } key={ idx } handleClick={ handleTags }/>
-                ))}
+                { !tagLoading && (
+                  tagData?.listTags?.map((tag: tagtype, idx: number) => (
+                    <Tag info={ tag } key={ idx } handleClick={ handleTags }/>
+                  ))
+                )}
               </div>
               <div className="createposttile">
                 <Askinput type={ "text" } 

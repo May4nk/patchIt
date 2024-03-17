@@ -5,8 +5,6 @@ export const ACTION: Record<"CURRENT"|"CLICKED"|"INPUT"|"DEFAULT", string> = {
   DEFAULT: "default"
 };
 
-export const tagnames: string[] = ["spoilers", "weird", "nsfw", "gore", "new" ];
-
 export const newpostrules: string[] = [ 
   "1. Dont forget basic moral values.",
   "2. It's good untill no harm to specific one.",

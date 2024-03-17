@@ -1,6 +1,6 @@
 export const posttagsTypeDefs = `
   type PostTags {
-    id: Int!
+    id: Int
     post_id: Post
     tag_id: Tag
     created_at: String

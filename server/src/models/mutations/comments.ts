@@ -8,11 +8,9 @@ export const commentMutations = {
   Mutation:{
     upsertComment: async(parent: undefined, { data }: commentdatatype,  { user, pubsub }: any ): Promise<commenttype> => {
       try {
-
         if(!user) throw new Error("user not authenticated");
         const commentID: number = data.id;
         if(commentID) {
-
           const foundComment: commenttype = await findOne<commenttype, { id: number }>("comments", { "id": commentID });
           if(!foundComment) throw new Error(`Comment not found...`);
           

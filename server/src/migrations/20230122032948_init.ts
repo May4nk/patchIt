@@ -51,9 +51,19 @@ export async function up(knex: Knex): Promise<void> {
       return knex.schema.createTable("tags", function(table: Knex.TableBuilder) {
         table.increments("id").unique().notNullable().primary();
         table.text("name").notNullable().unique();
-        table.text("description");
         table.timestamp("created_at").notNullable().defaultTo(knex.fn.now());
         table.timestamp("updated_at");
+      });
+    }
+  });
+ 
+  await knex.schema.hasTable("tag_community_relation").then(function(exists: boolean) {
+    if(!exists) {
+      return knex.schema.createTable("tag_community_relation", function(table: Knex.TableBuilder) {
+        table.increments("id").unique().notNullable().primary();
+        table.integer("tag_id").references("id").inTable("tags").onDelete("CASCADE");
+        table.integer("community_id").references("id").inTable("communities").onDelete("CASCADE");
+        table.timestamp("created_at").notNullable().defaultTo(knex.fn.now());
       });
     }
   });

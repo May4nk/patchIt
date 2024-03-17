@@ -9,6 +9,7 @@ interface usertype {
 export type reactedposttype = { reaction: number; post_id: { id: number } };
 export type savedposttype = { saved: boolean; pinned: boolean; post_id: { id: number } };
 export type polltype = { poll: string };
+export type tagtype = { tag_id: { name: string }};
 
 export interface comments {
   id: number;
@@ -35,7 +36,7 @@ export interface postpagetype {
   comments: comments[];
   community_id: { id: number, communityname: string };
   owner: { id: number, profile_pic: string, username: string };
-  tags: { tag_id: { name: string } };
+  tags: tagtype[];
 }
 
 export interface subdatatype {
