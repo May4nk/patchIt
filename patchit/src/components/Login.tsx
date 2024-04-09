@@ -1,14 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import useLoginvia from "../common/loginvia";
-
 //components
 import Askinput from "./html/Askinput";
 import Errorcard from "./Errorcard";
-
-//mutations
-import { LISTUSERS, SIGNUPUSER, UPSERTUSERPREFERENCE } from "../common/loginqueries";
-
+//queries & mutations
+import { LISTUSERS, SIGNUPUSER } from "../common/loginqueries";
+import { UPSERTUSERPREFERENCES } from "../containers/queries/profilesetting";
 //css
 import "./css/login.css";
 import { allNames } from "../constants/const";
@@ -22,12 +20,10 @@ const maillogo: string = require("../img/maillogo.png");
 
 const Login = ({ showLogin, setShowLogin }: loginproptypes) => {
   const active:string = showLogin ? "block" : "none" ;
-  
   const login = useLoginvia("login");
   const magiclogin = useLoginvia("magiclinkLogin");
   const googlelogin = useLoginvia("googleLogin");
   const anonlogin = useLoginvia("anonymousLogin");
-
   //states
   const [showSignup, setShowsignup] = useState<boolean>(false);
   const [signupLevel, setSignupLevel] = useState<number>(0);
@@ -39,12 +35,10 @@ const Login = ({ showLogin, setShowLogin }: loginproptypes) => {
   const [userData, setUserData] = useState<userdatatypes>({ username: "", password: "", email: "" });
   const [forgotData, setForgotData] = useState({ forgotemail: "", forgotusername: "", forgotpassword: "" });
   const [showPassword, setShowPassword] = useState<boolean>(false);
-  
   const { email, ...loginData }: userdatatypes = userData; //login data: userData without email
-
   //queries & mutations
   const [signupuser, { error: signupError }] = useMutation(SIGNUPUSER); 
-  const [createuserpreference] = useMutation(UPSERTUSERPREFERENCE);
+  const [createuserpreference] = useMutation(UPSERTUSERPREFERENCES);
   const [getAllUsers, { data, loading}] = useLazyQuery(LISTUSERS);
   
   //getting random username 

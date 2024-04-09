@@ -4,6 +4,7 @@ export const userchatroomTypeDefs = `
     room_id: Chatroom
     user_id: User
     users: [User]
+    lastMessage: Message
     status: String
     created_at: String
   }

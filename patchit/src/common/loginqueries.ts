@@ -1,14 +1,14 @@
 import { gql } from "@apollo/client";
 
 export const LISTUSERS = gql`
-query ListUsers {
-  listUsers {
-    id 
-    username
-    email
+  query ListUsers {
+    listUsers {
+      id
+      username
+      email
+    }
   }
-}
-`
+`;
 
 export const SIGNUPUSER = gql`
   mutation UpsertUser($data: InsertUserInput) {
@@ -17,15 +17,7 @@ export const SIGNUPUSER = gql`
       username
       email
     }
-  }  
-`;
-
-export const UPSERTUSERPREFERENCE = gql`
-mutation UpsertUserPreference($data: InsertUserPreferencesInput) {
-  upsertUserPreference(data: $data) {
-    id
   }
-}
 `;
 
 export const LOGINUSER = gql`
@@ -38,7 +30,7 @@ export const LOGINUSER = gql`
       new_user
       role {
         id
-      }  
+      }
     }
   }
 `;
@@ -58,7 +50,6 @@ export const MAGICLINKLOGIN = gql`
   }
 `;
 
-
 export const UPDATEUSER = gql`
   mutation Mutation($data: InsertUserInput) {
     updateUser(data: $data) {
@@ -68,17 +59,17 @@ export const UPDATEUSER = gql`
 `;
 
 export const GETUSERBYTOKEN = gql`
-query Token($filter: TokenfilterInput) {
-  listTokens(filter: $filter) {    
-    user_id {
-      id 
-      username      
-      new_user
-      email
-      role {
+  query Token($filter: TokenfilterInput) {
+    listTokens(filter: $filter) {
+      user_id {
         id
+        username
+        new_user
+        email
+        role {
+          id
+        }
       }
     }
   }
-}
 `;

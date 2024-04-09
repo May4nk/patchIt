@@ -19,6 +19,7 @@ export interface userpreferencetype {
   announcements: boolean;
   searchshowprofile: boolean;
   auth_twofactor: boolean;
+  blocked: string|null;
 }
 
 export interface userpreferencefiltertype {

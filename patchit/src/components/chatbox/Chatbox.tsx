@@ -1,35 +1,32 @@
 import React, { useState, useEffect } from "react";
 import { useQuery } from "@apollo/client";
 import { useAuth } from "../../common/hooks/useAuth";
-
 //components
 import Chatlist from "./chatlist/Chatlist";
 import Chatmsgs from "./chatmsgs/Chatmsgs";
-
-import { GETUSERCHATROOMS, SUBSCRIBETOUSERCHATROOMS } from "./queries"; //query
-
+//queries
+import { GETUSERCHATROOMS, SUBSCRIBETOUSERCHATROOMS } from "./queries";
 //css & types
 import "./css/chatbox.css";
 import { authcontexttype } from "../../context/types.js";
-import { 
-  chatboxprops, 
-  activeroomtype, 
-  userchatroomprevtype, 
-  userchatroomsubscriptiondatatype, 
-  userchatroomtype 
+import {
+  chatboxprops,
+  activeroomtype,
+  userchatroomprevtype,
+  userchatroomsubscriptiondatatype,
+  userchatroomtype
 } from "./types.js";
 
 const Chatbox = (chatboxprops: chatboxprops) => {
   const { showChatbox, setShowChatbox } = chatboxprops;
+  
   const show: string = showChatbox ? "display" : "none";
-  
-  const { user }: authcontexttype = useAuth(); 
-  const userId: number | null = user && Number(user["id"] || user["user_id"]); 
-  
+  const { user }: authcontexttype = useAuth();
+  const userId: number | null = user && Number(user["id"] || user["user_id"]);
+  //states
   const [chatLevel, setChatLevel] = useState<number>(0);
   const [createRoom, setCreateRoom] = useState<boolean>(false);
   const [activeRoom, setActiveRoom] = useState<activeroomtype>({ username: "", roomId: "" });
-  
   //queries
   const { data, subscribeToMore } = useQuery(GETUSERCHATROOMS, {
     variables: {
@@ -38,10 +35,9 @@ const Chatbox = (chatboxprops: chatboxprops) => {
       }
     }
   });
-  
   //handlers
-  const handleNew: (room: boolean) => void = (room = false) => {
-    if(room) {
+  const handleNew: (room: boolean) => void = (room: boolean) => {
+    if (room) {
       setCreateRoom(true);
     } else {
       setCreateRoom(false);
@@ -50,44 +46,47 @@ const Chatbox = (chatboxprops: chatboxprops) => {
     setActiveRoom({ username: "", roomId: "" });
   }
 
-  const handleActiveRoom: (e: any, room: activeroomtype) => void = (e: any, room: activeroomtype) => {
-    let active = document.querySelector(".activechatter");
-    if( active!== null) {
-      active.classList.remove("activechatter");
+  const handleActiveRoom: (name: string, room: activeroomtype) => void = (
+    name: string, room: activeroomtype
+  ) => {
+    let beenActive = document.querySelector(".activechatter");
+    if (beenActive !== null) {
+      beenActive.classList.remove("activechatter");
     }
-    e.currentTarget.classList.add("activechatter");
+    const active = document.querySelector(`.${name}`);
+    active?.classList.add("activechatter");
     setCreateRoom(false);
     setChatLevel(0);
     setActiveRoom({ username: room.username, roomId: room.roomId });
   }
-  
+
   useEffect(() => {
     let unsubscribe = subscribeToMore({
       document: SUBSCRIBETOUSERCHATROOMS,
       variables: { userId: Number(userId) },
       updateQuery: (prev: userchatroomprevtype, { subscriptionData }: userchatroomsubscriptiondatatype) => {
         const subdata = subscriptionData.data;
-        if(!subdata) return prev;
+        if (!subdata) return prev;
         const newChatroom: userchatroomtype[] = subdata.newUserChatroom;
         return {
-          listUserChatrooms: [ ...newChatroom, ...prev?.listUserChatrooms ]
+          listUserChatrooms: [...newChatroom, ...prev?.listUserChatrooms]
         };
       },
     });
 
-    if(unsubscribe) return () => unsubscribe();
-  },[subscribeToMore, userId]);
+    if (unsubscribe) return () => unsubscribe();
+  }, [subscribeToMore, userId]);
 
   return (
-    <div className={ show }>
+    <div className={show}>
       <div className="chatbox">
         <div className="chatlist">
-          <Chatlist 
-            chatrooms={ data?.listUserChatrooms }
-            handleActiveRoom={ handleActiveRoom }
-            activeRoom={ activeRoom }
-            handleNew={ handleNew } 
-            createRoom={ createRoom }
+          <Chatlist
+            chatrooms={data?.listUserChatrooms}
+            handleActiveRoom={handleActiveRoom}
+            activeRoom={activeRoom}
+            handleNew={handleNew}
+            createRoom={createRoom}
           />
         </div>
         <div className="chatmsgs">
@@ -101,6 +100,7 @@ const Chatbox = (chatboxprops: chatboxprops) => {
             handleActiveRoom={handleActiveRoom}
             setShowChatbox={setShowChatbox}
             userId={userId}
+            chatrooms={data?.listUserChatrooms}
           />
         </div>
       </div>

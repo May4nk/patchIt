@@ -18,11 +18,12 @@ export type usertype = {
     announcements?: boolean;
     sendmsg?: string;
     searchshowprofile?: boolean;
-    auth_twofactor?: boolean;  
-  }
-}
+    auth_twofactor?: boolean;
+    blocked?: string|null;
+  };
+};
 
-export interface userstate {  
+export interface userstate {
   new_user?: boolean;
   nsfw?: boolean;
   visiblity?: boolean;
@@ -40,13 +41,13 @@ export interface userstate {
   announcements?: boolean;
   sendmsg?: string;
   searchshowprofile?: boolean;
-  auth_twofactor?: boolean;  
-  
+  auth_twofactor?: boolean;
+  blocked?: string|null;
 }
 
 export interface loggedusercontexttype {
-  loggedUser: userstate|null,
-  updateLoggedUser: (userstate: userstate) => void
+  loggedUser: userstate | null;
+  updateLoggedUser: (userstate: userstate) => void;
 }
 
 export interface usercontextdatatype {
@@ -68,7 +69,7 @@ interface user {
 
 export interface userdatatype {
   id: number;
-  role: {id: number };
+  role: { id: number };
   new_user: boolean;
   username: string;
   email: string;
@@ -76,8 +77,8 @@ export interface userdatatype {
 }
 
 export interface authcontexttype {
-  user: user|null;
-  login: (userData: userdatatype) => void; 
+  user: user | null;
+  login: (userData: userdatatype) => void;
   logout: () => void;
 }
 
@@ -89,5 +90,5 @@ export interface tokentype {
 }
 
 export interface initialstatetype {
-  user: tokentype | null  
+  user: tokentype | null;
 }

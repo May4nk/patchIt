@@ -1,24 +1,26 @@
 export interface roomtype {
-  id: string;
+  id: number;
   room_code: string;
 }
 
-interface usertype {
-  id: string;
+export interface usertype {
+  id: number;
   email: string;
-  profile_pic: string;
   username: string;
+  profile_pic: string;
 }
 
 export interface userchatroomtype {
-  id: string;
-  room_id: roomtype|number;
-  user_id: usertype|number;
+  id: number;
+  room_id: roomtype;
+  user_id: usertype;
+  users: usertype[];
+  lastMessage: { message: string };
 }
 
 export interface chatboxprops {
-  showChatbox : boolean;
-  setShowChatbox: any;
+  showChatbox: boolean;
+  setShowChatbox: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export interface activeroomtype {
@@ -31,7 +33,7 @@ interface subdatatype {
 }
 
 interface userchatroomsubtype {
-  data: subdatatype
+  data: subdatatype;
 }
 
 export interface userchatroomsubscriptiondatatype {
@@ -43,38 +45,51 @@ export interface userchatroomprevtype {
 }
 
 // chatlist ----------------------------------------------
-
 export interface chatlistprops {
-  activeRoom: any;
-  chatrooms: any;
-  handleActiveRoom: any;
-  createRoom: any;
-  handleNew: any;
+  activeRoom: activeroomtype;
+  chatrooms: userchatroomtype[];
+  handleActiveRoom: (name: string, room: activeroomtype) => void;
+  createRoom: boolean;
+  handleNew: (room: boolean) => void;
 }
 
 export interface chatprofileprops {
-  handleActiveRoom: any;
-  chatroom: any;
+  handleActiveRoom: (name: string, room: activeroomtype) => void;
+  chatroom: chattertype;
+}
+
+export interface chattertype {
+  users: usertype[];
+  room: { id: number; room_code: string };
+  message: string;
 }
 
 // chatmsg --------------------------------------------
-
 export interface chatmsgsprops {
-  userId: number|null;
-  chatLevel: any;
-  setChatLevel: any;
-  activeRoom: any;
-  setActiveRoom: any;
-  handleActiveRoom: any;
-  createRoom: any;
-  setCreateRoom: any;
-  setShowChatbox: any;
+  userId: number | null;
+  chatLevel: number;
+  chatrooms: userchatroomtype[];
+  setChatLevel: React.Dispatch<React.SetStateAction<number>>;
+  activeRoom: activeroomtype;
+  setActiveRoom: React.Dispatch<React.SetStateAction<activeroomtype>>;
+  handleActiveRoom: (name: string, room: activeroomtype) => void;
+  createRoom: boolean;
+  setCreateRoom: React.Dispatch<React.SetStateAction<boolean>>;
+  setShowChatbox: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export interface message {
+export interface messagestatetype {
   user_id: number;
   message: string;
   room_id: string;
 }
 
-export type chatgroupusertype = { id: number, username: string };
+export interface messagetype {
+  id: number;
+  user_id: usertype;
+  room_id: roomtype;
+  message: string;
+  created_at: string;
+}
+
+export type chatgroupusertype = { id: number; username: string };

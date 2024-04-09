@@ -10,23 +10,23 @@ const CORE_FIELDS = gql`
     created_at
     country
     background_pic
-    about    
+    about
     profile_pic
     role {
       id
       role
     }
-    ownedCommunities {            
+    ownedCommunities {
       id
       communityname
       owner {
-        id      
+        id
       }
-    }    
+    }
     comments {
       id
       comment
-      status    
+      status
       post_id {
         id
         title
@@ -62,74 +62,60 @@ const CORE_FIELDS = gql`
         communityname
         profile_pic
       }
-      tags {
-        tag_id {
-          name
-        }
+      comments {
+        id
       }
     }
   }
 `;
 
 export const GETUSER = gql`
-query User($username: String!) {
-  user(username: $username) {
-    ...CoreFields    
+  query User($username: String!) {
+    user(username: $username) {
+      ...CoreFields
+    }
   }
-} 
-${ CORE_FIELDS } 
+  ${CORE_FIELDS}
 `;
 
 export const GETSIGNEDUPUSER = gql`
-query User($username: String!) {
-  user(username: $username) {
-    ...CoreFields,
-    savedposts {
-      saved
-      pinned
-      post_id {
-        id
-        title
-        type
-        tags {
-          tag_id {
-            name
-          }
-        }
-        content
-        community_id {
+  query User($username: String!) {
+    user(username: $username) {
+      ...CoreFields
+      savedposts {
+        saved
+        pinned
+        post_id {
           id
-          communityname
-          profile_pic
+          title
+          type
+          content
+          community_id {
+            id
+            communityname
+            profile_pic
+          }
+          likes
+          status
         }
-        likes
-        status
       }
-    }
-    reactedposts {
-      reaction
-      post_id {
-        id
-        title
-        type
-        content
-        likes
-        status
-        community_id {
+      reactedposts {
+        reaction
+        post_id {
           id
-          communityname
-          profile_pic
-        }      
-        tags {
-          tag_id {
-            name
+          title
+          type
+          content
+          likes
+          status
+          community_id {
+            id
+            communityname
+            profile_pic
           }
         }
-        
       }
     }
   }
-}
-${ CORE_FIELDS }
+  ${CORE_FIELDS}
 `;
-

@@ -8,8 +8,7 @@ interface posttype {
   content: string;
   created_at: string;
   likes: number;
-  status: string;
-  tags: {tag_id: {name: string;}}[];
+  status: string;  
 }
 
 interface userposttype extends posttype {

@@ -234,6 +234,7 @@ export async function up(knex: Knex): Promise<void> {
         table.boolean("announcements").defaultTo(true);
         table.boolean("searchshowprofile").defaultTo(true);
         table.boolean("auth_twofactor").defaultTo(true);
+        table.text("blocked");
         table.enu("sendmsg", ["ANYONE", "NONE", "FOLLOWERS"]).defaultTo("ANYONE").notNullable();
       });    
     }

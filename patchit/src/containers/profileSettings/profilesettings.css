@@ -1,4 +1,4 @@
-.switch label input[type="checkbox"]:checked + .lever::after {
+.switch label input[type="checkbox"]:checked+.lever::after {
   background-color: #2196F3;
 }
 
@@ -15,7 +15,8 @@
   padding-right: 0.5rem;
 }
 
-.usetting {
+.usetting,
+.privateusettings {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -34,7 +35,7 @@
   font-size: 0.8rem;
   margin: 0.3rem 0 0 0;
   color: grey;
-  border-bottom: 0.1rem solid rgba(255,255,255,0.1);
+  border-bottom: 0.1rem solid rgba(255, 255, 255, 0.1);
   width: 100%;
   text-transform: capitalize;
 }
@@ -66,7 +67,7 @@
 
 .usettingitemchange {
   width: 7%;
-  height: 53%;  
+  height: 53%;
 }
 
 .usettingitemdrop {
@@ -76,7 +77,7 @@
 }
 
 .usettingitemdrop .patdropdownprofile {
-  color: rgba(255,255,255,0.7);
+  color: rgba(255, 255, 255, 0.7);
 }
 
 .usettingitemdrop .droppers {
@@ -85,7 +86,8 @@
   font-weight: 500;
 }
 
-.usettingitembtn, .usettingupdatechangesbtn {
+.usettingitembtn,
+.usettingupdatechangesbtn {
   border-radius: 1.5rem;
   font-size: 0.8rem;
   font-weight: 500;
@@ -100,12 +102,13 @@
   margin-left: auto;
 }
 
-.picwrapper, .wallpicwrapper{
+.picwrapper,
+.wallpicwrapper {
   height: 5rem;
   width: 5rem;
   border-radius: 50%;
   opacity: 0.8;
-  border: 1px solid rgba(255,255,255,0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .wallpicwrapper {
@@ -113,8 +116,55 @@
   border-radius: 0.5rem;
 }
 
-.pic, .wallpic {
+.pic,
+.wallpic {
   height: 100%;
   width: 100%;
   border-radius: inherit;
+}
+
+/* privacy */
+.privacybox {
+  margin-left: 1rem;
+  width: 30%;
+  background: rgba(0, 0, 0, 0.7);
+  border-radius: 2vw;
+  padding: 0.7rem;
+  color: white;
+}
+
+.privacyboxtitle {
+  color: #096fc2;
+  ;
+  font-size: 1.1vw;
+  font-weight: 500;
+  width: 100%;
+  text-transform: capitalize;
+}
+
+.privacyboxbody {
+  height: 83%;
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  padding: 0.5rem;
+}
+
+.privacyboxfooter {
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-end
+}
+
+.privacyboxbtn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 2vw;
+  padding: 0.5rem 0.7rem;
+  font-size: 0.9vw;
+  font-weight: 500;
+  text-transform: capitalize;
 }

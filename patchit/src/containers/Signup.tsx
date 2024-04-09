@@ -1,21 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useLazyQuery, useMutation } from "@apollo/client";
-
 import { Randomcred } from "../common/helpers";
 import useLoginvia from "../common/loginvia";
-
-import { LISTUSERS, SIGNUPUSER, UPSERTUSERPREFERENCE } from "../common/loginqueries"; //mutations
-
+//queries & mutations
+import { LISTUSERS, SIGNUPUSER } from "../common/loginqueries";
+import { UPSERTUSERPREFERENCES } from "./queries/profilesetting";
 //component
 import Askinput from "../components/html/Askinput";
 import Errorcard from "../components/Errorcard";
-
-//css
+//css,types & pics
 import "./css/login.css";
 import { allNames } from "../constants/const";
 import { userdatatypes, usertype } from "./types/logintypes.js";
-
 const logo: string = require("../img/logo.png");
 const googlelogo: string = require("../img/logo_google.png");
 
@@ -30,7 +27,7 @@ const Signup = () => {
   const [userData, setUserData] = useState<userdatatypes>({ username: "", password: "", email: "" });
 
   const [signupuser, { error }] = useMutation(SIGNUPUSER);
-  const [createuserpreference] = useMutation(UPSERTUSERPREFERENCE);
+  const [createuserpreference] = useMutation(UPSERTUSERPREFERENCES);
   const [getUsers, { data, loading }] = useLazyQuery(LISTUSERS);
 
   //handlers

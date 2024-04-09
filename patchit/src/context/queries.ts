@@ -22,6 +22,7 @@ query ListUsers($filter: UsersfilterInput) {
       sendmsg
       searchshowprofile
       auth_twofactor
+      blocked
     }
   }
 }

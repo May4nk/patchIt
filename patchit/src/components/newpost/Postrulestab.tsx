@@ -1,9 +1,7 @@
 import React from "react";
-
-import "./css/postrulestab.css"; //css
-
-const logo: string = require("../../img/loading_logo.png"); //logo
-
+//css & types
+import "./css/postrulestab.css"; 
+const logo: string = require("../../img/loading_logo.png");
 interface postruletabprops { 
   about: string;
   active: boolean;

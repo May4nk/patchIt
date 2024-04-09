@@ -30,10 +30,8 @@ query Community($communityname: String!) {
       created_at
       likes
       status
-      tags {
-        tag_id {
-          name
-        }
+      comments {
+        id
       }
     }
     users {

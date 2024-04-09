@@ -25,6 +25,7 @@ export const userpreferencesTypeDefs = `
     sendmsg: SENDMSG
     searchshowprofile: Boolean
     auth_twofactor: Boolean
+    blocked: String
   } 
 
   input InsertUserPreferencesInput {
@@ -46,6 +47,7 @@ export const userpreferencesTypeDefs = `
     announcements: Boolean
     searchshowprofile: Boolean
     auth_twofactor: Boolean
+    blocked: String
   }
   input UserPreferencesfilterInput {
     user_id: Int 
