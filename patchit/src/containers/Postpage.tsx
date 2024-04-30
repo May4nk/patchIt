@@ -3,64 +3,59 @@ import { useLazyQuery, useMutation } from "@apollo/client";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../common/hooks/useAuth";
 import { dateFormatter } from "../common/helpers";
-
 //component
 import Inforecommended from "../components/infosection/Inforecommended";
 import Loadingpage from "../components/Loadingpage";
 import Commentspace from "../components/comments/Commentspace";
 import Patdrop from "../components/html/patdrop/Patdrop";
-
+import Postpoll from "../components/post/Postpoll";
 //queries
 import { GETPOST, SUBSCRIBETOMORECOMMENT, GETUSERALLREACTIONS } from "./queries/postpage";
 import { POSTLIKEDISLIKE, UPSERTSAVEDPOST, UPDATEPOST } from "../components/queries/post";
-
 //css & types & constants
 import "./css/main.css";
-import "./css/postpage.css"; 
+import "./css/postpage.css";
 import { parsedimgtype } from "../components/types/posttypes";
 import { commenttype } from "../components/comments/types";
 import { authcontexttype } from "../context/types";
 import { droppertype } from "../components/html/patdrop/types";
 import { sortprofile } from "../constants/patdropconst";
 import { postdblikestype } from "../components/types/posttypes";
-import { 
-  commentsubscriptiondatatype,  
+import {
+  commentsubscriptiondatatype,
   subdatatype,
   postpagetype,
   usersavedtype,
   reactedposttype,
   savedposttype,
-  polltype,
   tagtype
 } from "./types/postpage";
-
 //image
 let pic: string = require("../img/a.jpg");
 
 const Postpage = () => {
   const { postid } = useParams<Record<string, string>>();
-  const { user }: authcontexttype = useAuth(); 
-  const userId:number|null = user && Number(user["id"] || user["user_id"]);
+  const { user }: authcontexttype = useAuth();
+  const userId: number | null = user && Number(user["id"] || user["user_id"]);
   const navigate = useNavigate();
-  
-  const [getPost, { data, loading, error,  subscribeToMore }] = useLazyQuery(GETPOST);
+  //queries & mutations
+  const [getPost, { data, loading, error, subscribeToMore }] = useLazyQuery(GETPOST);
   const [likedislikepost] = useMutation(POSTLIKEDISLIKE);
   const [upsertSavedPost] = useMutation(UPSERTSAVEDPOST);
   const [upsertPost] = useMutation(UPDATEPOST);
-  const [getUserReactions, { data: userreactionData, loading: userreactionLoading }] = useLazyQuery(GETUSERALLREACTIONS);
-
-
+  const [getUserReactions, {
+    data: userreactionData,
+    loading: userreactionLoading
+  }] = useLazyQuery(GETUSERALLREACTIONS);
   //constants
   const postData: postpagetype = !loading ? data?.post : {};
-  const parsedimgData:parsedimgtype[] = postData?.type === "IMAGE" ? JSON.parse(postData.content) : [];
-  const totalimg:number = parsedimgData.length;
-  
+  const parsedimgData: parsedimgtype[] = postData?.type === "IMAGE" ? JSON.parse(postData.content) : [];
+  const totalimg: number = parsedimgData.length;
   const sortdroppers: droppertype[] = [
     { value: "popular", icn: "whatshot" },
     { value: "newest", icn: "trending_up" }
   ];
-
-  //state
+  //states
   const [currentImg, setCurrentImg] = useState<number>(0);
   const [postLikes, setPostLikes] = useState<number>(0);
   const [savedState, setSavedState] = useState<boolean>(false);
@@ -68,7 +63,6 @@ const Postpage = () => {
   const [likeState, setLikeState] = useState<string>("none");
 
   const allUserActions: usersavedtype = !userreactionLoading && userreactionData?.listUsers[0];
- 
   //handlers
   const postdblikes: postdblikestype = (userreact: number, type: string, postlikenumber: number) => {
     likedislikepost({
@@ -78,9 +72,9 @@ const Postpage = () => {
           post_id: Number(postData.id),
           user_id: userId
         }
-      }  
-    }); 
-    if(type === "+") {
+      }
+    });
+    if (type === "+") {
       upsertPost({
         variables: {
           data: {
@@ -88,8 +82,8 @@ const Postpage = () => {
             likes: postData.likes + postlikenumber
           }
         }
-      }); 
-    } else if(type === "-") {
+      });
+    } else if (type === "-") {
       upsertPost({
         variables: {
           data: {
@@ -97,21 +91,21 @@ const Postpage = () => {
             likes: postData.likes - postlikenumber
           }
         }
-      }); 
+      });
     }
   }
 
   const handleLike = () => {
-    if(user) {
-      if(likeState === "none") {
+    if (user) {
+      if (likeState === "none") {
         postdblikes(1, "+", 1);
         setPostLikes(postLikes + 1);
         setLikeState("like");
-      } else if(likeState === "like") {
+      } else if (likeState === "like") {
         postdblikes(0, "-", 1);
         setPostLikes(postLikes - 1);
         setLikeState("none");
-      } else if(likeState === "dislike") {
+      } else if (likeState === "dislike") {
         postdblikes(1, "+", 2);
         setPostLikes(postLikes + 2);
         setLikeState("like");
@@ -122,12 +116,12 @@ const Postpage = () => {
   }
 
   const handleDislike = () => {
-    if(user) {
+    if (user) {
       if (likeState === "none") {
         postdblikes(-1, "-", 1);
         setPostLikes(postLikes - 1);
         setLikeState("dislike");
-      } else if (likeState === 'dislike'){
+      } else if (likeState === 'dislike') {
         postdblikes(0, "+", 1);
         setPostLikes(postLikes + 1);
         setLikeState("none");
@@ -164,49 +158,49 @@ const Postpage = () => {
           }
         }
       });
-    }  
+    }
   }
 
-  const prevImg:() => void = () => {
-    if(currentImg !== 0) {
+  const prevImg: () => void = () => {
+    if (currentImg !== 0) {
       setCurrentImg(currentImg - 1)
     }
   }
-  
-  const nextImg:() => void = () => {
-    if(currentImg !== (Number(totalimg)-1)) {
+
+  const nextImg: () => void = () => {
+    if (currentImg !== (Number(totalimg) - 1)) {
       setCurrentImg(currentImg + 1)
     }
   }
 
-  useEffect(() => {      
+  useEffect(() => {
     let unsubscribe = subscribeToMore({
       document: SUBSCRIBETOMORECOMMENT,
       onError: err => console.log(err),
-      updateQuery: (prev: { post: postpagetype } , { subscriptionData }: commentsubscriptiondatatype) => {        
+      updateQuery: (prev: { post: postpagetype }, { subscriptionData }: commentsubscriptiondatatype) => {
         const subdata: subdatatype = subscriptionData?.data;
         if (!subdata) return prev;
-        const newComment: commenttype[] = subdata?.newComment;      
-        return Object.assign({}, prev, { 
+        const newComment: commenttype[] = subdata?.newComment;
+        return Object.assign({}, prev, {
           post: {
             ...prev?.post,
             comments: [...prev?.post.comments, ...newComment]
           }
         });
       }
-    });    
+    });
 
-    if(unsubscribe) return () => unsubscribe();
+    if (unsubscribe) return () => unsubscribe();
   }, [subscribeToMore]);
 
   useEffect(() => {
-    if(postid) {
+    if (postid) {
       getPost({
         variables: {
-          postId:Number(postid!)
+          postId: Number(postid!)
         }
-      }).then(({ data }: {data: {post: postpagetype}}) => {
-        if(data) {
+      }).then(({ data }: { data: { post: postpagetype } }) => {
+        if (data) {
           setPostLikes(data?.post?.likes);
         }
       });
@@ -214,7 +208,7 @@ const Postpage = () => {
   }, [postid, getPost]);
 
   useEffect(() => {
-    if(userId !== null) {
+    if (userId !== null) {
       getUserReactions({
         variables: {
           filter: {
@@ -229,149 +223,141 @@ const Postpage = () => {
       const userSaved: usersavedtype["savedposts"] = allUserActions?.savedposts;
       const userReacted: usersavedtype["reactedposts"] = allUserActions?.reactedposts;
 
-      if(userSaved?.length > 0) {
-        if(userSaved?.some((post: savedposttype) => (post.saved && post?.post_id?.id === Number(postid!)))){
+      if (userSaved?.length > 0) {
+        if (userSaved?.some((post: savedposttype) => (post.saved && post?.post_id?.id === Number(postid!)))) {
           setSavedState(true);
         }
 
-        if(userSaved?.some((post: savedposttype) => (post.pinned && post?.post_id?.id === Number(postid!)))){
+        if (userSaved?.some((post: savedposttype) => (post.pinned && post?.post_id?.id === Number(postid!)))) {
           setPinnedState(true);
         }
       }
 
-      if(userReacted?.length > 0 ) {
-        if(userReacted?.some((post: reactedposttype) => (post.reaction === 1 && post?.post_id?.id === Number(postid!)))){
+      if (userReacted?.length > 0) {
+        if (userReacted?.some((post: reactedposttype) => (post.reaction === 1 && post?.post_id?.id === Number(postid!)))) {
           setLikeState("like");
         }
 
-        if(userReacted?.some((post: reactedposttype) => (post.reaction === -1 && post?.post_id?.id === Number(postid!)))){
+        if (userReacted?.some((post: reactedposttype) => (post.reaction === -1 && post?.post_id?.id === Number(postid!)))) {
           setLikeState("dislike");
         }
-      }  
+      }
     } else {
       setLikeState("none");
       setPinnedState(false);
       setSavedState(false);
-    }    
-  },[userId, allUserActions, postid, getUserReactions])
+    }
+  }, [userId, allUserActions, postid, getUserReactions])
 
   if (loading) {
-    return ( <Loadingpage /> )
-  } else if(error) {
-    return (<Loadingpage err={error.message}/>)
+    return (<Loadingpage />)
+  } else if (error) {
+    return (<Loadingpage err={error.message} />)
   } else {
     return (
       <div className="flexy">
         <div className="contentpost">
           <div className="postpageheader">
             <div className="userpicwrapper">
-              <img src={ pic } className="userpic" alt={"user_profile_pic"}/>
+              <img src={pic} className="userpic" alt={"user_profile_pic"} />
             </div>
             <div className="postpageheadlineinfo" >
               <div className="postpageinfo">
-                <Link to={`/u/${ postData?.owner?.username }`} className="username">
-                  u/{ postData?.owner?.username} 
+                <Link to={`/u/${postData?.owner?.username}`} className="username">
+                  u/{postData?.owner?.username}
                 </Link>
-                { postData?.community_id !== null && (
+                {postData?.community_id !== null && (
                   <div className="communityname">
                     in
-                    <Link to={`/c/${ postData?.community_id?.communityname }`}>
+                    <Link to={`/c/${postData?.community_id?.communityname}`}>
                       <div className="communitynametxt">
-                        c/{ postData?.community_id?.communityname }
+                        c/{postData?.community_id?.communityname}
                       </div>
                     </Link>
                   </div>
                 )}
               </div>
               <div className="created">
-                { dateFormatter(postData?.created_at) }
+                {dateFormatter(postData?.created_at)}
               </div>
             </div>
           </div>
           <div className="postpageheading">
-            { postData?.title }
+            {postData?.title}
           </div>
-          { postData?.tags?.length > 0 && (
+          {postData?.tags?.length > 0 && (
             <div className="posttags">
-              { postData?.tags.map((tag: tagtype, idx: number) => (
-                <div className="posttag" key={ idx }>
+              {postData?.tags.map((tag: tagtype, idx: number) => (
+                <div className="posttag" key={idx}>
                   <i className="material-icons black-text posttagicn">local_offer</i>
-                  { tag.tag_id.name}
+                  {tag.tag_id.name}
                 </div>
               ))}
             </div>
-          )} 
-          { postData?.type === "IMAGE" ? (            
+          )}
+          {postData?.type === "IMAGE" ? (
             <div className="postpagepostwrapper">
-              <img src={ require(`../img/${parsedimgData[currentImg].postSrc}`)} className="postpagepost" alt={"pic"}/>
-              { totalimg > 1 && ( 
+              <img src={require(`../img/${parsedimgData[currentImg].postSrc}`)} className="postpagepost" alt={"pic"} />
+              {totalimg > 1 && (
                 <>
-                  <div className="allimages"> { `${currentImg + 1 } / ${totalimg}` } </div>                  
-                  <i className="material-icons leftimagebutton" onClick={ prevImg }> chevron_left </i>
-                  <i className="material-icons rightimagebutton" onClick={ nextImg }> chevron_right </i>
+                  <div className="allimages"> {`${currentImg + 1} / ${totalimg}`} </div>
+                  <i className="material-icons leftimagebutton" onClick={prevImg}> chevron_left </i>
+                  <i className="material-icons rightimagebutton" onClick={nextImg}> chevron_right </i>
                 </>
               )}
-              { parsedimgData[currentImg]?.postCaption && (
-                <div className="postpage_caption"> 
-                  { parsedimgData[currentImg]?.postCaption }
+              {parsedimgData[currentImg]?.postCaption && (
+                <div className="postpage_caption">
+                  {parsedimgData[currentImg]?.postCaption}
                 </div>
               )}
-            </div>            
+            </div>
           ) : postData?.type === "BLOG" ? (
             postData?.content && (
               <div className="postpageblog">
-                { postData?.content }
+                {postData?.content}
               </div>
             )
           ) : postData?.type === "POLL" ? (
-            postData?.content && (
-              <div className="pollwrapper">
-                { JSON.parse(postData?.content).map((poll: polltype, idx: number) => (
-                  <div className="postpagepolloptions" key={ idx }>
-                    { poll.poll }
-                    <div className="pollrating">
-                      0 %
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )                          
+            <Postpoll
+              pollData={postData?.content}
+              pollPostId={postData?.id}
+            />
           ) : postData?.type === "LINK" && (
-            <a href={ postData?.content }> 
-              { postData?.content }
+            <a href={postData?.content}>
+              {postData?.content}
             </a>
           )}
           <div className="postpagepostinfo">
             <div className="postpagepostinfotabs">
-              <i className={`material-icons icnspaceup ${likeState === "like" && "blue-text"}`} onClick={ handleLike }>
+              <i className={`material-icons icnspaceup ${likeState === "like" && "blue-text"}`} onClick={handleLike}>
                 mood
               </i>
-              { postLikes || 0 }
-              <i className={`material-icons icnspacedown ${likeState === "dislike" && "red-text"}`} onClick={ handleDislike }>
+              {postLikes || 0}
+              <i className={`material-icons icnspacedown ${likeState === "dislike" && "red-text"}`} onClick={handleDislike}>
                 sentiment_very_dissatisfied
               </i>
             </div>
-            { user && (
+            {user && (
               <div className="postpagepostinfotabs waves-effect waves-light" onClick={() => handleSavingPost("save")}>
-                <i className={`material-icons icnspacesave ${ savedState && "blue-text"}`}>
-                  bookmark_outline 
+                <i className={`material-icons icnspacesave ${savedState && "blue-text"}`}>
+                  bookmark_outline
                 </i>
                 Save
               </div>
             )}
           </div>
           <div className="postpagesortby">
-            { postData?.comments.length > 1 && (
+            {postData?.comments.length > 1 && (
               <div className="sortcomments">
-                <Patdrop profile={ sortprofile } droppers={ sortdroppers } />
+                <Patdrop profile={sortprofile} droppers={sortdroppers} />
               </div>
             )}
-            <div className="postpagesortbytrim"> 
-              { postData?.comments.length || 0 } comments 
+            <div className="postpagesortbytrim">
+              {postData?.comments.length || 0} comments
             </div>
           </div>
           <div className="commentsection">
-            <Commentspace postId={ Number(postData?.id) } comments={ postData?.comments } />
+            <Commentspace postId={Number(postData?.id)} comments={postData?.comments} />
           </div>
         </div>
         <div className="contentinfo">

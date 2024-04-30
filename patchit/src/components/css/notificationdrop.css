@@ -16,6 +16,8 @@
   align-items: flex-start;
   flex-direction: column;
   margin-left: -3rem;
+  margin-top: 0.7rem;
+  line-height: 25px;
 }
 
 .notificationdropheader {

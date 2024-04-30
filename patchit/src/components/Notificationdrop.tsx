@@ -1,23 +1,22 @@
 import React, { useRef } from "react";
-
-import "./css/notificationdrop.css";//css
-
+//css
+import "./css/notificationdrop.css";
 const pic = require("../img/unnamed.jpg"); //change
 
 const Notificationdrop = ({ showNotificationdrop, setShowNotificationdrop, data, icn }: any) => {
   const thisRef = useRef<HTMLDivElement>(null);
-
-  //handler
+  //handlers
   const closeDrop = (e: any) => {   
     if(thisRef.current && showNotificationdrop && !thisRef.current.contains(e.target)){
       setShowNotificationdrop(false)
     }
   }
+  
   document.addEventListener('mousedown', closeDrop);
 
   return (
     <div className="notificationdrop" ref={ thisRef }>   
-      <i className="material-icons loginuseraccessbtnsicn" onClick={() => setShowNotificationdrop(!showNotificationdrop)}>
+      <i className="material-icons loginuseraccessbtnsicn" title="notifications" onClick={() => setShowNotificationdrop(!showNotificationdrop)}>
         { icn }
       </i>
       { showNotificationdrop && (

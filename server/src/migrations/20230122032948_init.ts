@@ -255,24 +255,37 @@ export async function up(knex: Knex): Promise<void> {
       });    
     }
   });
+  await knex.schema.hasTable("polls").then(function(exists: boolean) {
+    if(!exists) {
+      return knex.schema.createTable("polls", function(table: Knex.TableBuilder) {
+        table.increments("id").unique().notNullable().primary();
+        table.text("post_id").references("id").inTable("posts").onDelete("CASCADE").notNullable();
+        table.text("user_id").references("id").inTable("users").onDelete("CASCADE").notNullable();
+        table.text("pollvalue").notNullable();
+      });    
+    }
+  });
+
 }
 
 export async function down(knex: Knex): Promise<void> {
+  await knex.schema.dropTable("roles");
+  await knex.schema.dropTable("categories");
   await knex.schema.dropTable("users");
   await knex.schema.dropTable("tags");
+  await knex.schema.dropTable("communities");
+  await knex.schema.dropTable("tag_community_relation");
   await knex.schema.dropTable("posts");
-  await knex.schema.dropTable("roles");
-  await knex.schema.dropTable("saved");
-  await knex.schema.dropTable("tokens");
+  await knex.schema.dropTable("user_community_relation");
+  await knex.schema.dropTable("posts_tags_relation");
   await knex.schema.dropTable("chatrooms");
   await knex.schema.dropTable("chat");
   await knex.schema.dropTable("user_chatrooms");
-  await knex.schema.dropTable("post_like_dislikes");
   await knex.schema.dropTable("comments");
-  await knex.schema.dropTable("communities");
-  await knex.schema.dropTable("posts_tags_relation");
-  await knex.schema.dropTable("user_community_relation");
+  await knex.schema.dropTable("post_like_dislikes");
+  await knex.schema.dropTable("saved");
+  await knex.schema.dropTable("tokens");
   await knex.schema.dropTable("user_preferences");
   await knex.schema.dropTable("community_preferences");
+  await knex.schema.dropTable("polls");
 }
-

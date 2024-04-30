@@ -3,9 +3,8 @@ import { useLazyQuery, useMutation } from "@apollo/client";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../common/hooks/useAuth";
 import { dateFormatter } from "../common/helpers";
-
-import Postpoll from "./Postpoll"; //component
-
+//component
+import Postpoll from "./post/Postpoll";
 //query&mutation
 import { 
   GETUSERALLREACTIONS,
@@ -15,7 +14,6 @@ import {
   UPSERTSAVEDPOST,
   UPDATEPOST
 } from "./queries/post";
-
 //css & types
 import "./css/post.css";
 import { authcontexttype } from "../context/types";
@@ -30,7 +28,6 @@ import {
 } from "./types/posttypes";
 
 const Post = ({ postData, showcommunity } : postprops) => {
-  
   const { id, title, type, content, owner, community_id, likes, created_at, comments } = postData;
 
   const navigate = useNavigate();
@@ -38,15 +35,13 @@ const Post = ({ postData, showcommunity } : postprops) => {
   const userId:number|null = user && Number(user["id"] || user["user_id"]);
   const parsedimgData:parsedimgtype[] = type === "IMAGE" && JSON.parse(content!);
   const totalimg:number|boolean = parsedimgData?.length > 1 && parsedimgData?.length;
-
-  //state
+  //states
   const [currentImg, setCurrentImg] = useState<number>(0);
   const [postLikes, setPostLikes] = useState<number>(0);
   const [likeState, setLikeState] = useState<string>("none");
   const [joinState, setJoinState] = useState<boolean>(false);
   const [savedState, setSavedState] = useState<boolean>(false);
   const [pinnedState, setPinnedState] = useState<boolean>(false);
-
   //queries & mutations
   const [likedislikepost] = useMutation(POSTLIKEDISLIKE);
   const [joincommunity] = useMutation(INSERTUSERCOMMUNITY);
@@ -56,7 +51,6 @@ const Post = ({ postData, showcommunity } : postprops) => {
   const [getUserReactions, { data, loading }] = useLazyQuery(GETUSERALLREACTIONS);
 
   const allUserActions = !loading && data?.listUsers[0];
-
   //handlers
   const postdblikes: postdblikestype = (userreact: number, type: string, postlikenumber: number) => {
     likedislikepost({
@@ -324,7 +318,10 @@ const Post = ({ postData, showcommunity } : postprops) => {
         ) : type === "POLL" ? (
           <div className="postpoll">
             {content && (
-              <Postpoll polldata={ content }/>
+              <Postpoll 
+                pollData={ content }
+                pollPostId={ postData.id }
+              />
             )}
           </div>
         ) : type === "BLOG" && (

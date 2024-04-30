@@ -1,4 +1,3 @@
-
 export interface postlikedislikestype {
   id: number;
   post_id: number;
@@ -8,7 +7,7 @@ export interface postlikedislikestype {
 
 export type rpostlikedislikestype = {
   id: number;
-}
+};
 
 export interface postlikedislikesdatatype {
   data: postlikedislikestype;

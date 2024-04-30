@@ -15,3 +15,4 @@ export * from "./tokens.js";
 export * from "./userpreferences.js";
 export * from "./roles.js";
 export * from "./categories.js";
+export * from "./polls.js";

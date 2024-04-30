@@ -1,6 +1,5 @@
-import {  mergeTypeDefs, mergeResolvers } from "@graphql-tools/merge";
-
-import { 
+import { mergeTypeDefs, mergeResolvers } from "@graphql-tools/merge";
+import {
   userTypeDefs,
   postTypeDefs,
   communityTypeDefs,
@@ -18,19 +17,19 @@ import {
   communitypreferencesTypeDefs,
   roleTypeDefs,
   categoryTypeDefs,
+  pollTypeDefs,
 } from "./typeDefs/index.js";
-
-import { 
-  userResolvers, 
-  postResolvers, 
-  tagResolvers, 
-  communityResolvers, 
+import {
+  userResolvers,
+  postResolvers,
+  tagResolvers,
+  communityResolvers,
   communitypreferenceResolvers,
-  messageResolvers, 
-  chatroomResolvers, 
+  messageResolvers,
+  chatroomResolvers,
   userchatroomResolvers,
-  postlikedislikeResolvers, 
-  userscommunityResolvers, 
+  postlikedislikeResolvers,
+  userscommunityResolvers,
   savedpostResolvers,
   commentResolvers,
   posttagsResolvers,
@@ -38,9 +37,10 @@ import {
   userpreferenceResolvers,
   roleResolvers,
   categoryResolvers,
-}  from "./resolvers/index.js";
+  pollResolvers,
+} from "./resolvers/index.js";
 
-import { 
+import {
   userMutations,
   postMutations,
   communityMutations,
@@ -55,8 +55,8 @@ import {
   commentMutations,
   userpreferenceMutations,
   communitypreferenceMutations,
+  pollsMutations
 } from "./mutations/index.js";
-
 
 const Query = ` 
   type Query {
@@ -73,27 +73,29 @@ const Query = `
     userCommunity(id: Int!): UserCommunity
     savedPost(id: Int!): SavedPost
     comment(id: Int!): Comment
+    poll(id: Int!): Poll
     role(role: String!): Role
     category(categoryname: String!): Category
     userpreference(userId: Int!): UserPreferences
     communitypreference(communityName: String!): CommunityPreferences
-    listUsers(filter: UsersfilterInput, sort: [SortInput], limit: Int ): [User!]!    
-    listUserPreferences(filter: UserPreferencesfilterInput, sort: [SortInput], limit: Int ): [UserPreferences]!
+    listUsers(filter: UsersfilterInput, sort: [SortInput], limit: Int): [User!]!    
+    listUserPreferences(filter: UserPreferencesfilterInput, sort: [SortInput], limit: Int): [UserPreferences]!
     listTokens(filter: TokenfilterInput, sort: [SortInput], limit: Int): [Token!]!
-    listCommunities(filter: CommunitiesfilterInput, sort: [SortInput], limit: Int ): [Community!]!
-    listCommunityPreferences(filter: CommunityPreferencesfilterInput, sort: [SortInput], limit: Int ): [CommunityPreferences]!
-    listTags(filter: TagsfilterInput, sort: [SortInput], limit: Int ): [Tag!]!
-    listRoles(filter: RolesfilterInput, sort: [SortInput], limit: Int ): [Role!]!
-    listCategories(filter: CategoriesfilterInput, sort: [SortInput], limit: Int ): [Category!]!
-    listPostTags(filter: PostTagsfilterInput, sort: [SortInput], limit: Int ): [PostTags!]!
-    listPosts(filter: PostfilterInput, sort: [SortInput], limit: Int ): [Post!]!
-    listMessages(filter: MessagesfilterInput, sort: [SortInput], limit: Int ): [Message!]
-    listChatrooms(filter: ChatroomsfilterInput, sort: [SortInput], limit: Int ): [Chatroom!]
-    listUserChatrooms(filter: UserChatroomfilterInput, sort: [SortInput], limit: Int ): [UserChatroom]!
-    listPostLikeDislikes(filter: PostlikedislikefilterInput, sort: [SortInput], limit: Int ): [Postlikedislike!]
-    listUsersCommunity(filter: UserCommunityfilterInput, sort: [SortInput], limit: Int ): [UserCommunity!]!
-    listComments(filter: CommentfilterInput, sort: [SortInput], limit: Int ): [Comment!]!
-    listSavedPost(filter: SavedPostfilterInput, sort: [SortInput], limit: Int ): [SavedPost!]!
+    listCommunities(filter: CommunitiesfilterInput, sort: [SortInput], limit: Int): [Community!]!
+    listCommunityPreferences(filter: CommunityPreferencesfilterInput, sort: [SortInput], limit: Int): [CommunityPreferences]!
+    listTags(filter: TagsfilterInput, sort: [SortInput], limit: Int): [Tag!]!
+    listRoles(filter: RolesfilterInput, sort: [SortInput], limit: Int): [Role!]!
+    listCategories(filter: CategoriesfilterInput, sort: [SortInput], limit: Int): [Category!]!
+    listPostTags(filter: PostTagsfilterInput, sort: [SortInput], limit: Int): [PostTags!]!
+    listPolls(filter: PollfilterInput, sort: [SortInput], limit: Int): [Poll!]!
+    listPosts(filter: PostfilterInput, sort: [SortInput], limit: Int): [Post!]!
+    listMessages(filter: MessagesfilterInput, sort: [SortInput], limit: Int): [Message!]
+    listChatrooms(filter: ChatroomsfilterInput, sort: [SortInput], limit: Int): [Chatroom!]
+    listUserChatrooms(filter: UserChatroomfilterInput, sort: [SortInput], limit: Int): [UserChatroom]!
+    listPostLikeDislikes(filter: PostlikedislikefilterInput, sort: [SortInput], limit: Int): [Postlikedislike!]
+    listUsersCommunity(filter: UserCommunityfilterInput, sort: [SortInput], limit: Int): [UserCommunity!]!
+    listComments(filter: CommentfilterInput, sort: [SortInput], limit: Int): [Comment!]!
+    listSavedPost(filter: SavedPostfilterInput, sort: [SortInput], limit: Int): [SavedPost!]!
   }
   type Mutation {
     insertUser(data: InsertUserInput): User
@@ -108,6 +110,7 @@ const Query = `
     upsertPostLikeDislike(data: UpsertPostLikeDislikeInput): Postlikedislike
     upsertTag(data: UpsertTagInput): Tag
     upsertSavedPost(data: InsertSavedPostInput): SavedPost
+    upsertPolls(data: InsertPollInput): Poll
     insertMessage(data: InsertMessageInput): Message    
     insertUserChatroom(data: [InsertUserChatroomInput!]!): [UserChatroom]!
     insertChatroom(data: InsertChatroomInput): Chatroom
@@ -127,6 +130,7 @@ const Query = `
     removeUserCommunity(data: RemoveUserCommunityInput): UserCommunity
     removePostTag(data: RemovePostTagsInput): PostTags
     removeSavedPost(data: RemoveSavedPostInput): SavedPost
+    removePoll(data: RemovePollInput): Poll
     removeUserPreference(data: RemoveUserPreferencesInput): UserPreferences
     removeCommunityPreference(data: RemoveCommunityPreferencesInput): CommunityPreferences
   }
@@ -137,6 +141,60 @@ const Query = `
   }
 `;
 
-export const allTypeDefs = mergeTypeDefs([ Query, userTypeDefs, postTypeDefs, communityTypeDefs, tagTypeDefs, messageTypeDefs, chatroomTypeDefs, userchatroomTypeDefs, postlikedislikeTypeDefs, usercommunityTypeDefs, savedpostTypeDefs, commentTypeDefs, posttagsTypeDefs, tokenTypeDefs, userpreferencesTypeDefs, roleTypeDefs, categoryTypeDefs, communitypreferencesTypeDefs ]);
+export const allTypeDefs = mergeTypeDefs([
+  Query,
+  userTypeDefs,
+  postTypeDefs,
+  communityTypeDefs,
+  tagTypeDefs,
+  messageTypeDefs,
+  chatroomTypeDefs,
+  userchatroomTypeDefs,
+  postlikedislikeTypeDefs,
+  usercommunityTypeDefs,
+  savedpostTypeDefs,
+  commentTypeDefs,
+  posttagsTypeDefs,
+  tokenTypeDefs,
+  userpreferencesTypeDefs,
+  roleTypeDefs,
+  categoryTypeDefs,
+  communitypreferencesTypeDefs,
+  pollTypeDefs
+]);
 
-export const allResolversAndMutations = mergeResolvers([ userResolvers, postResolvers, userscommunityResolvers, postlikedislikeResolvers, savedpostResolvers, tagResolvers, posttagsResolvers, communityResolvers, chatroomResolvers, commentResolvers, messageResolvers, userchatroomResolvers, tokenResolvers, userpreferenceResolvers, communitypreferenceResolvers, roleResolvers, categoryResolvers,  savedpostMutations, userMutations, tagMutations, communityMutations,  postMutations, messageMutations, chatroomMutations, postlikedislikeMutations, userscommunityMutations, commentMutations, userchatroomMutations, userpreferenceMutations, communitypreferenceMutations, posttagMutations ]);
+export const allResolversAndMutations = mergeResolvers([
+  userResolvers,
+  postResolvers,
+  userscommunityResolvers,
+  postlikedislikeResolvers,
+  savedpostResolvers,
+  tagResolvers,
+  posttagsResolvers,
+  communityResolvers,
+  chatroomResolvers,
+  commentResolvers,
+  messageResolvers,
+  userchatroomResolvers,
+  tokenResolvers,
+  userpreferenceResolvers,
+  communitypreferenceResolvers,
+  roleResolvers,
+  categoryResolvers,
+  pollResolvers,
+  savedpostMutations,
+  userMutations,
+  tagMutations,
+  communityMutations,
+  postMutations,
+  messageMutations,
+  chatroomMutations,
+  postlikedislikeMutations,
+  userscommunityMutations,
+  commentMutations,
+  userchatroomMutations,
+  userpreferenceMutations,
+  communitypreferenceMutations,
+  posttagMutations,
+  pollsMutations
+]);

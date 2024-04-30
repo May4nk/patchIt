@@ -1,14 +1,11 @@
 import React, { useRef } from "react";
-
 //css
 import "./css/patcoindrop.css";
-
 const patcoind_pic = require("../img/loading_logo.png");
 
 const Patcoindrop = ({ showPatcoindrop, setShowpatcoindrop, data, icn }: any) => {
   const thisRef = useRef<HTMLDivElement>(null);
-
-  //handler
+  //handlers
   const closeDrop = (e: any) => {   
     if(thisRef.current && showPatcoindrop && !thisRef.current.contains(e.target)){
       setShowpatcoindrop(false)
@@ -20,7 +17,13 @@ const Patcoindrop = ({ showPatcoindrop, setShowpatcoindrop, data, icn }: any) =>
   return (
     <div className="patcoindrop" ref={ thisRef }>   
       <div className="navpatcoinwrapper">
-        <img className="navpatcoin" onClick={() => setShowpatcoindrop(!showPatcoindrop)} src={patcoind_pic } alt={"patcoin"} />
+        <img
+          className="navpatcoin"
+          onClick={() => setShowpatcoindrop(!showPatcoindrop)}
+          src={patcoind_pic }
+          alt={"patcoin"}
+          title="patcoins"
+        />
       </div>
       { showPatcoindrop && (
         <div className="patcoindropcontent">

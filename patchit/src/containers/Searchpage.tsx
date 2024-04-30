@@ -1,18 +1,14 @@
-import React from "react";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useLazyQuery } from "@apollo/client";
-
 //components
 import Loadingpage from "../components/Loadingpage";
 import Zeropostcard from "../components/Zeropostcard";
 import Htab from "../components/html/Htabs";
 import { dateFormatter } from "../common/helpers";
-
 //queries
 import { GETALLCOMMENTS, GETCOMMUNITIES, GETUSERS } from "./queries/searchpage";
 import { GETALLPOSTS } from "./queries/common";
-
 //css & tyeps
 import "./css/main.css";
 import "./css/searchpage.css";

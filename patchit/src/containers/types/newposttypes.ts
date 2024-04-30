@@ -34,3 +34,8 @@ export interface tagtype {
   id: number;
   name: string;
 }
+
+export interface polltype {
+  value: string;
+  count: number;
+}

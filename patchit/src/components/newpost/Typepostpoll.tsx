@@ -1,58 +1,53 @@
 import React from "react";
-
 //components
 import PollRule from "./Pollrule";
 import Askinput from "../html/Askinput";
-
-import { pollrules } from "../../constants/const"; //constants
-
-import "./css/typepostpoll.css"; //css
-
-type polltype = { poll: string };
-
+//css & types, constants
+import { pollrules } from "../../constants/const";
+import "./css/typepostpoll.css"; 
+import { polltype } from "../../containers/types/newposttypes";
 interface posttypepollprops {  
-  inputList: polltype[];
-  setInputList: React.Dispatch<React.SetStateAction<polltype[]>>;
+  polls: polltype[];
+  setPolls: React.Dispatch<React.SetStateAction<polltype[]>>;
 }
 
 const Typepostpoll = (posttypepollprops: posttypepollprops) => {
-  const { inputList, setInputList } = posttypepollprops;  
-     
+  const { polls, setPolls } = posttypepollprops;      
   //handler
   const handlepolloptions: () => void = () => {
-    setInputList([ ...inputList , { poll: "" } ]);
+    setPolls([ ...polls , { value: "", count: 0 } ]);
   }
 
   const handleOnChange: (e: any, index: number) => void = (e:any, index: number) => {
-    let temppolls: polltype[] = [...inputList];
-    (temppolls[index] as any )[e.target.name as keyof typeof inputList] = e.target.value;   
-    setInputList([ ...temppolls ]);
+    let temppolls: polltype[] = [...polls];
+    (temppolls[index] as any )[e.target.name as keyof typeof polls] = e.target.value;   
+    setPolls([ ...temppolls ]);
   }
   
   const handleDeleteOption: (idx: number) => void = (idx: number) => {    
-    let pollarray = [...inputList];
+    let pollarray = [...polls];
     pollarray.splice(idx, 1);
-    setInputList(pollarray);
+    setPolls(pollarray);
   }
   
   return (
     <div className="polloptions" >
       <div className="options">        
-        {inputList.map((poll: polltype, idx: number) => (
+        {polls.map((poll: polltype, idx: number) => (
           <div className="pollinputs" key={ idx }>     
             <Askinput 
-              name={ "poll" } 
+              name={ "value" } 
               placeholder={`option${idx+1}`} 
               maxlength={ 30 } 
               required={ true } 
-              postfix={ inputList.length > 2 ? "ICdelete" : null }
+              postfix={ polls.length > 2 ? "ICdelete" : null }
               onClickPostfix={() => handleDeleteOption(idx)} 
               onChange={(e: any) => handleOnChange(e,idx)} 
-              value={ poll.poll } 
+              value={ poll.value } 
             />
           </div>
         ))}
-        { inputList.length < 6 && (
+        { polls.length < 6 && (
           <div className="waves-effect waves-light addoptions" onClick={ handlepolloptions }> 
             Add More 
           </div>

@@ -8,7 +8,6 @@ interface usertype {
 
 export type reactedposttype = { reaction: number; post_id: { id: number } };
 export type savedposttype = { saved: boolean; pinned: boolean; post_id: { id: number } };
-export type polltype = { poll: string };
 export type tagtype = { tag_id: { name: string }};
 
 export interface comments {

@@ -4,7 +4,7 @@
   background: #090808e8;
   display: flex;
   align-items: stretch;
-  box-shadow: 1px 1px black;
+  box-shadow: 1px 1px #2195f331;
 }
 
 .postcontent {
