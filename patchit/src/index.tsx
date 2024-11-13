@@ -1,30 +1,30 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
 import App from './App';
+import React from 'react';
 import client from "./client";
-import { AuthProvider } from "./context/authContext";
-import { LoggedUserProvider } from "./context/userContext";
+import ReactDOM from 'react-dom/client';
 import { ApolloProvider } from "@apollo/client";
 import { BrowserRouter } from "react-router-dom";
+import { AuthProvider } from "./context/authContext";
 import { GoogleOAuthProvider } from '@react-oauth/google';
+import { LoggedUserProvider } from "./context/userContext";
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 )
 
 root.render(
-  <AuthProvider>
+  <ApolloProvider client={client}>
     <GoogleOAuthProvider clientId="632307576369-mtg71mrrhgqseqe5r5s7pu4fdu126n08.apps.googleusercontent.com">
-    <ApolloProvider client={ client }>
-      <LoggedUserProvider>  
+      <AuthProvider>
+        <LoggedUserProvider>
           <BrowserRouter>
-            <React.StrictMode>     
+            <React.StrictMode>
               <App />
             </React.StrictMode>
           </BrowserRouter>
-      </LoggedUserProvider>
-    </ApolloProvider>
+        </LoggedUserProvider>
+      </AuthProvider>
     </GoogleOAuthProvider>
-  </AuthProvider>
+  </ApolloProvider>
 );
 

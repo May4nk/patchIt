@@ -1,0 +1,119 @@
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 100%;
+  background: #0d0d0d;
+  padding: 0.5rem 1rem;
+}
+
+.navhead {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 0.5rem;
+  height: 100%;
+}
+
+.logowrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 10vw
+}
+
+.logo {
+  height: 90%;
+  width: 100%;
+}
+
+.navigationbar {
+  width: 21%;
+  margin: 0 0.5rem;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.1);
+  color: white;
+}
+
+.searchbarwrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 41%;
+  height: 90%;
+  margin: 0 0.3rem;
+}
+
+.loginuseraccessbtns {
+  width: 21%;
+  height: 90%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 0.5rem;
+}
+
+.loginusersec {
+  height: 80%;
+  margin: 0 0.3rem;
+  border-left: 0.1rem solid rgba(255, 255, 255, 0.2);
+}
+
+.loginusericns {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 2vw;
+  margin: 0 0.3rem;
+}
+
+.loginuseraccessbtnsicn {
+  font-size: 1.7vw !important;
+  line-height: 16px !important;
+  height: 100% !important;
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+  color: rgba(60, 58, 58, 0.8);
+  cursor: pointer;
+}
+
+.loginuseraccessbtnsicn:hover {
+  color: white;
+}
+
+.tipicn {
+  font-size: 0.7vw !important;
+  line-height: 16px !important;
+  height: 100% !important;
+  color: #2196F3;
+}
+
+.userprofile {
+  width: 20%;
+  height: 100%;
+  margin: 0 0.5rem;
+  background: rgba(0, 0, 0, 0.1);
+  color: white;
+}
+
+#abtn {
+  line-height: 16px !important;
+  border: 1px solid black;
+  border-radius: 0.5rem;
+  background-color: black;
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 500;
+  font-size: 1vw !important;
+  padding: 0.5vw 1.3vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#abtn:hover {
+  color: #93d6f8;
+  background-color: #111416;
+  border-color: rgba(255, 255, 255, 0.1);
+}

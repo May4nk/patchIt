@@ -1,18 +1,10 @@
-.block {
-  display: block;
-}
-
-.none {
-  display: none;
-}
-
-.chatbox {        
+.chatbox {
   position: fixed;
   right: 1rem;
   bottom: 0;
   z-index: 100;
   border-radius: 0.5rem 0.5rem 0 0;
-  background: #0d0d0d;
+  background-color: rgba(0, 0, 0);
   color: white;
   display: flex;
   justify-content: center;
@@ -20,17 +12,23 @@
   height: 80%;
   width: 53%;
   cursor: default;
-  line-height: 23px !important;
-  box-shadow: 2px 2px black;
+  line-height: 16px !important;
+  box-shadow: 2px 2px #222121;
 }
 
-.chatlist { 
+.pandabackground {
+  background-image: url("../../../img/panda_village.png");
+  background-repeat: no-repeat;
+  background-position: bottom;
+}
+
+.chatlist {
   height: 100%;
   width: 35%;
-  border-right: 0.1rem solid rgba(64, 60, 60, 0.1);
+  border-right: 0.1rem solid rgba(255, 255, 255, 0.1);
 }
 
 .chatmsgs {
   height: 100%;
-  width: 65%; 
+  width: 65%;
 }

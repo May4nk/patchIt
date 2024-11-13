@@ -1,0 +1,75 @@
+.popularpostcard {
+  color: white;
+  margin: 0.5rem;
+  border-radius: 0.5rem;
+  width: 18vw;
+  height: 13vw;
+  cursor: pointer;
+  box-shadow: 3px 3px black;
+}
+
+.popularpostcardpix {
+  width: 100%;
+  height: 100%;
+  border-radius: 0.3rem;
+  opacity: 0.7;
+}
+
+.popularpostcardblog {
+  background: #131313;
+  border-radius: 0.3rem;
+  height: 100%;
+  width: 100%;
+}
+
+.popularpostcardblogcontent {
+  width: 100%;
+  height: 85%;
+  border-radius: 0.3rem;
+  opacity: 0.7;
+  font-size: 0.7vw;
+  font-weight: 410;
+  padding: 0 0.5rem;
+  color: rgba(255,255,255,0.4);
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  overflow: hidden;
+}
+
+.popularpostcardtext {
+  position: relative;
+  margin-top: -3vw;
+  padding: 0 0.5vw;
+  font-weight: 500;
+  font-size: 0.8vw;
+  background: rgba(0,0,0,0.1);
+  color: rgba(255,255,255,0.9);
+  word-wrap: break-word;
+  white-space: pre-wrap;
+}
+
+.popularpostcardblogtitle {
+  padding: 0.5rem;
+  font-weight: 500;
+  font-size: 0.9vw;
+  color: rgba(255,255,255,0.9);  
+}
+
+.popularpostcardpoll {
+  padding: 0.7rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.popularpostcardpolltext {
+  padding: 0.1rem 0.7rem;
+  font-size: 0.7vw;
+  width: 100%;
+  margin: 0.1rem 0;
+  color: black;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  background: linear-gradient(70deg, #4696d88a 10%, #35353513 90%);
+}

@@ -1,21 +1,34 @@
-import { listAll, findOne, filtersorttype } from "../../common/queries.js";
-import { posttagstype, posttagsfiltertype } from "./types/posttagstypes.js";
+import { listAll, findOne } from "../../utils/queriesutils.js";
+
+//types
 import { tagtype } from "./types/tagtypes.js";
 import { posttype } from "./types/posttypes.js";
+import { filtersorttype } from "../../utils/types.js";
+import { posttagstype, posttagsfiltertype } from "./types/posttagstypes.js";
 
 export const posttagsResolvers = {
   Query: {
-    listPostTags: async (parent: undefined, filter: filtersorttype<posttagsfiltertype>): Promise<posttagstype[]> => {
+    listPostTags: async (
+      _: undefined,
+      filter: filtersorttype<posttagsfiltertype>
+    ): Promise<posttagstype[]> => {
       try { 
-        const allPostTags: posttagstype[] = await listAll<posttagstype, posttagsfiltertype>("posts_tags_relation", filter);
+        const allPostTags: posttagstype[] = await listAll<
+          posttagstype,
+          posttagsfiltertype
+        >("posts_tags_relation", filter);
+
         return allPostTags;
       } catch(err) {
         throw err;
       }
     },
-    postTag: async (parent: undefined, { id }: { id: number }): Promise<posttagstype> => {
+    postTag: async (_: undefined, { id }: { id: number }): Promise<posttagstype> => {
       try {
-        const postTagById: posttagstype = await findOne<posttagstype, { id: number }>("posts_tags_relation", { "id": id });
+        const postTagById: posttagstype = await findOne<
+          posttagstype,
+          { id: number }
+        >("posts_tags_relation", { "id": id });
 
         if(!postTagById) throw new Error(`Post and tag relation not found with id: ${ id }`);
 

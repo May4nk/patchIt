@@ -1,191 +1,264 @@
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
 import db from "../../db.js";
-import { findOne } from "../../common/queries.js";
-import { userdatatype, remuserdatatype, rusertype, logindatatype, magiclinkdatatype } from "./types/usermutetypes.js";
+import { JwtPayload } from "jsonwebtoken";
+
+//utils
+import { findOne } from "../../utils/queriesutils.js";
+import { sendMail } from "../../utils/mailutils.js";
+import {
+  generateMagicToken,
+  generateTokens,
+  setCookies,
+  verifyToken,
+} from "../../utils/tokenutils.js";
+
+//types
+import { Request, Response } from "express";
 import { usertype } from "../resolvers/types/usertypes.js";
+import { rusertype, logintype, magiclinktype } from "./types/usermutetypes.js";
 
 export const userMutations = {
-  Mutation: {       
-    insertUser: async(parent: undefined, { data }: userdatatype): Promise<usertype> => {
+  Mutation: {
+    insertUser: async (
+      _: undefined,
+      { data }: { data: usertype }
+    ): Promise<usertype> => {
       try {
-        const userFound: usertype = await findOne<usertype, { email: string }>("users", { email: data.email });        
+        const userFound: usertype = await findOne<usertype, { email: string }>(
+          "users",
+          { email: data.email }
+        );
 
         if (userFound) {
-          throw Error(`User already Exists! Try forgetting password or Use another email.`);
+          throw new Error(`User already Exists! Try forgetting password.`);
         }
 
-        const encryptedPassword: string = await bcrypt.hash(data.password, 10);        
+        const encryptedPassword: string = await bcrypt.hash(data.password, 10);
 
         const [createUser]: usertype[] = await db("users")
           .insert({
             username: data.username,
             email: data.email,
-            password: encryptedPassword
+            password: encryptedPassword,
           })
           .returning("*");
 
-        return createUser;         
-        
-      } catch(err) {
-        throw err;
+        return createUser;
+      } catch (err) {
+        throw new Error("Inserting user failed");
       }
     },
-    updateUser: async(parent: undefined, { data }: userdatatype): Promise<usertype> => {
-      try {       
+    updateUser: async (
+      _: undefined,
+      { data }: { data: usertype }
+    ): Promise<usertype> => {
+      try {
+        const userFound: usertype = await findOne<usertype, { id: number }>(
+          "users",
+          { id: data.id }
+        );
 
-        const userFound: usertype = await findOne<usertype, { id: number }>("users", { "id": data.id });        
-
-        if(!userFound) {
-          throw Error("User don't Exist! Try Signing up for new user.");       
+        if (!userFound) {
+          throw Error("User don't Exist! Try Signing up for new user.");
         }
-        
-        const encryptedPassword: string = data?.password ? await bcrypt.hash(data?.password!, 10) : "";
-               
+
         const [updateUser]: usertype[] = await db("users")
           .where("id", userFound.id)
           .update(data)
           .returning("*");
-        
+
         return updateUser;
-      } catch(err) {
-        throw err
+      } catch (err) {
+        throw new Error("Something wrong with updating user");
       }
     },
-    loginUser: async(parent: undefined, { data }: logindatatype): Promise<usertype> => {
+    loginUser: async (
+      _: undefined,
+      { data }: { data: logintype },
+      { res }: { res: Response }
+    ): Promise<usertype> => {
       try {
-        
-        const userFound: usertype = await findOne<usertype, { username: string }>("users", { username: data.username });
+        const userFound: usertype = await findOne<
+          usertype,
+          { username: string }
+        >("users", { username: data.username });
 
-        if (userFound) {         
-          if(userFound.status === "ACTIVE") {                   
-            const validatePassword: boolean = await bcrypt.compare(data.password, userFound.password);
-
-            if (validatePassword) {
-              const token: string = jwt.sign({
-                user_id: userFound.id,
-                email: userFound.email,
-                username: userFound.username,
-                role_id: userFound.role
-              }, 
-              "PASS_STRING",
-              { expiresIn: "2h" });
-
-              const checkUserToken = await findOne("tokens", { user_id: userFound.id });
-
-              if(checkUserToken){
-                const updateTokenInDb = await db("tokens")
-                  .where("user_id", userFound.id)
-                  .update({
-                    token: token
-                  })
-              } else {
-                const insertTokenInDb = await db("tokens")
-                  .insert({
-                    token: token,
-                    user_id: userFound.id,
-                  });
-              }
-              
-              userFound.token = token;
-
-              return userFound;
-
-            } else {
-              throw Error("incorrect password");
-            }
-          } else {
-            throw Error("This account is deactivated");
-          }
-        } else {
-          throw Error("user not found");
-        }        
-      } catch(err) {
-        throw err;
-      }
-    },   
-    magicloginUser: async(parent: undefined, { data }: magiclinkdatatype): Promise<usertype> => {
-      try {
-        const userFound: usertype = await findOne<usertype, { email: string }>("users", { "email": data.email });
-
-        if(!userFound) {
-          const [createUser]: usertype[] = await db("users")
-            .insert({
-              username: `interestedTom${Math.random().toString(36).slice(2, 7)}`,
-              email: data.email,
-            })            
-            .returning("*");
-            
-          const token: string = jwt.sign(
-            {
-              user_id: createUser.id,
-              email: createUser.email,
-              username: createUser.username,
-              role_id: createUser.role
-            },
-            "PASS_STRING",
-            {
-              expiresIn: "2h"
-            }
-          );
-          
-          const insertTokenInDb = await db("tokens")
-            .insert({
-              token: token,
-              user_id: createUser.id,
-            });
-
-          createUser.token = token;
-
-          return createUser;
-
-        } else {
-                
-          const token: string = jwt.sign({
-            user_id: userFound.id,
-            email: userFound.email,
-            username: userFound.username,
-            role_id: userFound.role
-          },
-          "PASS_STRING",
-          { expiresIn: "2h" });
-
-          const checkUserToken = await findOne("tokens", { user_id: userFound.id });
-
-            if(checkUserToken) {
-              
-              const updateTokenInDb = await db("tokens")
-                .where({ user_id: userFound.id })
-                .update({ token: token });
-
-            } else {
-              const insertTokenInDb = await db("tokens")
-                .insert({ token: token, user_id: userFound.id, });
-            }
-
-            userFound.token = token;
-            return userFound;
+        if (!userFound) {
+          throw new Error("User don't exist. Try signing up for account");
         }
 
-      } catch(err) {
-        throw err;
-      }    
+        if (userFound.status !== "ACTIVE") {
+          throw new Error("User account is deactivated");
+        }
+
+        const validatePassword: boolean = await bcrypt.compare(
+          data.password,
+          userFound.password
+        );
+
+        if (!validatePassword) {
+          throw new Error("Invalid User credentials");
+        }
+
+        const { refreshToken, accessToken } = await generateTokens(userFound);
+        setCookies(res, refreshToken);
+
+        userFound.token = accessToken;
+
+        return userFound;
+      } catch (err) {
+        throw new Error(`Logging in user failed: ${err}`);
+      }
     },
-    removeUser: async(parent: undefined, { data }: remuserdatatype): Promise<rusertype> => {
+    magicloginUser: async (
+      _: undefined,
+      { data }: { data: magiclinktype }
+    ): Promise<string> => {
       try {
-        const userFound: usertype = await findOne<usertype, { id: number }>("users", { "id": data.id });
-        
-        if(!userFound) throw Error("User not found...");
-        
+        const userFound: usertype = await findOne<usertype, { email: string }>(
+          "users",
+          { email: data.email }
+        );
+
+        let magicUser: usertype;
+        if (!userFound) {
+          const magicUsername: string = `interestedTom${Math.random()
+            .toString(36)
+            .slice(2, 7)}`;
+
+          const magicUserPassword: string = await bcrypt.hash(
+            data.password,
+            10
+          );
+
+          [magicUser] = await db("users")
+            .insert({
+              email: data.email,
+              username: magicUsername,
+              password: magicUserPassword,
+              status: "INACTIVE",
+            })
+            .returning("*");
+        } else {
+          magicUser = userFound;
+        }
+
+        const magicToken = await generateMagicToken(data?.email);
+        const magicMessage = data?.message + magicToken;
+
+        await sendMail(data?.email, magicMessage);
+
+        return "Magic link sent successfully";
+      } catch (err) {
+        throw new Error(`Magic login failed: ${err}`);
+      }
+    },
+    changePassword: async (
+      _: undefined,
+      { data }: { data: usertype }
+    ): Promise<usertype> => {
+      try {
+        const userFound: usertype = await findOne<usertype, { id: number }>(
+          "users",
+          { id: data.id }
+        );
+
+        if (!userFound) {
+          throw Error("User don't Exist! Try Signing up for new user.");
+        }
+
+        const isPasswordValid: boolean = await bcrypt.compare(
+          data.password,
+          userFound.password
+        );
+
+        if (!isPasswordValid) {
+          throw new Error("Invalid Old password");
+        }
+
+        const newPassword: string = await bcrypt.hash(data.newPassword!, 10);
+
+        const [updateUserPassword]: usertype[] = await db("users")
+          .where("id", userFound.id)
+          .update({ password: newPassword })
+          .returning("*");
+
+        return updateUserPassword;
+      } catch (err) {
+        throw err;
+      }
+    },
+    logoutUser: async (
+      _: undefined,
+      { userId }: { userId: number },
+      { res }: { res: Response }
+    ): Promise<string> => {
+      try {
+        res.clearCookie("rToken");
+        await db("tokens").where("user_id", userId).del();
+
+        return "User logged Out";
+      } catch (err) {
+        throw new Error("Something wrong with user logging out");
+      }
+    },
+    refreshToken: async (
+      _: undefined,
+      args: undefined,
+      { req, res }: { req: Request; res: Response }
+    ): Promise<usertype> => {
+      try {
+        const { rToken } = req.cookies;
+
+        const userData: JwtPayload = verifyToken(
+          rToken,
+          process.env.REFRESH_TOKEN_SECRET!
+        ) as JwtPayload;
+
+        const userFound: usertype = await findOne<usertype, { id: number }>(
+          "users",
+          { id: userData.id }
+        );
+
+        if (!userFound) {
+          throw new Error("Invalid req: User not found");
+        }
+
+        const { accessToken, refreshToken } = await generateTokens(userFound);
+        setCookies(res, refreshToken);
+
+        userFound.token = accessToken;
+
+        return userFound;
+      } catch (err) {
+        throw new Error(`Token refresh failed: ${err}`);
+      }
+    },
+    removeUser: async (
+      _: undefined,
+      { data }: { data: rusertype },
+      { res }: { res: Response }
+    ): Promise<rusertype> => {
+      try {
+        const userFound: usertype = await findOne<usertype, { id: number }>(
+          "users",
+          { id: data.id }
+        );
+
+        if (!userFound) throw new Error("User not found...");
+
         const [deleteUser]: rusertype[] = await db("users")
           .where("id", userFound.id)
           .del()
           .returning("id");
-        
+
+        res.clearCookie("rToken");
+        await db("tokens").where("user_id", userFound.id).del().returning("*");
+
         return deleteUser;
-      } catch(err) {
-        throw err;
+      } catch (err) {
+        throw new Error("Error removing user");
       }
-    }
-  }
-}
+    },
+  },
+};

@@ -1,7 +1,9 @@
 import React from 'react';
+//components
+import Settingtab from '../../components/settings/Settingtab';
 //css & types
 import "./profilesettings.css";
-import { notificationsstatetype } from './profilesettingtypes';
+import { notificationsstatetype } from './types';
 interface notificationprops {
   notificationsState: notificationsstatetype;
   handleChange: (e: any, statename: string) => void;
@@ -14,174 +16,76 @@ function Notificationtab(notificationprops: notificationprops) {
     <div className="usetting">
       <div className="usettingtitle"> Notification Preferences </div>
       <div className="usettingtitlemeta"> Messages </div>
-      <div className="usettingitems">
-        <div className="usettingitemlabels">
-          <div className="usettingitemtitle"> Chat requests </div>
-        </div>
-        <div className="switch blue-text">
-          <label>
-            <input
-              type="checkbox"
-              className="blue-text"
-              name="chatreq"
-              checked={notificationsState.chatreq}
-              onChange={(e: any) => handleChange(e, "notifications")}
-            />
-            <span className="lever"></span>
-          </label>
-        </div>
-      </div>
+      <Settingtab
+        title={"Chat requests"}
+        type={"switch"}
+        name={"chatreq"}
+        value={notificationsState.chatreq}
+        handleChange={(e: any) => handleChange(e, "notifications")}
+      />
       <div className="usettingtitlemeta"> Activity </div>
-      <div className="usettingitems">
-        <div className="usettingitemlabels">
-          <div className="usettingitemtitle"> Mention of u/username </div>
-        </div>
-        <div className="switch blue-text">
-          <label>
-            <input
-              type="checkbox"
-              className="blue-text"
-              name="mentionusername"
-              checked={notificationsState.mentionusername}
-              onChange={(e: any) => handleChange(e, "notifications")}
-            />
-            <span className="lever"></span>
-          </label>
-        </div>
-      </div>
-      <div className="usettingitems">
-        <div className="usettingitemlabels">
-          <div className="usettingitemtitle"> Activity on your posts </div>
-          <div className="usettingitemmetatitle">
-            Any activity (upvotes, downvotes, comments) on your done post.
-          </div>
-        </div>
-        <div className="switch blue-text">
-          <label>
-            <input
-              type="checkbox"
-              className="blue-text"
-              name="activityonpost"
-              checked={notificationsState.activityonpost}
-              onChange={(e: any) => handleChange(e, "notifications")}
-            />
-            <span className="lever"></span>
-          </label>
-        </div>
-      </div>
-      <div className="usettingitems">
-        <div className="usettingitemlabels">
-          <div className="usettingitemtitle"> Activity on your comment </div>
-          <div className="usettingitemmetatitle">
-            Any activity (upvotes, replies) on your done comment.
-          </div>
-        </div>
-        <div className="switch blue-text">
-          <label>
-            <input
-              type="checkbox"
-              className="blue-text"
-              name="activityoncmnt"
-              checked={notificationsState.activityoncmnt}
-              onChange={(e: any) => handleChange(e, "notifications")}
-            />
-            <span className="lever"></span>
-          </label>
-        </div>
-      </div>
-      <div className="usettingitems">
-        <div className="usettingitemlabels">
-          <div className="usettingitemtitle"> Activity on your followed post </div>
-          <div className="usettingitemmetatitle">
-            Any activity (upvotes, downvotes, comments) on your followed post.
-          </div>
-        </div>
-        <div className="switch blue-text">
-          <label>
-            <input
-              type="checkbox"
-              className="blue-text"
-              name="activityonpostfollowed"
-              checked={notificationsState.activityonpostfollowed}
-              onChange={(e: any) => handleChange(e, "notifications")}
-            />
-            <span className="lever"></span>
-          </label>
-        </div>
-      </div>
-      <div className="usettingitems">
-        <div className="usettingitemlabels">
-          <div className="usettingitemtitle"> Activity on your followed community </div>
-          <div className="usettingitemmetatitle">
-            Any activity (new posts, new rules, new pinned posts, new announcements) in your followed community.
-          </div>
-        </div>
-        <div className="switch blue-text">
-          <label>
-            <input
-              type="checkbox"
-              className="blue-text"
-              name="communityfollowed"
-              checked={notificationsState.communityfollowed}
-              onChange={(e: any) => handleChange(e, "notifications")}
-            />
-            <span className="lever"></span>
-          </label>
-        </div>
-      </div>
-      <div className="usettingitems">
-        <div className="usettingitemlabels">
-          <div className="usettingitemtitle"> Patcoins you receive </div>
-        </div>
-        <div className="switch blue-text">
-          <label>
-            <input
-              type="checkbox"
-              className="blue-text"
-              name="patcoinreceived"
-              checked={notificationsState.patcoinreceived}
-              onChange={(e: any) => handleChange(e, "notifications")}
-            />
-            <span className="lever"></span>
-          </label>
-        </div>
-      </div>
+      <Settingtab
+        title={"Mention of u/username"}
+        type={"switch"}
+        name={"mentionusername"}
+        value={notificationsState.mentionusername}
+        handleChange={(e: any) => handleChange(e, "notifications")}
+      />
+      <Settingtab
+        title={"Activity on your posts"}
+        type={"switch"}
+        metatitle={"Any activity (upvotes, downvotes, comments) on your done post."}
+        name={"activityonpost"}
+        value={notificationsState.activityonpost}
+        handleChange={(e: any) => handleChange(e, "notifications")}
+      />
+      <Settingtab
+        title={"Activity on your comment"}
+        type={"switch"}
+        metatitle={"Any activity (upvotes, replies) on your done comment."}
+        name={"activityoncmnt"}
+        value={notificationsState.activityoncmnt}
+        handleChange={(e: any) => handleChange(e, "notifications")}
+      />
+      <Settingtab
+        title={"Activity on your followed post"}
+        type={"switch"}
+        metatitle={"Any activity (upvotes, downvotes, comments) on your followed post."}
+        name="activityonpostfollowed"
+        value={notificationsState.activityonpostfollowed}
+        handleChange={(e: any) => handleChange(e, "notifications")}
+      />
+      <Settingtab
+        title={"Activity on your followed community"}
+        type={"switch"}
+        metatitle={"Any activity (new posts, new rules, new pinned posts, new announcements) in your followed community."}
+        name={"communityfollowed"}
+        value={notificationsState.communityfollowed}
+        handleChange={(e: any) => handleChange(e, "notifications")}
+      />
+      <Settingtab
+        title={"Patcoins you receive"}
+        type={"switch"}
+        name={"patcoinreceived"}
+        value={notificationsState.patcoinreceived}
+        handleChange={(e: any) => handleChange(e, "notifications")}
+      />
       <div className="usettingtitlemeta"> Updates </div>
-      <div className="usettingitems">
-        <div className="usettingitemlabels">
-          <div className="usettingitemtitle"> Birthday </div>
-          <div className="usettingitemmetatitle"> Any follower or community birth/created date. </div>
-        </div>
-        <div className="switch blue-text">
-          <label>
-            <input
-              type="checkbox"
-              className="blue-text"
-              name="birthday"
-              checked={notificationsState.birthday}
-              onChange={(e: any) => handleChange(e, "notifications")}
-            />
-            <span className="lever"></span>
-          </label>
-        </div>
-      </div>
-      <div className="usettingitems">
-        <div className="usettingitemlabels">
-          <div className="usettingitemtitle"> Patch announcements </div>
-        </div>
-        <div className="switch blue-text">
-          <label>
-            <input
-              type="checkbox"
-              className="blue-text"
-              name="announcements"
-              checked={notificationsState.announcements}
-              onChange={(e: any) => handleChange(e, "notifications")}
-            />
-            <span className="lever"></span>
-          </label>
-        </div>
-      </div>
+      <Settingtab
+        title={"Birthday"}
+        type={"switch"}
+        metatitle={"Any follower or community birth/created date."}
+        name="birthday"
+        value={notificationsState.birthday}
+        handleChange={(e: any) => handleChange(e, "notifications")}
+      />
+      <Settingtab
+        title={"Patch announcements"}
+        type={"switch"}
+        name={"announcements"}
+        value={notificationsState.announcements}
+        handleChange={(e: any) => handleChange(e, "notifications")}
+      />
     </div>
   )
 }

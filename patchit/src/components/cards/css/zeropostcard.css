@@ -1,0 +1,104 @@
+.zeropostcard {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  flex-direction: column;
+  width: 100%;
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.1rem;
+  background: #0a0a0b70;
+}
+
+.zeropostcardheader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  width: 100%;
+  background: #29333708;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  padding: 1rem;
+  border-top-left-radius: 0.5rem;
+  border-top-right-radius: 0.5rem;
+}
+
+.zeropostcardheadertitle {
+  width: 100%;
+  font-weight: 500;
+  font-size: 1vw !important;
+  text-transform: capitalize;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  max-width: 50vw;
+}
+
+.zeropostcardicn {
+  margin-left: auto;
+  font-size: 1.7vw;
+}
+
+.zeropostcardcontent {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  width: 100%;
+  padding: 0.3rem 1rem;
+  border-bottom-left-radius: 0.5rem;
+  border-bottom-right-radius: 0.5rem;
+}
+
+.zeropostcardheading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  flex-direction: column;
+  background: #292f312e;
+  color: #cfd8dc;
+  cursor: pointer;
+  width: 100%;
+  border-radius: 0.5rem;
+  padding: 0.7rem 2rem;
+  margin-top: 0.5rem;
+}
+
+.zeropostcardheadingtitle {
+  font-weight: 450;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  text-transform: capitalize;
+  width: 100%;
+}
+
+.zeropostheadingunlockitem {
+  margin-left: auto;
+  animation-name: animatedicns;
+  animation-duration: 4s;
+  animation-iteration-count: 2;
+  color: #2196F3;
+  font-size: 1.7vw !important;
+}
+
+.zeropostcardheadingcontent {
+  color: grey;
+  font-size: 0.9vw;
+  text-transform: capitalize;
+}
+
+.zeropostcreatebtn {
+  border-radius: 1rem;
+  background: #232c31;
+  color: white;
+  margin-top: 0.5rem;
+  font-size: 0.9vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.4rem 0.7rem;
+  text-transform: capitalize;
+}
+
+.zeropostcreatebtn:hover {
+  background: #455a64;
+}

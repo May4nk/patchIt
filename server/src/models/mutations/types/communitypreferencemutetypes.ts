@@ -1,6 +1,6 @@
 export interface communitypreferencetype {
   id: number;
-  community_name: string; 
+  community_name: string;
   nsfw: boolean;
   allowppltofollow: boolean;
   newuserreq: boolean;
@@ -9,18 +9,10 @@ export interface communitypreferencetype {
   reportonuser: boolean;
   activityincommunity: boolean;
   birthday: boolean;
+  handlers: string;
 }
 
 export type rcommunitypreferencetype = {
   community_name: string;
   id: number;
-}
-
-export interface communitypreferencedatatype {
-  data: communitypreferencetype;
-}
-
-export interface remcommunitypreferencedatatype {
-  data: rcommunitypreferencetype;
-}
-
+};

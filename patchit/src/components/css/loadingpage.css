@@ -8,7 +8,7 @@
   flex-direction: column;
 }
 
-.loadinglogo1 {
+.loadinglogowrapper {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -24,11 +24,11 @@
   height: 10.7vw;
 }
 
-.loadingtext { 
+.loadingtext {
   color: rgba(255, 255, 255, 0.8);
   margin-top: 0.5rem;
   margin-left: 0.5rem;
-  font-size: 0.95vw;
+  font-size: 1vw;
   font-weight: 500;
   font-family: GillSans, Calibri, Trebuchet, sans-serif;
 }
@@ -36,10 +36,10 @@
 .loadingmetatext {
   color: rgba(255, 255, 255, 0.4);
   font-weight: 450;
-  font-size: 0.8vw;
+  font-size: 0.9vw;
 }
 
 .btn-floating:hover {
   background: #44444445;
-  cursor: default !important; 
+  cursor: default !important;
 }

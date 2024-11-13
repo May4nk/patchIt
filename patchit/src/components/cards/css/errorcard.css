@@ -1,0 +1,59 @@
+.errorcard,
+.infocard,
+.msgcard {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  width: 25%;
+  max-width: 40%;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  margin-right: 1rem;
+  z-index: 1000;
+  line-height: 16px;
+  border-radius: 0.5rem;
+  background-size: 27% !important;
+  background-repeat: no-repeat !important;
+  background-position: right !important;
+}
+
+.errorcard {
+  color: black;
+  background-color: #ef9a9a;
+  background-image: url("../../../img/angry_panda.png");
+}
+
+.msgcard {
+  color: white;
+  background-color: #2d4957e0;
+  background-image: url("../../../img/happy_panda.png");
+}
+
+.infocard {
+  color: black;
+  background-color: rgb(169, 190, 194);
+  background-image: url("../../../img/info_panda.png");
+}
+
+.errorcardheader {
+  font-size: 1.2vw;
+  font-weight: 450;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.erroricn {
+  padding-right: 0.7rem;
+  font-size: 1.7vw !important;
+}
+
+.errorcardcontent {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  font-weight: 430;
+  font-size: 1vw;
+  margin: 0.5rem;
+  text-transform: capitalize;
+}

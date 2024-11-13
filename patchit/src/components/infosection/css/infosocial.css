@@ -1,0 +1,18 @@
+.infosocialicnwrapper {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 0.1rem 0.5rem 0.3rem 0.5rem;
+}
+
+.infosocialtxt {
+  font-size: 0.8vw;
+  font-weight: 450;
+  padding: 0.4rem 0 0 0.5rem;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.infosocialimg {
+  height: 3.7vw;
+  cursor: pointer;
+}

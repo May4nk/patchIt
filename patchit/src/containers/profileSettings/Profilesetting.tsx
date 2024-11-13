@@ -1,21 +1,29 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { useNavigate, useParams } from "react-router-dom";
-import { useAuth, useLogged } from "../../common/hooks/useAuth";
+
+import { changeToBase64 } from "../../utils/opx";
+import { useAuth, useLogged } from "../../utils/hooks/useAuth";
+
 //components
 import Chattab from "./Chattab";
 import Feedtab from "./Feedtab";
 import Privacytab from "./Privacytab";
 import Accounttab from "./Accounttab";
 import Profiletab from "./Profiletab";
+import Modal from "../../components/Modal";
 import Notificationtab from "./Notificationtab";
 import Htabs from "../../components/html/Htabs";
-import Modalcomponent from "../../components/Modalcomponent";
+import Errorcard from "../../components/cards/Errorcard";
+
 //queries
-import { GETUSERPREFERENCE, UPSERTUSERPREFERENCES } from "../queries/profilesetting";
+import { UPDATEUSER } from "../../utils/loginqueries";
+import { GETUSERPREFERENCE, UPSERTUSERPREFERENCES } from "./queries";
+
 //css & types
 import "../css/main.css";
 import "./profilesettings.css";
+import { ERRORTYPE } from "../../utils/main/types";
 import { settingTabs } from "../../constants/const";
 import { authcontexttype, loggedusercontexttype } from "../../context/types";
 import {
@@ -25,40 +33,44 @@ import {
   privacystatetype,
   chatstatetype,
   userdatatype,
-  modalstatetype,
   userprofilestate,
-} from "./profilesettingtypes.js"
+  profilesettingtabs,
+  handleupdatetype,
+  handleuserupdatetype,
+} from "./types.js"
 
 const Profilesetting = () => {
   const navigate = useNavigate();
   const { uname } = useParams();
-  const { user }: authcontexttype = useAuth();
+  const profileRef = useRef<HTMLInputElement | null>(null);
+  const wallpicRef = useRef<HTMLInputElement | null>(null);
+
+  const { user, logout }: authcontexttype = useAuth();
   const { loggedUser }: loggedusercontexttype = useLogged();
-  const userId: number | null = user && (user["user_id"] | user["id"]);
+  const userId: number | null = user && Number(user["id"]);
   const username: string | null = user && (user["username"]);
   const usettings: loggedusercontexttype["loggedUser"] = user && loggedUser;
+
   //queries
+  const [updateUser] = useMutation(UPDATEUSER);
   const [getUserSettings] = useLazyQuery(GETUSERPREFERENCE);
   const [updateUserSettings] = useMutation(UPSERTUSERPREFERENCES);
+
   //states
-  const [show, setShow] = useState<boolean>(false);
+  const [message, setMessage] = useState<ERRORTYPE>({ status: 0, message: "", show: false });
+  const [deactivateAcc, setDeactivateAcc] = useState<boolean>(false);
   const [updateState, setUpdateState] = useState<boolean>(false);
-  const [userOption, setUserOption] = useState<string>("account");
+  const [userOption, setUserOption] = useState<profilesettingtabs>("account");
   const [chatState, setChatState] = useState<chatstatetype>({ sendmsg: "" });
   const [feedsState, setFeedState] = useState<feedsstatetype>({ show_nsfw: false });
-  const [modalState, setModalState] = useState<modalstatetype>({
-    txt: "",
-    btntxt: "",
-    placeholder: "",
-    toUpdate: ""
-  });
   const [userData, setUserData] = useState<userdatatype>({
     email: "",
-    username: "",
-    status: "",
     about: "",
+    username: "",
+    privacy: "PUBLIC",
     profile_pic: "",
-    background_pic: ""
+    background_pic: "",
+    social_links: ""
   });
   const [profileState, setProfileState] = useState<profilestatetype>({
     nsfw: false,
@@ -67,23 +79,23 @@ const Profilesetting = () => {
   });
   const [notificationsState, setNotificationState] = useState<notificationsstatetype>({
     chatreq: false,
-    mentionusername: false,
-    activityonpost: false,
-    activityoncmnt: false,
-    activityonpostfollowed: false,
-    patcoinreceived: false,
-    communityfollowed: false,
     birthday: false,
     announcements: false,
+    activityonpost: false,
+    activityoncmnt: false,
+    patcoinreceived: false,
+    mentionusername: false,
+    communityfollowed: false,
+    activityonpostfollowed: false,
   });
   const [privacyState, setPrivacyState] = useState<privacystatetype>({
+    blocked: "",
     auth_twofactor: false,
     searchshowprofile: false,
-    blocked: [],
   });
+
   //handlers
   const handleChange: (e: any, statename: string) => void = (e: any, statename: string) => {
-    setUpdateState(true);
     if (statename === "profile") {
       setProfileState({
         ...profileState,
@@ -104,60 +116,139 @@ const Profilesetting = () => {
         ...privacyState,
         [e.target.name]: e.target.checked
       });
+    };
+    setUpdateState(true);
+  };
+
+  const update: handleupdatetype = async (toUpdate: string, value: string) => {
+    try {
+      await updateUser({
+        variables: {
+          data: {
+            id: userId,
+            [toUpdate]: value
+          }
+        },
+      });
+
+      return "Settings updated  successfully";
+
+    } catch (err) {
+      throw Error("Something went wrong: Setting update failed. Try again later");
     }
   }
 
-  const handleModalState: (mstate: modalstatetype) => void = (mstate: modalstatetype) => {
-    setShow(true);
-    setModalState({
-      ...modalState,
-      ...mstate,
-    })
-  }
+  const handleUserUpdate: handleuserupdatetype = async (toUpdate: string, val?: string) => {
+    try {
+      if (!userId) return;
 
-  const handleUpdateChanges: () => void = () => {
-    updateUserSettings({
-      variables: {
-        data: {
-          user_id: userId,
-          ...privacyState,
-          blocked: JSON.stringify(privacyState.blocked),
-          ...notificationsState,
-          ...feedsState,
-          ...profileState
+      if (toUpdate === "profile_pic" || toUpdate === "background_pic") {
+        const profileFiles = profileRef?.current?.files;
+        const wallpicFiles = wallpicRef?.current?.files;
+
+        const picBlob = (profileFiles && profileFiles.length > 0 ? profileFiles[0] : null) ||
+          (wallpicFiles && wallpicFiles.length > 0 ? wallpicFiles[0] : null);
+
+        if (picBlob) {
+          const pic = await changeToBase64(picBlob);
+          setUserData({ ...userData, [toUpdate]: pic });
+
+          try {
+            const msg = await update(toUpdate, pic);
+            setMessage({ status: 200, message: msg, show: true });
+          } catch (err) {
+            setMessage({
+              show: true,
+              status: 500,
+              message: "Something went wrong: Pic update failed",
+            });
+          }
         }
+      } else {
+        const msg = await update(toUpdate, val ? val : userData[toUpdate]);
+        setMessage({ status: 200, message: msg, show: true });
       }
-    }).then(() => {
-      setUpdateState(false);
-    })
+    } catch (err) {
+      setMessage({
+        show: true,
+        status: 500,
+        message: "Something went wrong: User update failed",
+      });
+    }
+  };
+
+  const handleDeleteAcc: () => Promise<void> = async () => {
+    try {
+      await update("status", "INACTIVE");
+      setDeactivateAcc(false);
+      logout();
+    } catch (err) {
+      setDeactivateAcc(false);
+      setMessage({
+        show: true,
+        status: 500,
+        message: "Something went wrong DELETING your account. Try again later",
+      });
+    }
+  };
+
+  const handleUpdateChanges: () => Promise<void> = async () => {
+    try {
+      await updateUserSettings({
+        variables: {
+          data: {
+            user_id: userId,
+            ...privacyState,
+            ...notificationsState,
+            ...feedsState,
+            ...profileState,
+            blocked: JSON.stringify(privacyState.blocked),
+          }
+        },
+        onCompleted: () => {
+          setMessage({
+            status: 200,
+            show: true,
+            message: "User Settings updated",
+          });
+          setUpdateState(false);
+        }
+      })
+    } catch (err) {
+      setMessage({
+        status: 500,
+        show: true,
+        message: "Something went wrong: Settings update failed",
+      });
+    }
   }
 
-  const handleUserOptions: (uoption: string) => void = (uoption) => {
+  const handleUserOptions: (uoption: profilesettingtabs) => void = (uoption: profilesettingtabs) => {
     document.querySelector(`.tab${userOption}`)?.classList?.remove("selected");
     setUserOption(uoption);
     document.querySelector(`.tab${uoption}`)?.classList?.add("selected");
   }
 
   useEffect(() => {
+    if (!user || username !== uname) {
+      navigate("/home");
+      return;
+    }
+
+    handleUserOptions("account");
     getUserSettings({
       variables: {
         userId: userId!
-      }
-    }).then(({ data }: { data: { userpreference: { id: number, user_id: userprofilestate } } }) => {
-      if (data) {
-        const userprofile: userprofilestate = data?.userpreference?.user_id;
-        if (userprofile) {
-          setUserData({
-            email: userprofile?.email,
-            username: userprofile?.username,
-            status: userprofile?.status,
-            about: userprofile?.about,
-            profile_pic: userprofile?.profile_pic,
-            background_pic: userprofile?.background_pic,
-          })
+      },
+      onCompleted: ({ userpreference }: { userpreference: { user_id: userprofilestate } }) => {
+        if (userpreference.user_id) {
+          const userprofile: userprofilestate = userpreference?.user_id;
+          if (userprofile) {
+            setUserData(userprofile);
+          }
         }
       }
-    })
+    });
   }, []);
 
   useEffect(() => {
@@ -165,9 +256,9 @@ const Profilesetting = () => {
       setChatState({ sendmsg: usettings?.sendmsg! });
       setFeedState({ show_nsfw: usettings?.show_nsfw! });
       setPrivacyState({
+        blocked: usettings.blocked!,
         auth_twofactor: usettings?.auth_twofactor!,
         searchshowprofile: usettings?.searchshowprofile!,
-        blocked: usettings?.blocked ? JSON.parse(usettings?.blocked) : usettings?.blocked,
       });
       setProfileState({
         nsfw: usettings?.nsfw!,
@@ -186,15 +277,7 @@ const Profilesetting = () => {
         announcements: usettings?.announcements!,
       });
     }
-  }, [usettings])
-
-  useEffect(() => {
-    if (!user || username !== uname) {
-      navigate("/home");
-    } else {
-      handleUserOptions("account");
-    }
-  }, [username, user, uname]);
+  }, [usettings]);
 
   return (
     <>
@@ -203,43 +286,40 @@ const Profilesetting = () => {
         User Preferences
       </div>
       <div className="useroverview">
-        {settingTabs.map((tab: string, idx: number) => (
+        {settingTabs.map((tab: profilesettingtabs, idx: number) => (
           <Htabs
+            key={idx}
             tabname={tab}
             handleClick={() => handleUserOptions(tab)}
-            key={idx}
           />
         ))}
         {updateState && (
-          <div className="usettingupdatechangesbtn waves-effect waves-light black-text grey"
+          <div
             onClick={handleUpdateChanges}
+            className="usettingupdatechangesbtn waves-effect waves-light black-text grey lighten-2"
           >
-            Update
+            Apply
           </div>
         )}
-        <Modalcomponent
-          showModal={show}
-          btntxt={modalState.btntxt}
-          setShowModal={setShow}
-          txt={modalState.txt}
-          toUpdate={modalState.toUpdate}
-          placeholder={modalState.placeholder}
-          setUserData={setUserData}
-          userData={userData}
-        />
       </div>
       <div className="flexy">
         {userOption === "account" ? (
           <Accounttab
             userData={userData}
-            handleModalState={handleModalState}
+            handleUpdate={update}
+            setMessage={setMessage}
+            setUserData={setUserData}
+            setDeactivateAcc={setDeactivateAcc}
           />
         ) : userOption === "profile" ? (
           <Profiletab
+            userData={userData}
+            profileRef={profileRef}
+            wallpicRef={wallpicRef}
+            setUserData={setUserData}
             profileState={profileState}
             handleChange={handleChange}
-            handleModalState={handleModalState}
-            userData={userData}
+            handleUserUpdate={handleUserUpdate}
           />
         ) : userOption === "privacy" ? (
           <Privacytab
@@ -263,6 +343,19 @@ const Profilesetting = () => {
           />
         )}
       </div>
+      {deactivateAcc && (
+        <Modal
+          btntxt={"Delete"}
+          head={"Delete Account"}
+          txt={"Are you sure, you want to DELETE your account?"}
+          showModal={deactivateAcc}
+          handleUpdate={handleDeleteAcc}
+          handleClose={() => setDeactivateAcc(false)}
+        />
+      )}
+      {message && (
+        <Errorcard message={message} />
+      )}
     </>
   );
 }

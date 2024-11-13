@@ -1,0 +1,67 @@
+.postimage {
+  height: 100%;
+  position: relative;
+  width: 100%;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.postpic {
+  max-height: 100%;
+  max-width: 100%;
+}
+
+.totalimg {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 0.5rem;
+  font-size: 0.7vw;
+  padding: 0.1rem 0.3rem;
+  color: black;
+  font-weight: 500;
+}
+
+.rightimagebutton,
+.leftimagebutton {
+  position: absolute;
+  bottom: 50%;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  font-size: 1.7vw;
+}
+
+.rightimagebutton {
+  right: 0.5rem;
+}
+
+.leftimagebutton {
+  left: 0.5rem;
+}
+
+.leftimagebutton:hover,
+.rightimagebutton:hover {
+  background: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+}
+
+.post_caption {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  color: rgba(255, 255, 255, 0.7);
+  background: rgba(0, 0, 0, 0.1);
+  bottom: 1vh;
+  border-radius: 1.5rem;
+  font-size: 1vw;
+  font-weight: 500;
+}
+
+.post_caption:hover {
+  color: white;
+  background: rgba(0, 0, 0, 0.3);
+}

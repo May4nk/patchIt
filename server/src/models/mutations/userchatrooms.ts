@@ -1,48 +1,78 @@
 import db from "../../db.js";
-import { findOne } from "../../common/queries.js";
-import { userchatroomdatatype, remuserchatroomdatatype, ruserchatroomtype } from "./types/userchatroommutetypes.js";
+import { findOne } from "../../utils/queriesutils.js";
+
+// types
 import { userchatroomtype } from "../resolvers/types/userchatroomtypes.js";
+import {
+  remuserchatroomdatatype,
+  userchatroomdatatype,
+  rawuserchatroomtype,
+  ruserchatroomtype,
+} from "./types/userchatroommutetypes.js";
 
 export const userchatroomMutations = {
   Mutation: {
-    insertUserChatroom: async(parent: undefined, { data }: userchatroomdatatype, { pubsub }: any ): Promise<userchatroomtype[]> => {
+    insertUserChatroom: async (
+      _: undefined,
+      { data }: userchatroomdatatype,
+      { pubsub }: any
+    ): Promise<userchatroomtype[]> => {
       try {
-        const createUserChatroom: userchatroomtype[] = await db.batchInsert("user_chatrooms", data)      
-          .returning("*");       
-        
+        const createUserChatroom: userchatroomtype[] = await db
+          .batchInsert("user_chatrooms", data)
+          .returning("*");
+
         pubsub.publish("NEWUSERCHATROOM", createUserChatroom);
 
-        return createUserChatroom;                
-      } catch(err) {
+        return createUserChatroom;
+      } catch (err) {
         throw err;
       }
     },
-    removeUserChatroom: async(parent: undefined, { data }: remuserchatroomdatatype): Promise<ruserchatroomtype> => {
+    removeUserChatroom: async (
+      _: undefined,
+      { data }: remuserchatroomdatatype
+    ): Promise<ruserchatroomtype> => {
       try {
-        const foundUserChatroom: userchatroomtype = await findOne<userchatroomtype, { id: number }>("user_chatrooms", { "id": data.id });
-        
-        if(!foundUserChatroom) throw new Error("User Chat room not found...");
-        
-        const [deleteUserChatroom]: ruserchatroomtype[] = await db("user_chatrooms")
+        const foundUserChatroom: userchatroomtype = await findOne<
+          userchatroomtype,
+          { id: number }
+        >("user_chatrooms", { id: data.id });
+
+        if (!foundUserChatroom) throw new Error("User Chat room not found...");
+
+        const [deleteUserChatroom]: ruserchatroomtype[] = await db(
+          "user_chatrooms"
+        )
           .where("id", foundUserChatroom.id)
           .del()
-          .returning("id");       
+          .returning("id");
 
         return deleteUserChatroom;
-      } catch(err) {
+      } catch (err) {
         throw err;
       }
-    }
+    },
   },
   Subscription: {
-    newUserChatroom : {
-      subscribe: async(parent: undefined, args: undefined, { pubsub }: any) => {
-        return pubsub.asyncIterator('NEWUSERCHATROOM');
+    newUserChatroom: {
+      subscribe: (_: undefined, args: undefined, { pubsub }: any) => {
+        return pubsub.asyncIterator("NEWUSERCHATROOM");
       },
-      resolve: (payload: userchatroomtype[], { userId }: { userId: number }) => {
-        const re: userchatroomtype[] = payload.filter((load: any) => load.user_id !== +userId);
-        return re;
-      }
-    }
-  }    
-}
+      resolve: (
+        payload: rawuserchatroomtype[],
+        { userId }: { userId: number }
+      ) => {
+        const chatroomUsers = payload.filter(
+          (chatroom: rawuserchatroomtype) => chatroom.user_id === userId
+        );
+
+        if (chatroomUsers.length === 0) {
+          return null;
+        }
+
+        return chatroomUsers[0];
+      },
+    },
+  },
+};

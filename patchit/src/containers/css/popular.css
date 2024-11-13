@@ -1,23 +1,21 @@
-.contenttitle {
+.popularpagetitle {
   margin-top: 0.5rem;
   padding-left: 1.7rem;
   color: grey;
   font-size: 1vw;
 }
 
-.contentfilter {
+.popularpagecards {
   display: flex;
   width: 98%;
-  min-height: 13rem;  
+  min-height: 11vw;
   justify-content: flex-start;
 }
 
-@media  ( min-width: 600px) and (max-width: 800px) {
-  .contentfilter {
+@media (min-width: 600px) and (max-width: 800px) {
+  .popularpagecards {
     display: flex;
     width: 98%;
-    min-height: 10rem;  
     justify-content: flex-start;
   }
 }
-

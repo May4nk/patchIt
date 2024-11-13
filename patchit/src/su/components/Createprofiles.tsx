@@ -7,7 +7,7 @@ import Askinput from "../../components/html/Askinput";
 import "./css/createprofile.css";
 
 interface createprofileprops {
-  showcreateprofile : boolean;
+  showcreateprofile: boolean;
   setShowcreateprofile: any;
   ttab: string;
   setProfile?: any;
@@ -17,12 +17,12 @@ const Createprofiles = (createprofileprops: createprofileprops) => {
   //props
   const { showcreateprofile, setShowcreateprofile, ttab, setProfile } = createprofileprops;
   const show = showcreateprofile ? "block" : "none";
-  
+
   const [userProfile, setUserProfile] = useState({ email: "", dob: "", username: "", status: "", password: "" });
 
   const statusData = [
-    { label: "ACTIVE", value:"ACTIVE" },
-    { label: "INACTIVE", value:"INACTIVE" }
+    { label: "ACTIVE", value: "ACTIVE" },
+    { label: "INACTIVE", value: "INACTIVE" }
   ]
 
   //handlers
@@ -30,7 +30,7 @@ const Createprofiles = (createprofileprops: createprofileprops) => {
     setShowcreateprofile(false);
     setProfile("");
   }
-  
+
   const handleChangesucreateprofile = (e: any) => {
     setUserProfile({
       ...userProfile,
@@ -38,23 +38,23 @@ const Createprofiles = (createprofileprops: createprofileprops) => {
     })
   }
 
-  return(
-    <div className={ show }> 
+  return (
+    <div className={show}>
       <div className="overlay">
         <div className="sucreateprofileform">
           <div className="sucreateprofiletitle blue-text">
-             add { ttab }
-            <i className="material-icons handlecloseicn" onClick={ handleClose }> close </i>
+            add {ttab}
+            <i className="material-icons handlecloseicn" onClick={handleClose}> close </i>
           </div>
-          <div className="sucreateprofilecontent">            
-            {[ ...Array(Math.ceil(Object.keys(userProfile).length/2)) ].map((d: any ,i: number) => (
-              <div className="sucreateprofileinputs" key={ i }>
-                { Object.keys(userProfile).slice(i+i, (i*2)+2).map((obj: any, idx: number) => (
-                  <div className={ idx % 2 === 0 ? "sucreateprofilehalflinput" : "sucreateprofilehalfrinput"} key={idx}>
-                    <Askinput name={"username"} placeholder={`${obj}`} maxlength={30} prefix={"u/"} onChange={ handleChangesucreateprofile } />
+          <div className="sucreateprofilecontent">
+            {[...Array(Math.ceil(Object.keys(userProfile).length / 2))].map((d: any, i: number) => (
+              <div className="sucreateprofileinputs" key={i}>
+                {Object.keys(userProfile).slice(i + i, (i * 2) + 2).map((obj: any, idx: number) => (
+                  <div className={idx % 2 === 0 ? "sucreateprofilehalflinput" : "sucreateprofilehalfrinput"} key={idx}>
+                    <Askinput name={"username"} placeholder={`${obj}`} maxlength={30} prefixes={["u/"]} onChange={handleChangesucreateprofile} />
                   </div>
                 ))}
-              </div>                          
+              </div>
             ))}
           </div>
           <div className="sucreateprofilefooter">
@@ -63,7 +63,7 @@ const Createprofiles = (createprofileprops: createprofileprops) => {
               <i className="material-icons right tiny">send</i>
             </button>
           </div>
-       </div>
+        </div>
       </div>
     </div>
   )

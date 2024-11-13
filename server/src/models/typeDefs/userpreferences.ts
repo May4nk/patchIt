@@ -49,6 +49,7 @@ export const userpreferencesTypeDefs = `
     auth_twofactor: Boolean
     blocked: String
   }
+
   input UserPreferencesfilterInput {
     user_id: Int 
     nsfw: Boolean
@@ -69,6 +70,7 @@ export const userpreferencesTypeDefs = `
     searchshowprofile: Boolean
     auth_twofactor: Boolean
   }
+  
   input RemoveUserPreferencesInput {
     user_id: Int!
   }

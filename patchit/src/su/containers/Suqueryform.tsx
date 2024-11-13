@@ -7,7 +7,7 @@ import Askinput from "../../components/html/Askinput";
 import "./css/suqueryform.css";
 import { suqueryformprops, tablecolumntype, wheretype } from "../types";
 import { droppertype } from "../../components/html/patdrop/types";
-import { 
+import {
   defaultprofile,
   columnprofile,
   orderprofile,
@@ -19,10 +19,10 @@ import {
   categoryfiltercolumns,
 } from "../../constants/patdropconst";
 
-const Suqueryform = (suqueryformprops: suqueryformprops) => { 
+const Suqueryform = (suqueryformprops: suqueryformprops) => {
   const {
     tablename,
-    handleSubmit,     
+    handleSubmit,
     where,
     setWhere,
     limitState,
@@ -34,33 +34,33 @@ const Suqueryform = (suqueryformprops: suqueryformprops) => {
     orderby,
     setOrderBy
   } = suqueryformprops;
-  
+
   const tablecolumns: tablecolumntype = {
     "roles": rolefiltercolumns,
     "posts": postfiltercolumns,
     "users": userfiltercolumns,
     "chats": chatfiltercolumns,
     "communities": communityfiltercolumns,
-    "categories": categoryfiltercolumns,    
+    "categories": categoryfiltercolumns,
   }
-  
+
   const [current, setCurrent] = useState(0);
 
   const orderdroppers: droppertype[] = [
-    { value: "ascending",  state: "clicked", event: () => handleOrder("order", "asec")},
-    { value: "descending",  state: "clicked", event: () => handleOrder("order", "desc")},
+    { title: "ascending", state: "CLICKED", event: () => handleOrder("order", "asec") },
+    { title: "descending", state: "CLICKED", event: () => handleOrder("order", "desc") },
   ];
 
   const nullsdroppers: droppertype[] = [
-    { value: "last",  state: "clicked", event: () => handleOrder("nulls", "last" )},
-    { value: "first",  state: "clicked", event: () => handleOrder("nulls", "first" )},
-  ]; 
+    { title: "last", state: "CLICKED", event: () => handleOrder("nulls", "last") },
+    { title: "first", state: "CLICKED", event: () => handleOrder("nulls", "first") },
+  ];
 
-  const columndroppers: droppertype[] = [ ...tablecolumns[tablename as keyof typeof tablecolumns] ? 
-    tablecolumns[tablename as keyof typeof tablecolumns].map((drop: droppertype, idx: number) => ( 
-      { ...drop, event: () => handleWhere(current, "column", drop.value) }
-    )) 
-  : []];
+  const columndroppers: droppertype[] = [...tablecolumns[tablename as keyof typeof tablecolumns] ?
+    tablecolumns[tablename as keyof typeof tablecolumns].map((drop: droppertype) => (
+      { ...drop, event: () => handleWhere(current, "column", drop.title) }
+    ))
+    : []];
 
   //handlers
   const addOrder: () => void = () => {
@@ -68,25 +68,25 @@ const Suqueryform = (suqueryformprops: suqueryformprops) => {
     setOrderBy([{ order: "", column: "", nulls: "last" }]);
   }
 
-  const handleOrder: (name: string, value: string ) => void = (name: string, value: string, ) => {
+  const handleOrder: (name: string, value: string) => void = (name: string, value: string,) => {
     setOrderBy([{ ...orderby[0], [name]: value }]);
   }
 
-  const addLimit: () => void = () => {        
+  const addLimit: () => void = () => {
     setLimitState(!limitState);
     setLimit(0);
   }
 
   const addWhere: () => void = () => {
-    setWhere([ ...where, { column: "", value: "" }])
+    setWhere([...where, { column: "", value: "" }])
   }
 
   const handleWhere: (
     indx: number,
     name: string,
-    value: string 
+    value: string
   ) => void = (indx: number, name: string, value: string) => {
-    const tempWhere = [ ...where ];
+    const tempWhere = [...where];
     (tempWhere[indx] as any)[name] = value;
     setWhere(tempWhere);
   }
@@ -98,13 +98,13 @@ const Suqueryform = (suqueryformprops: suqueryformprops) => {
     setWhere(temparr);
     console.log("where", where);
     const temp = where[indx];
-    console.log("splice",where.splice(indx,1));
+    console.log("splice", where.splice(indx, 1));
     console.log("where", where);
-    console.log(temp);    
+    console.log(temp);
   }
 
   useEffect(() => {
-    setWhere([]);    
+    setWhere([]);
     setLimitState(false);
     setLimit(0);
     setOrderState(false);
@@ -113,57 +113,57 @@ const Suqueryform = (suqueryformprops: suqueryformprops) => {
 
   console.log(where);
 
-  return (  
-    <form className="suform" onSubmit={ handleSubmit }>
+  return (
+    <form className="suform" onSubmit={handleSubmit}>
       <div className="suformtitle">Resolve your query</div>
       <div className="querypanels">
         <div className="queryformat">
           <div className="query">
-            Select &nbsp; &nbsp; * &nbsp; &nbsp; from &nbsp; &nbsp; 
-            <span className="querytable">{ tablename }</span> &nbsp;
-            { where.length < 1 && !orderState && !limitState ? (
+            Select &nbsp; &nbsp; * &nbsp; &nbsp; from &nbsp; &nbsp;
+            <span className="querytable">{tablename}</span> &nbsp;
+            {where.length < 1 && !orderState && !limitState ? (
               <span>;</span>
             ) : (
               <>
-                { where.map((value: wheretype, idx: number) => (
-                  <div className="metaqueryformat" key={ idx }>
+                {where.map((value: wheretype, idx: number) => (
+                  <div className="metaqueryformat" key={idx}>
                     <div className="metaquery">
                       .where  &nbsp; &nbsp;
                       <div className="queryoptions" onClick={() => setCurrent(idx)}>
-                        <Patdrop profile={{ title: value.column||"column" }} droppers={ columndroppers } />
+                        <Patdrop profile={{ title: value.column || "column" }} droppers={columndroppers} />
                       </div>
                       &nbsp; &nbsp;is&nbsp; &nbsp;
                       <div className="queryask">
-                        <Askinput                          
-                          name={"ask"}                      
+                        <Askinput
+                          name={"ask"}
                           placeholder={"..."}
-                          value={ value.value }  
-                          onChange={(e: any) => handleWhere(current, "value", e.target.value)}                      
+                          value={value.value}
+                          onChange={(e: any) => handleWhere(current, "value", e.target.value)}
                         />
                       </div>
                     </div>
                     <i className="material-icons tiny red-text deletequery" onClick={() => handleDeleteWhere(idx)}>delete</i>
                   </div>
                 ))}
-                { orderState && (
+                {orderState && (
                   <div className="metaqueryformat">
                     <div className="metaquery">
                       .order  &nbsp; by &nbsp;
                       <div className="queryoptions">
-                        <Patdrop profile={ columnprofile } droppers={ columndroppers } />
+                        <Patdrop profile={columnprofile} droppers={columndroppers} />
                       </div>
                       &nbsp; &nbsp; in &nbsp; &nbsp;
                       <div className="queryoptions">
-                        <Patdrop profile={ orderprofile } droppers={ orderdroppers } />
+                        <Patdrop profile={orderprofile} droppers={orderdroppers} />
                       </div>
                       &nbsp; &nbsp; nulls &nbsp; &nbsp;
                       <div className="queryoptions">
-                        <Patdrop profile={ defaultprofile } droppers={ nullsdroppers } />
+                        <Patdrop profile={defaultprofile} droppers={nullsdroppers} />
                       </div>
                     </div>
                   </div>
                 )}
-                { limitState && (
+                {limitState && (
                   <div className="metaqueryformat">
                     <div className="metaquery">
                       .limit  &nbsp; &nbsp;
@@ -173,7 +173,7 @@ const Suqueryform = (suqueryformprops: suqueryformprops) => {
                           name={"limit"}
                           onChange={(e) => setLimit(Number(e.target.value))}
                           placeholder={"query limit"}
-                          value={ limit }
+                          value={limit}
                         />
                       </div>
                     </div>
@@ -187,7 +187,7 @@ const Suqueryform = (suqueryformprops: suqueryformprops) => {
           <div className="waves-effect waves-light queryvariables">
             Delete
           </div>
-          <div className="waves-effect waves-light queryvariables" onClick={ addWhere }>
+          <div className="waves-effect waves-light queryvariables" onClick={addWhere}>
             where
           </div>
           <div className={`waves-effect waves-light queryvariables ${limitState && "active"}`} onClick={() => addLimit()}>
@@ -198,8 +198,8 @@ const Suqueryform = (suqueryformprops: suqueryformprops) => {
           </div>
         </div>
       </div>
-      <button className="waves-effect waves-light querybtn" type="submit"> 
-        execute 
+      <button className="waves-effect waves-light querybtn" type="submit">
+        execute
       </button>
     </form>
   )

@@ -1,0 +1,16 @@
+.descinfotitle {
+  font-size: 1.1vw;
+  color: var(--main-color);
+  font-weight: 500;
+  padding: 0.5rem 0.5rem 0 0.5rem;
+}
+
+.descinfotxt {
+  color: var(--main-meta-no-highlight-text-color);
+  padding: 0.5rem;
+  font-size: 0.8vw;
+  font-weight: 500;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  max-width: 25vw;
+}

@@ -1,7 +1,6 @@
-
 export interface userpreferencetype {
   id: number;
-  user_id: number; 
+  user_id: number;
   nsfw: boolean;
   visiblity: boolean;
   show_nsfw: boolean;
@@ -23,7 +22,7 @@ export interface userpreferencetype {
 export type ruserpreferencetype = {
   user_id: number;
   id: number;
-}
+};
 
 export interface userpreferencedatatype {
   data: userpreferencetype;
@@ -32,4 +31,3 @@ export interface userpreferencedatatype {
 export interface remuserpreferencedatatype {
   data: ruserpreferencetype;
 }
-

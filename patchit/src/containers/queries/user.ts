@@ -1,17 +1,20 @@
 import { gql } from "@apollo/client";
+import { CORE_POST_FIELDS } from "../../utils/main/fragments";
 
 const CORE_FIELDS = gql`
-  fragment CoreFields on User {
+  fragment CoreUserInfoFields on User {
     id
     email
     username
-    status
+    privacy
     dob
     created_at
     country
     background_pic
     about
+    status
     profile_pic
+    social_links
     role {
       id
       role
@@ -26,53 +29,56 @@ const CORE_FIELDS = gql`
     comments {
       id
       comment
-      status
+      created_at
       post_id {
         id
         title
         community_id {
           communityname
+          profile_pic
         }
+        created_at
+      }
+      user_id {
+        username
+        profile_pic
+        status
       }
       parent_id {
-        id
         comment
         user_id {
           username
-          profile_pic
+          status
         }
-        status
+        created_at
       }
     }
     posts {
+      ...CorePostFields
+    }
+    followers {
       id
-      likes
-      title
-      type
-      status
-      content
-      created_at
-      owner {
+      following {
         id
         username
-        profile_pic
       }
-      community_id {
+      follower {
         id
-        communityname
-        profile_pic
-      }
-      comments {
-        id
+        username
       }
     }
+    settings {
+      nsfw
+      allowppltofollow
+    }
   }
+  ${CORE_POST_FIELDS}
 `;
 
 export const GETUSER = gql`
   query User($username: String!) {
     user(username: $username) {
-      ...CoreFields
+      ...CoreUserInfoFields
     }
   }
   ${CORE_FIELDS}
@@ -81,41 +87,22 @@ export const GETUSER = gql`
 export const GETSIGNEDUPUSER = gql`
   query User($username: String!) {
     user(username: $username) {
-      ...CoreFields
+      ...CoreUserInfoFields
       savedposts {
         saved
         pinned
         post_id {
-          id
-          title
-          type
-          content
-          community_id {
-            id
-            communityname
-            profile_pic
-          }
-          likes
-          status
+          ...CorePostFields
         }
       }
       reactedposts {
         reaction
         post_id {
-          id
-          title
-          type
-          content
-          likes
-          status
-          community_id {
-            id
-            communityname
-            profile_pic
-          }
+          ...CorePostFields
         }
       }
     }
   }
-  ${CORE_FIELDS}
+  ${CORE_FIELDS},
+  ${CORE_POST_FIELDS}
 `;

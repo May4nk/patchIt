@@ -1,27 +1,39 @@
-import { listAll, findOne, filtersorttype } from "../../common/queries.js";
+import { listAll, findOne } from "../../utils/queriesutils.js";
+
+//types
+import { filtersorttype } from "../../utils/types.js";
 import { tagtype, tagfiltertype } from "./types/tagtypes.js";
 
 export const tagResolvers = {
   Query: {
-    listTags: async (parent: undefined, filter: filtersorttype<tagfiltertype>): Promise<tagtype[]> => {
+    listTags: async (
+      _: undefined,
+      filter: filtersorttype<tagfiltertype>
+    ): Promise<tagtype[]> => {
       try {
-        const allTags: tagtype[] = await listAll<tagtype, tagfiltertype>("tags", filter);
+        const allTags: tagtype[] = await listAll<tagtype, tagfiltertype>(
+          "tags",
+          filter
+        );
+
         return allTags;
-      } catch(err) {
+      } catch (err) {
         throw err;
       }
     },
-    tag: async (parent: undefined, { id }: { id: number }): Promise<tagtype> => {
+    tag: async (_: undefined, { id }: { id: number }): Promise<tagtype> => {
       try {
-        const tagById: tagtype = await findOne<tagtype, { id: number }>("tags", { "id": id }); 
+        const tagById: tagtype = await findOne<tagtype, { id: number }>(
+          "tags",
+          { id: id }
+        );
 
-        if(!tagById) throw new Error(`tag not found with ID: ${id}`);
+        if (!tagById) throw new Error(`tag not found with ID: ${id}`);
 
         return tagById;
-      } catch(err) {
+      } catch (err) {
         throw err;
       }
-    }
-  }
-}
-
+    },
+  },
+};

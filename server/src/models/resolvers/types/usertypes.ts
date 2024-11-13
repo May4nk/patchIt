@@ -3,14 +3,16 @@ export interface usertype {
   email: string;
   username: string;
   password: string;
-  role: string;
+  role: number;
   dob: string;
   gender: string;
   country: string;
   about: string;
   status: string;
   token: string;
+  social_links: string;
   new_user: boolean;
+  newPassword?: string;
   profile_pic: string;
   background_pic: string;
   created_at: string;
@@ -21,7 +23,7 @@ export interface userfiltertype {
   email: string;
   username: string;
   dob: string;
-  role: string;
+  role: number;
   gender: string;
   country: string;
   status: string;
@@ -30,4 +32,3 @@ export interface userfiltertype {
   background_pic: string;
   created_at: string;
 }
-

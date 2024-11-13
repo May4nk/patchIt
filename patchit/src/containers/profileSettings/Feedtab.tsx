@@ -1,7 +1,9 @@
 import React from 'react';
+//components
+import Settingtab from '../../components/settings/Settingtab';
 //css & types
 import "./profilesettings.css";
-import { feedsstatetype } from './profilesettingtypes';
+import { feedsstatetype } from './types';
 interface feedprops {
   handleChange: (e: any, statename: string) => void;
   feedsState: feedsstatetype;
@@ -14,26 +16,14 @@ function Feedtab(feedprops: feedprops) {
     <div className="usetting">
       <div className="usettingtitle"> Feeds Settings </div>
       <div className="usettingtitlemeta"> Content Preferences </div>
-      <div className="usettingitems">
-        <div className="usettingitemlabels">
-          <div className="usettingitemtitle"> Adult Content </div>
-          <div className="usettingitemmetatitle">
-            Enable to view adult and NSFW (not safe for work) content in your feed and search results.
-          </div>
-        </div>
-        <div className="switch">
-          <label>
-            <input
-              type="checkbox"
-              className="blue-text"
-              name="show_nsfw"
-              checked={feedsState.show_nsfw}
-              onChange={(e: any) => handleChange(e, "feeds")}
-            />
-            <span className="lever"></span>
-          </label>
-        </div>
-      </div>
+      <Settingtab
+        title={"Adult Content"}
+        type={"switch"}
+        metatitle={"Enable to view adult and NSFW (not safe for work) content in your feed and search results."}
+        name={"show_nsfw"}
+        value={feedsState.show_nsfw}
+        handleChange={(e: any) => handleChange(e, "feeds")}
+      />     
     </div>
   )
 }

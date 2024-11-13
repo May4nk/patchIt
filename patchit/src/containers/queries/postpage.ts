@@ -1,95 +1,78 @@
 import { gql } from "@apollo/client";
 
-export const GETPOST = gql`
-query Post($postId: Int!) {
-  post(id: $postId) {
+const CORE_COMMENT_FIELDS = gql`
+  fragment CoreCommentFields on Comment {
     id
-    title
-    type
-    status
-    content
+    comment
     likes
     created_at
-    comments {
-      id    
-      comment
-      created_at      
-      parent_id {
-        id
-        comment
-        created_at
-        user_id {
-          id
-          username
-          profile_pic
-        }
-      }
-      user_id {
-        id
-        username
-        profile_pic
-      }
-    }
-    community_id {
-      id
-      communityname
-    }    
-    owner {
-      id
-      profile_pic
-      username
-    }
-    tags {
-      tag_id {
-        name
-      }
-    }  
-  }
-}
-`;
-
-export const SUBSCRIBETOMORECOMMENT = gql`
-subscription NewComment {
-  newComment {
-    id    
-    comment
-    created_at      
     parent_id {
       id
       comment
-      created_at
-      user_id {
-        id
-        username
-        profile_pic
-      }
+      status
     }
     user_id {
       id
       username
       profile_pic
+      status
     }
   }
-}
 `;
 
-export const GETUSERALLREACTIONS = gql`
-query ListUsers($filter: UsersfilterInput) {
-  listUsers(filter: $filter) {
-    id
-    reactedposts {
-      reaction
-      post_id {
+export const GETPOST = gql`
+  query Post($postId: Int!) {
+    post(id: $postId) {
+      id
+      title
+      type
+      status
+      content
+      likes
+      created_at
+      community_id {
         id
+        about
+        communityname
+        background_pic
+        profile_pic
+        created_at
+        posts {
+          id
+        }
+        users {
+          id
+        }
       }
-    }
-    savedposts {
-      saved
-      pinned
-      post_id {
+      owner {
         id
+        profile_pic
+        username
+        status
+      }
+      tags {
+        tag_id {
+          name
+        }
       }
     }
   }
-}
+`;
+
+export const GETPOSTCOMMENTS = gql`
+  query ListComments($filter: CommentfilterInput, $sort: [SortInput]) {
+    listComments(filter: $filter, sort: $sort) {
+      ...CoreCommentFields
+    }
+  }
+  ${CORE_COMMENT_FIELDS}
+`;
+
+export const SUBSCRIBETOMORECOMMENT = gql`
+  subscription NewComment {
+    newComment {
+      ...CoreCommentFields
+    }
+  }
+  ${CORE_COMMENT_FIELDS}
 `;

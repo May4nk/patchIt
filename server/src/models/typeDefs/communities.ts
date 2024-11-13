@@ -11,18 +11,21 @@ export const communityTypeDefs = `
     privacy: String
     background_pic: String   
     profile_pic: String
+    social_links: String
     created_at: String
     users: [UserCommunity]
     posts: [Post]
+    settings: CommunityPreferences
   }                                         
   input UpsertCommunityInput {
     id: Int
     communityname: String!
-    owner: Int!
+    owner: Int
     description: String
     status: String
     about: String
     category: String
+    social_links: String
     theme: String
     privacy: String
     background_pic: String   

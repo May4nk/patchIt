@@ -1,62 +1,76 @@
-type idstype = { id: number };
-
-interface posttype {
-  id: number;
-  title: string;
-  type: string;
-  owner: { id: number; profile_pic: string; username: string; };
-  content: string;
-  created_at: string;
-  likes: number;
-  status: string;  
-}
+import { userfollowingtype } from "../../containers/types/user";
+import { sociallinktype } from "../settings/types";
+import {
+  communitynametype,
+  ERRORTYPE,
+  idstype,
+  posttype,
+  PRIVACY,
+  STATUS,
+  usernametype,
+} from "../../utils/main/types";
+import {
+  usersettinginfoactiontype,
+  usersettinginfotype,
+} from "../../utils/types";
 
 interface userposttype extends posttype {
-  community_id: { 
-    id: number; 
-    communityname: string; 
-    profile_pic: string 
-  };
+  community_id: communitynametype;
 }
 
 export interface communitypatcherdatatype {
   id: number;
-  communityname: string ;
-  owner: { id: number };
+  communityname: string;
+  owner: idstype;
 }
 
-interface userdatatype {
+export type communityusertype = { id: number; user_id: idstype };
+
+export interface infoaboutuserdatatype {
   id: number;
   about: string;
   created_at: string;
   username: string;
+  privacy: PRIVACY;
   background_pic: string;
   profile_pic: string;
+  status: STATUS;
   posts: userposttype[];
+  followers: userfollowingtype[];
+  userSettings: usersettinginfotype;
+  updateUserSettings: React.Dispatch<usersettinginfoactiontype>;
 }
 
-interface communitydatatype {
+export interface infoaboutcommunitydatatype {
   id: number;
+  communityname: string;
   about: string;
-  themecolour: string;
+  theme: string;
   background_pic: string;
+  description: string;
+  owner: { id: number; username: string };
+  privacy: PRIVACY;
   profile_pic: string;
   created_at: string;
-  posts: posttype[];
-  users: { id: number, user_id: { id: number } }[];
+  posts: idstype[];
+  users: idstype[];
+  inCommunity: boolean;
+  setInCommunity: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 interface infoaboutuserprops {
-  data: userdatatype;
+  data: infoaboutuserdatatype;
   userdata: true;
+  setError: React.Dispatch<React.SetStateAction<ERRORTYPE>>;
 }
 
 interface infoaboutcommunityprops {
-  data: communitydatatype;
+  data: infoaboutcommunitydatatype;
   userdata: false;
+  setError: React.Dispatch<React.SetStateAction<ERRORTYPE>>;
 }
 
-export type infoaboutprops = infoaboutcommunityprops | infoaboutuserprops;
+export type infoaboutpropstype = infoaboutcommunityprops | infoaboutuserprops;
 
 export interface infosectionprops {
   communitypatcherdata?: communitypatcherdatatype[];
@@ -67,7 +81,7 @@ export interface infouserscommunityprops {
 }
 
 // infotab type ----------------------------------------
-interface communitytype {
+export interface communitytype {
   id: number;
   communityname: string;
   posts: idstype[];
@@ -85,15 +99,15 @@ export interface recommendedposttype {
   likes: number;
   title: string;
   type: string;
-  owner: idstype & { username: string };
+  owner: usernametype & { status: STATUS };
   comments: idstype[];
-  community_id: idstype & { communityname: string, profile_pic: string };
+  community_id: communitynametype;
 }
 
 // infocreatecard type ----------------------------------
-interface createcardtype {
+export interface infocreatecardtype {
   id: number;
-  description: string;
+  about: string;
   communityname: string;
   background_pic: string;
   profile_pic: string;
@@ -103,5 +117,10 @@ interface createcardtype {
 }
 
 export interface infocreatecardprops {
-  data: createcardtype;
+  data: infocreatecardtype & { inCommunity: boolean };
+}
+
+// infosocial type --------------------------------------------
+export interface infosocialpropstype {
+  socialData: sociallinktype | null;
 }

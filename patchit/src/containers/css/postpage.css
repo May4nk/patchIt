@@ -1,4 +1,4 @@
-.postpageheader, .postpagepostinfo {
+.postpageheader {
   display: flex;
   justify-content: flex-start;
   align-items: center;
@@ -9,7 +9,7 @@
   border: 1px solid grey;
   border-radius: 50%;
   height: 3.5vw;
-  width: 3.5vw;
+  width: 3.7vw;
 }
 
 .userpic {
@@ -24,7 +24,7 @@
   align-items: center;
   width: 100%;
   margin-left: 1rem;
-  color: rgba(255,255,255,0.3);
+  color: rgba(255, 255, 255, 0.3);
 }
 
 .postpageinfo {
@@ -37,12 +37,12 @@
 .username {
   font-size: 1vw;
   font-weight: 600;
-  color: rgba(255,255,255,0.6);
+  color: rgba(255, 255, 255, 0.6);
   cursor: pointer;
 }
 
 .username:hover {
-  color: rgba(255,255,255,0.9);
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .communityname {
@@ -54,13 +54,13 @@
 }
 
 .communitynametxt {
-  color: rgba(255,255,255,0.7);
+  color: rgba(255, 255, 255, 0.7);
   padding: 0 0.3rem;
   cursor: pointer;
   font-size: 0.9vw;
-}        
+}
 
-.communitynametxt:hover{
+.communitynametxt:hover {
   color: white;
   text-decoration: underline;
 }
@@ -69,16 +69,19 @@
   align-self: flex-end;
   font-size: 0.9vw;
   font-weight: 500;
-  color: rgba(255,255,255,0.3);
+  color: rgba(255, 255, 255, 0.3);
 }
 
 .postpageheading {
-  margin: 0.5rem;
+  padding: 0.5rem;
   font-size: 1.4vw;
   font-weight: 600;
   color: white;
   height: auto;
   max-height: 5rem;
+  max-width: 48vw;
+  word-wrap: break-word;
+  white-space: pre-wrap;
 }
 
 .posttags {
@@ -93,11 +96,11 @@
   justify-content: center;
   align-items: center;
   font-size: 0.8vw;
-  border-radius: 2rem;;
+  border-radius: 2rem;
   background: #2232364f;
-  color: rgba(255,255,255,0.6);
+  color: #8acaff;
   font-weight: 500;
-  padding: 0.1rem 0.3rem;
+  padding: 0.1rem 0.5rem 0.1rem 0.1rem;
   margin: 0rem 0.3rem;
   text-transform: capitalize;
 }
@@ -109,85 +112,34 @@
 
 .postpagepostwrapper {
   width: 100%;
-  position: relative;
-  border-radius: 0.5rem;
-}
-
-.postpagepost {
-  width: 100%;
-  height: auto;
-  border-radius: 0.5rem;
-}
-
-.allimages {
-  position: absolute;
-  top: 0.3rem;
-  right: 0.3rem;
-  background: rgba(255,255,255,0.5);
-  border-radius: 0.5rem;
-  font-size: 0.8vw;
-  padding: 0.1rem 0.3rem;
-  color: black;
-  font-weight: 500;
-}
-
-.rightimagebutton, .leftimagebutton {
-  position: absolute;
-  bottom: 50%;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.1);
-  font-size: 1.7vw;
-}
-
-.leftimagebutton {
-  left: 0.5rem;
-}
-
-.rightimagebutton {
-  right: 0.5rem;
-}
-
-.postpage_caption {
-  position: absolute;
-  color: rgba(255,255,255,0.7);
-  background: rgba(0,0,0,0.2);
-  border-radius: 1.5rem;
-  margin-top: -2rem;
-  z-index: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  font-weight: 500;
-}
-
-.postpage_caption:hover {
-  color: white;
-  background: rgba(0,0,0,0.3);
 }
 
 .postpageblog {
   font-size: 1vw;
-  color: gray;
-  background: rgba(0,0,0,0.1);
-  padding: 0.3rem;
+  color: rgba(255, 255, 255, 0.6);
+  padding: 0.3rem 0.5rem;
   border-radius: 0.5rem;
-  max-width: 45rem;
+  max-width: 49vw;
   width: 100%;
   white-space: pre-wrap;
   word-wrap: break-word;
 }
 
-.postpagepostinfo {
-  margin-top: 0.5rem;
+.postpagefooter {
+  margin: 0.7rem 0 0.3rem 0;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
 }
 
-.postpagepostinfotabs {
+.postpagefootertabs,
+.postpagefooterpintab {
   color: white;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 1vw;
+  font-size: 0.9vw;
   background: #28272740;
   padding: 0.3vw 0.7vw;
   border-radius: 1vw;
@@ -195,19 +147,24 @@
   cursor: pointer;
 }
 
-.icnspaceup, .icnspacedown {
-  padding-right: 0.7rem;
+.postpagefooterpintab {
+  margin-left: auto;
+}
+
+.icnspaceup,
+.icnspacedown {
+  padding-right: 0.5rem;
   color: grey;
-  font-size: 1.5vw;
+  font-size: 1.1vw;
 }
 
 .icnspacedown {
   padding-right: 0;
-  padding-left: 0.7rem;
+  padding-left: 0.5rem;
 }
 
 .icnspaceup:hover {
-  color: #2196F3; 
+  color: #2196F3;
 }
 
 .icnspacedown:hover {
@@ -217,7 +174,7 @@
 .icnspacesave {
   color: grey;
   padding-right: 0.3rem;
-  font-size: 1.5vw;
+  font-size: 1.1vw;
 }
 
 .icnspacesave:hover {
@@ -249,4 +206,5 @@
 .commentsection {
   width: 100%;
   margin-top: 1rem;
+  max-width: 48vw;
 }

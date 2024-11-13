@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useLazyQuery } from "@apollo/client";
-import { useAuth } from "../common/hooks/useAuth";
+import { useAuth } from "../utils/hooks/useAuth";
 
 //components
-import Loadingpage from "../components/Loadingpage";
-import Post from "../components/Post";
+import Post from "../components/post/Post";
 import Sortpanel from "../components/Sortpanel";
+import Loadingpage from "../components/Loadingpage";
 import Infosection from "../components/infosection/Info";
 
 //queries
@@ -14,30 +14,34 @@ import { GETALLPOSTFORHOME } from "./queries/home";
 
 //css & types
 import "./css/main.css";
-import { homeposttype, posttype } from "../types/posttype";
 import { authcontexttype } from "../context/types";
+import { homeposttype, posttype } from "../utils/main/types";
 
 const Home = () => {
   const { user }: authcontexttype = useAuth();
-  const userId: number|null = user && Number(user["id"] || user["user_id"]);
-  
-  const [sortby, setSortby] = useState<string>("created_at");  
-  
-  //queries
-  const [getPostsForHome, { data: homePostData, loading: homePostLoading }] = useLazyQuery(GETALLPOSTFORHOME);  
-  const [ getPosts , { data: postData, loading: postLoading }] = useLazyQuery(GETALLPOSTS);
+  const userId: number | null = user && Number(user["id"]);
 
+  //states
+  const [sortby, setSortby] = useState<string>("created_at");
+
+  //queries
+  const [getPosts, { data: postData, loading: postLoading }] = useLazyQuery(GETALLPOSTS);
+  const [getPostsForHome, { data: homePostData, loading: homePostLoading }] = useLazyQuery(GETALLPOSTFORHOME);
+
+  //handlers
   const pdata = userId !== null
-    ? !homePostLoading && homePostData?.listUsersCommunity.map((posts: homeposttype) => posts.community_id?.posts).flat(1)
+    ? !homePostLoading && homePostData?.listUsersCommunity.map(
+      (posts: homeposttype) => posts.community_id?.posts
+    ).flat(1)
     : !postLoading && postData?.listPosts;
-  
+
   useEffect(() => {
-    if(userId !== null) {
+    if (userId !== null) {
       getPostsForHome({
-        variables: {          
+        variables: {
           filter: {
             user_id: userId!,
-          }          
+          }
         }
       })
     } else {
@@ -50,27 +54,31 @@ const Home = () => {
               order: "desc"
             }
           ],
-          filter: {            
+          filter: {
             status: "ACTIVE",
-            privacy: "PUBLIC"      
-          } 
+            privacy: "PUBLIC"
+          }
         }
       })
     }
   }, [userId, sortby])
 
-  if(postLoading || homePostLoading) {  
-    return  <Loadingpage />   
+  if (postLoading || homePostLoading) {
+    return <Loadingpage />
   } else {
     return (
       <>
         <div className="flexy">
-          <div className="contentpost">
+          <div className="patchcontent">
             <div className="postsort">
-              <Sortpanel sort={ sortby } setSort={ setSortby } />
+              <Sortpanel sort={sortby} setSort={setSortby} />
             </div>
-            { pdata?.map((post: posttype, idx: number) => (              
-              <Post postData={ post } key={ idx } showcommunity={ post.community_id === null? false: true } />
+            {pdata?.map((post: posttype, idx: number) => (
+              <Post
+                key={idx}
+                postData={post}
+                showcommunity={post.community_id === null ? false : true}
+              />
             ))}
           </div>
           <div className="contentinfo">

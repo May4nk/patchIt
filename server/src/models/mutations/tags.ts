@@ -1,11 +1,15 @@
 import db from "../../db.js";
-import { findOne } from "../../common/queries.js";
-import { tagdatatype, remtagdatatype, rtagtype } from "./types/tagmutetypes.js";
+import { findOne } from "../../utils/queriesutils.js";
+
+//types
 import { tagtype } from "../resolvers/types/tagtypes.js";
+interface rtagtype {
+  id: number;
+}
 
 export const tagMutations = {
   Mutation:{
-    upsertTag: async(parent: undefined, { data }: tagdatatype): Promise<tagtype> => {
+    upsertTag: async(parent: undefined, {data}: {data: tagtype}): Promise<tagtype> => {
       try {
         const foundTag: tagtype = await findOne<tagtype, { name: string }>("tags", { "name": data.name });
         
@@ -27,7 +31,7 @@ export const tagMutations = {
         throw err;
       }
     },
-    removeTag: async(parent: undefined, { data }: remtagdatatype): Promise<rtagtype> => {
+    removeTag: async(parent: undefined, {data}: {data: rtagtype}): Promise<rtagtype> => {
       try {
         const foundTag: tagtype = await findOne<tagtype, { id: number }>("tags", { "id": data.id });
         

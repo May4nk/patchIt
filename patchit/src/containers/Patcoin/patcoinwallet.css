@@ -1,0 +1,251 @@
+.patcoinwallet {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
+  width: 100%;
+}
+
+.patcoincard {
+  width: 29%;
+  height: 67vh;
+  perspective: 1000px;
+  border-radius: 1vw;
+  background-color: black;
+  transition: transform 1s;
+  transform-style: preserve-3d;
+  box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.6);
+}
+
+.patcointransx {
+  width: 70%;
+  height: 83vh;
+  padding: 1rem;
+  display: flex;
+  border-radius: 1vw;
+  align-items: center;
+  flex-direction: column;
+  justify-content: flex-start;
+  background: rgba(0, 0, 0, 0.6);
+  box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.6);
+}
+
+.patcoincard.flipped {
+  transform: rotateY(180deg);
+}
+
+.patcoincard.turned {
+  transform: rotateX(180deg);
+}
+
+.patcoinhome,
+.patcoinsend,
+.patcoinadd {
+  width: 100%;
+  height: 100%;
+  padding: 1rem;
+  display: flex;
+  border-radius: 1vw;
+  align-items: center;
+  justify-content: flex-start;
+  flex-direction: column;
+}
+
+.patcoinsend {
+  transform: rotateY(180deg);
+}
+
+.patcoinadd {
+  transform: rotateX(180deg);
+}
+
+.wallethead {
+  width: 100%;
+  font-size: 1.3vw;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0.1rem;
+}
+
+.walletheadactions, .wallettranxheadactions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  width: 100%;
+}
+
+.walletheadicn, .wallettranxheadicns {
+  font-size: 1.3vw;
+  cursor: pointer;
+  margin-right: 0.3vw;
+}
+
+.wallettranxheadicns {
+  margin-right: 0.5vw;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.wallettranxheadicns:hover {
+  color: #53abf3;
+}
+
+.walletbody {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  margin-top: 2rem;
+  width: 100%;
+  height: 80%;
+}
+
+.walletfooter {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  width: 100%;
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 0.9vw;
+  font-weight: 500;
+}
+
+.address {
+  margin-right: 0.2rem;
+}
+
+.patcoinimgwrapper {
+  width: 14vw;
+  height: 14vw;
+}
+
+.patcoinimg {
+  width: 100%;
+  height: 100%;
+  animation-name: animatedicns;
+  animation-duration: 7s;
+  animation-iteration-count: 1;
+  background: radial-gradient(circle, #243e3a99, black, black);
+}
+
+.walletbalance,
+.patcoinbalance {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1vw;
+  font-weight: 500;
+  color: #93c5eee3;
+  padding: 0.2vw 1vw;
+  border-radius: 2rem;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.patcoinbalance {
+  margin-left: 0.3rem;
+  font-size: 0.8vw;
+}
+
+.walletactions {
+  display: flex;
+  justify-content: space-evenly;
+  width: 80%;
+  align-items: center;
+  padding: 0.3rem;
+  margin-top: 1.5rem;
+}
+
+.walletaction {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  font-size: 1vw;
+  font-weight: 500;
+  padding: 0.3rem 0.5rem;
+  border-radius: 2rem;
+  text-transform: capitalize;
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.walletaction:hover {
+  cursor: pointer;
+  color: white;
+}
+
+.walleticn {
+  font-size: 1.3rem !important;
+}
+
+.sendpatcoin {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  margin-top: auto;
+}
+
+.walletinput {
+  height: 2.3rem;
+  width: 80%;
+  color: rgba(255, 255, 255, 0.7);
+  margin-top: 1rem;
+}
+
+.walletbtn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 1rem;
+  padding: 0.1vw 1.3vw;
+  font-size: 1vw;
+  font-weight: 500;
+  text-transform: capitalize;
+  cursor: pointer;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 2rem;
+}
+
+.walletbtn:hover {
+  cursor: pointer;
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.wallettranxhead {
+  color: #53abf3;
+  font-size: 1.1vw;
+  font-weight: 500;
+  text-transform: capitalize;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.wallettranxbody {
+  margin-top: 1rem;
+  width: 100%;
+  height: 90%;
+  overflow-y: auto;
+}
+
+.wallettransaction {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+  padding: 0 0.3rem;
+  margin-top: 0.5rem;
+  font-size: 0.9vw;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.7);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.01);
+}
+
+.wallettranxicn {
+  font-size: 0.8vw !important;
+  margin: 0 0.3rem;
+}

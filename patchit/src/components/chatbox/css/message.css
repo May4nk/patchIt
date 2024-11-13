@@ -75,25 +75,88 @@
   justify-content: flex-start;
 }
 
-.senttxt,
-.receivedtxt {
-  background: rgba(0, 0, 0, 0.1);
-  box-shadow: 1px 1px #020202;
-  border-radius: 0.5vw;
-  max-width: 71%;
-  word-wrap: break-word;
-  white-space: pre-wrap;
-  padding: 0.1rem 0.7rem;
-  color: rgba(255, 255, 255, 0.7);
-  font-weight: 430;
-  font-size: 0.9vw;
+.sentmedia,
+.receivedmedia {
   display: flex;
-  justify-content: flex-start;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  max-width: 67%;
+  width: auto;
+  box-shadow: 0px 1px #2b4e46;
+}
+
+.receivedmedia {
+  box-shadow: 0px 1px #64b4f66e;
+}
+
+.chatmedia {
+  background: black;
+  border-radius: 0.5rem;
+  display: flex;
+  flex-wrap: wrap;
   align-items: center;
 }
 
+.mediapic {
+  height: 100%;
+  width: 100%;
+  flex: 1 0 45%;
+  display: flex;
+}
+
+.totalchatimgs {
+  margin-top: -1.6rem;
+  background: #90caf9;
+  color: black;
+  font-size: 0.9vw;
+  font-weight: 500;
+  padding: 0.1rem 0.3rem;
+  border-radius: 1rem;
+  align-self: flex-end;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.totalimgicn {
+  line-height: 25px !important;
+  margin-left: 0.3rem;
+  font-size: 1.1rem !important;
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+  height: 100% !important;
+}
+
+.senttxt,
+.receivedtxt,
+.sentmediatxt {
+  background: black;
+  color: rgba(255, 255, 255, 0.7);
+  border-radius: 0.3rem;
+  max-width: 71%;
+  padding: 0.2rem 0.5rem;
+  font-weight: 430;
+  font-size: 0.9vw !important;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+}
+
+.sentmediatxt {
+  color: rgba(255, 255, 255, 0.4);
+  max-width: 100% !important;
+}
+
+.senttxt {
+  box-shadow: 0px 1px #2b4e46;
+}
+
 .receivedtxt {
-  box-shadow: 0px 1px rgba(255, 255, 255, 0.1);
+  box-shadow: 0px 1px #64b4f66e;
 }
 
 .messageinfo {
@@ -114,6 +177,7 @@
 .messageuser {
   margin: 0 0.2rem;
   color: white;
+  padding: 0 0.1rem;
 }
 
 .messageuser:hover {

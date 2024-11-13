@@ -7,10 +7,9 @@ export interface tokentype {
   created_at: string;
 }
 
-export interface tokenfiltertype {    
+export interface tokenfiltertype {
   id: number;
   user_id: number;
   token: string;
   created_at: string;
 }
-

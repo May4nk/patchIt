@@ -2,9 +2,9 @@ import React from "react";
 import { Outlet } from "react-router-dom";
 
 //components
-import Navbar from "../components/Navbar";
+import Navbar from "../components/navbar/Navbar";
 import Sidenav from "../components/sidenav/Sidenav";
-import { useAuth } from "../common/hooks/useAuth";
+import { useAuth } from "../utils/hooks/useAuth";
 
 //css & types
 import "./main.css";
@@ -12,22 +12,22 @@ import { authcontexttype } from "../context/types";
 
 const Rootlayout = () => {
   const { user }: authcontexttype = useAuth();
-  
-  return (  
+
+  return (
     <>
-      <div className="nav">
+      <div className="nav">      
         <Navbar />
       </div>
       <div className="fcontainer">
-        { !user && ( 
+        {!user && (
           <div className="mysidenav">
             <div className="sidebar">
               <Sidenav />
             </div>
           </div>
-        )}
+        )}        
         <div className="fcontainerflexy">
-          <div className={ user ? "content" : "nocontent" }>
+          <div className={user ? "content" : "nocontent"}>       
             <Outlet />
           </div>
         </div>

@@ -4,51 +4,35 @@ const CORE_ROOM_FIELDS = gql`
   fragment CoreRoomFields on Chatroom {
     id
     room_code
+    roomName
+    owner {
+      id
+    }
   }
 `;
 
 const CORE_USER_FIELDS = gql`
   fragment CoreUserFields on User {
     id
-    email
+    status
     username
     profile_pic
   }
 `;
 
-export const CREATECHATROOM = gql`
-  mutation Mutation($data: InsertChatroomInput) {
-    insertChatroom(data: $data) {
-      ...CoreRoomFields
-    }
-  }
-  ${CORE_ROOM_FIELDS}
-`;
-
-export const GETALLCHATER = gql`
-  subscription NewChatroom {
-    newChatroom {
-      ...CoreRoomFields
-    }
-  }
-  ${CORE_ROOM_FIELDS}
-`;
-
-export const INSERTUSERCHATROOM = gql`
-  mutation InsertUserChatroom($data: [InsertUserChatroomInput!]!) {
-    insertUserChatroom(data: $data) {
+//queries
+export const GETALLMSGS = gql`
+  query ListMessages($filter: MessagesfilterInput) {
+    listMessages(filter: $filter) {
       id
+      message
+      media
+      created_at
       room_id {
         ...CoreRoomFields
       }
       user_id {
         ...CoreUserFields
-      }
-      users {
-        ...CoreUserFields
-      }
-      lastMessage {
-        message
       }
     }
   }
@@ -56,26 +40,42 @@ export const INSERTUSERCHATROOM = gql`
   ${CORE_USER_FIELDS}
 `;
 
-export const SUBSCRIBETOUSERCHATROOMS = gql`
-  subscription UserChatroom($userId: Int!) {
-    newUserChatroom(userId: $userId) {
+export const GETCHATROOM = gql`
+  query Chatroom($chatroomId: String!) {
+    chatroom(chatroomId: $chatroomId) {
       id
-      room_id {
-        ...CoreRoomFields
+      roomName
+      room_code
+      roomUsers {
+        id
+        username
+        profile_pic
+        status
       }
-      user_id {
-        ...CoreUserFields
+      owner {
+        id
       }
-      users {
-        ...CoreUserFields
-      }
-      lastMessage {
-        message
+      chatPreferences {
+        about
+        group_profile
+        allowedmedia
+        chatgrouptheme
+        blocked
+        admin {
+          username
+        }
+        co_admin {
+          username
+        }
+        operator {
+          username
+        }
+        acceptor {
+          username
+        }
       }
     }
   }
-  ${CORE_ROOM_FIELDS}
-  ${CORE_USER_FIELDS}
 `;
 
 export const GETUSERCHATROOMS = gql`
@@ -104,48 +104,54 @@ export const GETUSERCHATROOMS = gql`
   ${CORE_USER_FIELDS}
 `;
 
+export const GETALLUSERS = gql`
+  query ListUsers($filter: UsersfilterInput) {
+    listUsers(filter: $filter) {
+      id
+      username
+      profile_pic
+    }
+  }
+`;
+
+//mutations
+export const CREATECHATROOM = gql`
+  mutation InsertChatroom($data: InsertChatroomInput) {
+    insertChatroom(data: $data) {
+      ...CoreRoomFields
+    }
+  }
+  ${CORE_ROOM_FIELDS}
+`;
+
+export const INSERTUSERCHATROOM = gql`
+  mutation InsertUserChatroom($data: [InsertUserChatroomInput!]!) {
+    insertUserChatroom(data: $data) {
+      id
+      room_id {
+        ...CoreRoomFields
+      }
+      user_id {
+        ...CoreUserFields
+      }
+      users {
+        ...CoreUserFields
+      }
+      lastMessage {
+        message
+      }
+    }
+  }
+  ${CORE_ROOM_FIELDS}
+  ${CORE_USER_FIELDS}
+`;
+
 export const INSERTMSG = gql`
   mutation NewMessage($data: InsertMessageInput) {
     insertMessage(data: $data) {
       id
     }
   }
-`;
-
-export const SUBSCRIBETONEWMSG = gql`
-  subscription NewMessage {
-    newMessage {
-      id
-      message
-      created_at
-      room_id {
-        ...CoreRoomFields
-      }
-      user_id {
-        ...CoreUserFields
-      }
-    }
-  }
-  ${CORE_ROOM_FIELDS}
-  ${CORE_USER_FIELDS}
-`;
-
-export const GETALLMSGS = gql`
-  query ListMessages($filter: MessagesfilterInput) {
-    listMessages(filter: $filter) {
-      id
-      message
-      created_at
-      room_id {
-        ...CoreRoomFields
-      }
-      user_id {
-        ...CoreUserFields
-      }
-    }
-  }
-  ${CORE_ROOM_FIELDS}
-  ${CORE_USER_FIELDS}
 `;
 
 export const DELETECHATROOM = gql`
@@ -157,11 +163,61 @@ export const DELETECHATROOM = gql`
   ${CORE_ROOM_FIELDS}
 `;
 
-export const GETALLUSERS = gql`
-  query ListUsers($filter: UsersfilterInput) {
-    listUsers(filter: $filter) {
+export const UPSERTCHATROOMPREFERENCE = gql`
+  mutation UpsertChatPreference($data: InsertChatPreferencesInput) {
+    upsertChatPreference(data: $data) {
       id
-      username
     }
   }
+`;
+
+//subscriptions
+export const GETALLCHATER = gql`
+  subscription NewChatroom {
+    newChatroom {
+      ...CoreRoomFields
+    }
+  }
+  ${CORE_ROOM_FIELDS}
+`;
+
+export const SUBSCRIBETOUSERCHATROOMS = gql`
+  subscription UserChatroom($userId: Int!) {
+    newUserChatroom(userId: $userId) {
+      id
+      room_id {
+        ...CoreRoomFields
+      }
+      user_id {
+        ...CoreUserFields
+      }
+      users {
+        ...CoreUserFields
+      }
+      lastMessage {
+        message
+      }
+    }
+  }
+  ${CORE_ROOM_FIELDS}
+  ${CORE_USER_FIELDS}
+`;
+
+export const SUBSCRIBETONEWMSG = gql`
+  subscription NewMessage {
+    newMessage {
+      id
+      message
+      media
+      created_at
+      room_id {
+        ...CoreRoomFields
+      }
+      user_id {
+        ...CoreUserFields
+      }
+    }
+  }
+  ${CORE_ROOM_FIELDS}
+  ${CORE_USER_FIELDS}
 `;

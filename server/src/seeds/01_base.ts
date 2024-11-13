@@ -1,8 +1,9 @@
 import { Knex } from "knex";
 
 export async function seed(knex: Knex): Promise<void> {
-  await knex("categories").del()
-    .then(function() {   
+  await knex("categories")
+    .del()
+    .then(function () {
       return knex("categories").insert([
         { categoryname: "entertainment", categoryicon: "beach_access" },
         { categoryname: "music", categoryicon: "library_music" },
@@ -16,14 +17,15 @@ export async function seed(knex: Knex): Promise<void> {
       ]);
     });
 
-  await knex("roles").del()
-    .then(function() {
+  await knex("roles")
+    .del()
+    .then(function () {
       return knex("roles").insert([
         { id: 0, role: "su" },
         { id: 7001, role: "admin" },
         { id: 5339, role: "cm" },
         { id: 9005, role: "user" },
-        { id: 1337, role: "anon" }
-      ]);    
+        { id: 1337, role: "anon" },
+      ]);
     });
-};
+}

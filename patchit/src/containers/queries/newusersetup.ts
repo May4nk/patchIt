@@ -4,19 +4,11 @@ export const GETPOPULARCOMMUNITIES = gql`
   query ListCommunities($filter: CommunitiesfilterInput) {
     listCommunities(filter: $filter) {
       id
-      communityname    
+      communityname
       description
       privacy
       status
-      profile_pic     
-    }
-  } 
-`; 
-
-export const UPDATEUSER = gql`
-  mutation Mutation($data: InsertUserInput) {
-    updateUser(data: $data) {
-      id
+      profile_pic
     }
   }
 `;

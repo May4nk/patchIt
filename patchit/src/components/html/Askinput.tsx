@@ -1,33 +1,36 @@
 import React, { useState, useEffect } from "react";
 
+//component
+import Patchip from "./Patchip";
+
+//css & types
 import "./css/askinput.css";
 import { askinputprops } from "./types";
 
 const Askinput = (askinputprops: askinputprops) => {
   const {
-    placeholder,
-    prefix,
-    postfix,
-    required,
-    maxlength,
-    name,
     type,
+    name,
+    value,
+    onBlur,
+    postfix,
     onClick,
+    onChange,
+    required,
+    prefixes,
+    maxlength,
+    placeholder,
     onClickPostfix,
     onClickPrefixTab,
-    onChange,
-    onBlur,
-    value
   } = askinputprops;
 
+  //states
   const [inputlength, setInputLength] = useState<number>(0);
 
   //handler
   const handleInput: (e: any) => void = (e) => {
     setInputLength(e.target.value.length);
   }
-
-  const prefixes = prefix?.split(" ");
 
   useEffect(() => {
     if (typeof value === "string" && value?.length === 0) {
@@ -37,47 +40,40 @@ const Askinput = (askinputprops: askinputprops) => {
 
   return (
     <>
-      <div className="custominput">
-        {prefixes && prefixes.length === 1 ? (
-          prefixes[0].substr(0, 2) === "IC" ? (
-            <i className="material-icons inputprefix"> {prefixes[0].substr(2,)}</i>
-          ) : prefixes[0].substr(0, 3) === "TAB" ? (
-            <div className="askinputtab" onClick={onClickPrefixTab}>
-              {prefixes[0].substr(3,)}
-              <i className="material-icons askinputtabicn right"> clear </i>
-            </div>
-          ) : (
-            <div className="inputprefix">{prefixes[0]}</div>
-          )
-        ) : (prefixes && prefixes.length >= 2) && (
+      <div className={type === "color" ? "custominputcolor" : "custominput"}>
+        {prefixes && (
           <div className="custominputspace">
             {prefixes.map((pre: string, idx: number) => (
-              pre.substr(0, 2) === "IC" ? (
-                <i className="material-icons inputprefix" key={idx}> {pre.substr(2,)}</i>
-              ) : pre.substr(0, 3) === "TAB" ? (
-                <div className="askinputtab" key={idx} onClick={onClickPrefixTab}>
-                  {pre.substr(3,)}
-                  <i className="material-icons askinputtabicn right"> clear </i>
-                </div>
+              pre.substring(0, 2) === "IC" ? (
+                <i className="material-icons inputprefixicn" key={idx}>
+                  {pre.substring(2,)}
+                </i>
+              ) : pre.substring(0, 3) === "TAB" ? (
+                <Patchip
+                  key={idx}
+                  title={pre.substring(3,)}
+                />
               ) : (
-                <div className="inputprefix" key={idx}>{pre}</div>
+                <div className="inputprefix" key={idx}>
+                  {pre}
+                </div>
               )
             ))}
           </div>
         )}
         <input
-          className="askinput"
+          name={name}
+          value={value}
+          onBlur={onBlur}
+          onClick={onClick}
+          autoComplete="off"
+          onChange={onChange}
+          onInput={handleInput}
+          maxLength={maxlength}
+          type={type || "text"}
           placeholder={placeholder}
           required={required ? true : false}
-          maxLength={maxlength}
-          type={type}
-          name={name}
-          onInput={handleInput}
-          onClick={onClick}
-          onChange={onChange}
-          onBlur={onBlur}
-          value={value}
-          autoComplete="off"
+          className={type === "color" ? "askinputcolor" : "askinput"}
         />
         {maxlength && (
           <div className="inputlength">
@@ -85,9 +81,9 @@ const Askinput = (askinputprops: askinputprops) => {
           </div>
         )}
         {(postfix && postfix !== null) && (
-          postfix.substr(0, 2) === "IC" ? (
+          postfix.substring(0, 2) === "IC" ? (
             <i className="material-icons inputpostfix" onClick={onClickPostfix}>
-              {postfix.substr(2,)}
+              {postfix.substring(2,)}
             </i>
           ) : (
             <div className="inputpostfix" onClick={onClickPostfix}>

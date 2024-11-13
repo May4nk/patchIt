@@ -1,0 +1,25 @@
+.privateprofilewrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+}
+
+.privatelogo {
+  height: 41%;
+}
+
+.privateprofiletext, .privateprofilemetatext {
+  color: rgba(110, 187, 151, 0.986);
+  font-weight: 500;
+  font-size: 1vw;
+  margin-top: 0.5rem;
+  margin-left: 2rem;
+}
+
+.privateprofilemetatext {
+  color: rgba(110, 182, 187, 0.986);
+  margin-top: -4rem;
+}

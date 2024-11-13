@@ -1,8 +1,9 @@
 export const userTypeDefs = `
   type LoginUser {
     username: String!
-    password: String!   
+    password: String!
   }
+
   type User {
     id: Int!
     email: String!
@@ -17,6 +18,7 @@ export const userTypeDefs = `
     profile_pic: String
     token: String
     verified: Boolean
+    social_links: String
     background_pic: String
     created_at: String
     posts: [Post]
@@ -27,18 +29,25 @@ export const userTypeDefs = `
     savedposts: [SavedPost]
     reactedposts: [Postlikedislike]
     settings: UserPreferences
+    followers: [UserFollowing]
   }
+
   enum STATUS {
     ACTIVE
     INACTIVE
   }
+
   input LoginUserInput {
     username: String!
     password: String!
   }
+
   input MagicLinkLoginInput {
     email: String!
+    password: String!
+    message: String!
   }
+    
   input InsertUserInput {
     id: Int
     email: String
@@ -48,13 +57,15 @@ export const userTypeDefs = `
     about: String
     status: String
     privacy: String
-    password: String   
+    password: String
     new_user: Boolean
+    social_links: String
     role: Int
     verified: Boolean
     profile_pic: String
     background_pic: String
   }
+
   input UsersfilterInput {
     id: Int
     email: String
@@ -69,7 +80,15 @@ export const userTypeDefs = `
     background_pic: String
     created_at: String
   }
+
   input RemoveUserInput {
     id: Int!
   }
+
+  input ChangePasswordInput {
+    id: Int!
+    password: String!
+    newPassword: String!
+  }
+  
 `;

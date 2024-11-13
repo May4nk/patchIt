@@ -1,11 +1,3 @@
-.block {
-  display: block;
-}
-
-.none {
-  display: none;
-}
-
 .setuserboxoverlay {
   position: fixed;
   top: 0;
@@ -20,17 +12,17 @@
 }
 
 .setuserbox {
-  min-width: 27%;
-  box-shadow: 5px 5px #0d0c0c;
-  display: flex;
   height: 80%;
+  min-width: 27%;
+  padding: 1rem;
+  display: flex;
   justify-content: flex-start;
   align-items: flex-start;
   flex-direction: column;
-  padding: 1rem;
-  background: #0f1213c7;
   border-radius: 0.5rem;
+  background: #090a0bc7;
   color: rgba(255,255,255,0.7);
+  box-shadow: 5px 5px #0d0c0c;
 }
 
 .newusersetuplogowrapper {
@@ -64,12 +56,12 @@
 
 .newuserusernametitle {
   font-weight: 500;
-  font-size: 1.1rem;
+  font-size: 1.1vw;
   margin-top: auto;
 }
 
 .newuserusernametitle1 {
-  font-size: 0.9rem;
+  font-size: 0.9vw;
   font-weight: 500;
   margin: 1rem 0;
 }
@@ -80,48 +72,44 @@
   height: 2.5rem;
 }
 
-
 .newuserbackgroundbox, .newuserprofilepicbox {
   display: flex;
-  width: 100%;
   align-items: center;
   justify-content: center;
-  border: 0.1rem solid rgba(255,255,255,0.1);
-  background: rgba(0,0,0,0.3);
   height: 60%;
   width: 37rem;
+  margin-top: 1rem;
   border-radius: 0.5rem;
-}
-
-.newuserbackgroundpic {
-  height: 100%;
-  width: 100%;
-  border-radius: 0.5rem;
+  background-color: black;
 }
 
 .newuserprofilepicbox {
-  border-radius: 50%;
-  height: 21rem;
-  width: 21rem;
-  margin: 0 2rem;
-  align-self: center;
+  width: 22rem;
 }
 
-.newuserprofilepic {
+.newuserpicwrapper {
   height: 100%;
   width: 100%;
-  border-radius: 50%;
+  border-radius: 0.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
+.newuserpic {
+  max-height: 100%;
+  max-width: 100%;
+  border-radius: inherit;
+}
 
-.profilepicdel {
-  margin-top: -1rem;
-  margin-left: 18%;
-  cursor: pointer;
+.delicn {
+  font-size: 1.3vw !important;
+  height: 100% !important;
+  line-height: 16px !important;
 }
 
 .delicn:hover {
-  color: #F44336;
+  color: #fa675c;
 }
 
 .bgpicdel {
@@ -181,12 +169,8 @@
 }
 
 .setusername {
-  margin-top: 1rem;
-  display: flex;
-  margin-left: auto;
-  align-items: center;
-  justify-content: flex-end;
-  width: 100%;
+  margin-top: 1rem;  
+  margin-left: auto;    
 }
 
 .setusernamebtn {
@@ -194,11 +178,13 @@
   justify-content: center;
   align-items: center;
   border-radius: 1.5rem;
-  width: 7rem;
-  font-weight: 600;
-  height: 2rem;
-  font-size: 0.8rem;
+  padding: 0.3vw 0.9vw;
+  font-weight: 500;
+  line-height: 16px;
+  font-size: 0.9vw;
   text-transform: capitalize;
+  color: black;
+  background-color: var(--main-color);
 }
 
 #newuserbgpic, #newuserdp {

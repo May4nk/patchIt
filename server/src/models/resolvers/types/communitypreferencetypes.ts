@@ -1,27 +1,28 @@
 import { communitytype } from "./communitiestypes";
+import { usertype } from "./usertypes";
 
-export interface communitypreferencetype {
+interface communitypreference {
+  nsfw: boolean;
+  allowppltofollow: boolean;
+  newuserreq: boolean;
+  reportonpost: boolean;
+  reportoncmnt: boolean;
+  reportonuser: boolean;
+  activityincommunity: boolean;
+  birthday: boolean;
+}
+
+export interface communitypreferencetype extends communitypreference {
   id: number;
-  community_name: communitytype; 
-  nsfw: boolean;
-  allowppltofollow: boolean;
-  newuserreq: boolean;
-  reportonpost: boolean;
-  reportoncmnt: boolean;
-  reportonuser: boolean;
-  activityincommunity: boolean;
-  birthday: boolean;
+  handlers: string;
 }
 
-export interface communitypreferencefiltertype {
-  community_name: string; 
-  nsfw: boolean;
-  allowppltofollow: boolean;
-  newuserreq: boolean;
-  reportonpost: boolean;
-  reportoncmnt: boolean;
-  reportonuser: boolean;
-  activityincommunity: boolean;
-  birthday: boolean;
+export interface communitypreferenceresolvertype extends communitypreference {
+  id: number;
+  community_name: communitytype;
+  handers: usertype[];
 }
 
+export interface communitypreferencefiltertype extends communitypreference {
+  community_name: string;
+}

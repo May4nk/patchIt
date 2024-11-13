@@ -1,7 +1,12 @@
 html {
-  background: #111010;
   width: 100%;
   min-height: 100%;
+  scroll-behavior: smooth;
+  background: #111010;
+  --main-color: #8ac7f8;
+  --main-background-color: #2196F3;
+  --main-background-inactive-color: #436079;
+  --main-meta-no-highlight-text-color: rgba(255, 255, 255, 0.4);
 }
 
 body {
@@ -16,9 +21,11 @@ body {
   width: 100%;
   z-index: 1000;
   box-shadow: 1px 3px 3px black;
+  height: 4.7vw;
 }
 
-.fcontainer, .othercontainer {
+.fcontainer,
+.othercontainer {
   height: 100%;
   display: flex;
   background: #111010a6;
@@ -53,7 +60,8 @@ body {
   width: 100%;
 }
 
-.content, .nocontent {
+.content,
+.nocontent {
   padding: 7px;
   display: flex;
   flex-basis: 81%;
@@ -66,4 +74,94 @@ body {
 .nocontent {
   flex-basis: 100%;
   margin-left: 21%;
+}
+
+.themecolor {
+  color: var(--main-color) !important;
+}
+
+.themebg {
+  background-color: var(--main-background-color) !important;
+}
+
+.thememetanhtext {
+  color: var(--main-meta-no-highlight-text-color) !important;
+}
+
+.themeinactivebtnbg {
+  background-color: var(--main-background-inactive-color) !important;
+}
+
+.block {
+  display: block;
+}
+
+.none {
+  display: none;
+}
+
+.overlay,
+.overlay1 {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.9);
+  z-index: 100;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.overlay1 {
+  backdrop-filter: blur(8px);
+}
+
+.checkerror,
+.infoerror,
+.successerror {
+  font-size: 0.9vw;
+  font-weight: 500;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  line-height: 16px;
+  padding: 0.2rem 0.5rem;
+  border-radius: 2rem;
+  position: absolute;
+  top: 1vw;
+  opacity: 0;
+  transform: translateX(-100%);
+  transition: opacity 0.3s ease, transform 0.5s ease;
+}
+
+.checkerror {
+  color: black;
+  background-color: #E57373 !important;
+}
+
+.infoerror {
+  color: black;
+  background-color: #41494de0 !important;
+}
+
+.successerror {
+  color: black;
+  background-color: rgb(169, 190, 194) !important;
+}
+
+.checkerror.showerror,
+.infoerror.showerror,
+.successerror.showerror {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.checkerroricn {
+  font-size: 1.2vw !important;
+  font-weight: 500 !important;
+  height: 100% !important;
+  line-height: 16px !important;
+  margin-right: 0.3rem;
 }

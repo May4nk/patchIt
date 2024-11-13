@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { useAuth } from "../../common/hooks/useAuth";
+import { useAuth } from "../../utils/hooks/useAuth";
 
 //css & types
 import "./css/infouserscommunity.css";

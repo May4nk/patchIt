@@ -1,18 +1,15 @@
 import React from 'react';
+
+//component
 import Askinput from '../../html/Askinput';
+
 //css & types
 import "../css/chatmsgs.css";
-import { chatgroupusertype } from '../types';
-
-interface chatgroupcardprops {
-  roomName: string;
-  setRoomName: React.Dispatch<React.SetStateAction<string>>;
-  chatgroupUsers: chatgroupusertype[];
-  setChatgroupUsers: React.Dispatch<React.SetStateAction<chatgroupusertype[]>>;
-}
+import { chatgroupusertype, chatgroupcardprops } from '../types';
 
 function Chatgroupcard(chatgroupcardprops: chatgroupcardprops) {
   const { roomName, setRoomName, chatgroupUsers, setChatgroupUsers } = chatgroupcardprops;
+
   //handlers
   const handleRemoveSelectedUser: (id: number) => void = (id: number) => {
     const tempGroupUsers: chatgroupusertype[] = chatgroupUsers.filter((user: chatgroupusertype) => (
@@ -25,16 +22,16 @@ function Chatgroupcard(chatgroupcardprops: chatgroupcardprops) {
     <>
       <div className="groupname">
         <Askinput
-          placeholder={"Room Name"}
           value={roomName}
+          placeholder={"Room Name"}
           onChange={(e: any) => setRoomName(e.target.value)}
-          required={true}
         />
       </div>
       <div className="selectedGroupUsers">
         {chatgroupUsers.map((groupUser: chatgroupusertype, idx: number) => (
-          <div className="groupUser waves-light waves-effect"
+          <div
             key={idx}
+            className="groupUser waves-light waves-effect"
             onClick={() => handleRemoveSelectedUser(groupUser.id)}
           >
             {groupUser.username}

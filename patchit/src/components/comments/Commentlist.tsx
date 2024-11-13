@@ -2,32 +2,32 @@ import React from "react";
 
 //component
 import Comments from "./Comment";
-import Zeropostcard from "../Zeropostcard";
+import Zeropostcard from "../cards/Zeropostcard";
 
-//css
+//css & types
 import "./css/commentlist.css";
-import { commentlistprops } from "./types";
+import { commentlistprops, commenttype } from "./types";
 
 const Commentlist = (commentlistprops: commentlistprops) => {
   const { rootcomments, allcomments, setNewComment, newComment, setParentComment } = commentlistprops;
 
   return (
     <div className="allcomments">
-      { rootcomments?.length > 0 ? (
-        rootcomments?.map((comment: any, idx: number) => (
+      {rootcomments?.length > 0 ? (
+        rootcomments?.map((comment: commenttype, idx: number) => (
           <Comments
-            data={ comment }
-            key={ idx }
-            childcomments={ allcomments }
-            setNewComment={ setNewComment }
-            newComment={ newComment }
-            setParentComment={ setParentComment }
+            key={idx}
+            data={comment}
+            newComment={newComment}
+            childcomments={allcomments}
+            setNewComment={setNewComment}
+            setParentComment={setParentComment}
           />
         ))
       ) : (
         <Zeropostcard
-          title={ "No comments done yet!!" }
-          openstate={ false }
+          title={"No comments done yet!!"}
+          openstate={false}
           content={[
             {
               title: "Be first to comment here",

@@ -1,34 +1,49 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-import "./css/loadingpage.css"; //css
-
-const logo:string = require("../img/loading_logo.png");
-
+//css, image & types
+import "./css/loadingpage.css";
+const logo: string = require("../img/loading_logo.png");
 interface loadingpageprops {
-  err?: string
+  err?: string;
+  msg?: string;
+  onErrorMsg?: string;
+  onError?: () => void;
 }
 
 const Loadingpage = (loadingpageprops: loadingpageprops) => {
-  const { err } = loadingpageprops;
+  const { msg, err, onError, onErrorMsg } = loadingpageprops;
   const navigate = useNavigate();
 
   useEffect(() => {
-    if(err) {
+    if (err || msg) {
       setTimeout(() => {
-        navigate("/home");
+        onError ? onError() : navigate("/home");
       }, 3000);
     }
-  }, [err])
+  }, [err]);
 
-  return(
+  return (
     <div className="loadingwrapper">
-      <div className="btn-floating loadinglogo1 pulse">
-        <img src={ logo } id="loadinglogo" alt={"loading_logo"}/>
+      <div className="btn-floating loadinglogowrapper pulse">
+        <img
+          src={logo}
+          id="loadinglogo"
+          alt={"loading_logo"}
+        />
       </div>
-      <div className="loadingtext"> { err ? err : "Loading..." } </div>
-      { err && (
-        <div className="loadingmetatext"> Redirecting... </div>
+      <div className="loadingtext">
+        {err
+          ? `Error: ${err.length > 37 ? err.substring(0, 47) + "..." : err}`
+          : msg
+            ? msg
+            : "Loading..."
+        }
+      </div>
+      {(err || msg) && (
+        <div className="loadingmetatext">
+          {onErrorMsg ? onErrorMsg : "Redirecting..."}
+        </div>
       )}
     </div>
   )

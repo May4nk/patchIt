@@ -1,32 +1,14 @@
-import { usertype } from "../../resolvers/types/usertypes.js";
-
-interface logintype {
+export interface logintype {
   username: string;
   password: string;
 }
 
-interface magiclinktype {
+export interface magiclinktype {
+  message: string;
   email: string;
-}
-
-export interface magiclinkdatatype {
-  data: magiclinktype;
+  password: string;
 }
 
 export type rusertype = {
   id: number;
-}
-
-export interface userdatatype {
-  data: usertype;
-}
-
-export interface remuserdatatype {
-  data: rusertype;
-}
-
-export interface logindatatype {
-  data: logintype;
-}
-
-
+};

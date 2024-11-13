@@ -2,8 +2,7 @@
 /node_modules
 /lib
 
-.env.dev
-
+.gitignore
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*

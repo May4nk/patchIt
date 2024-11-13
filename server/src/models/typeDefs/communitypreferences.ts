@@ -10,6 +10,7 @@ export const communitypreferencesTypeDefs = `
     reportonuser: Boolean
     activityincommunity: Boolean
     birthday: Boolean
+    handlers: [User]
   } 
 
   input InsertCommunityPreferencesInput {
@@ -22,18 +23,21 @@ export const communitypreferencesTypeDefs = `
     reportonuser: Boolean
     activityincommunity: Boolean
     birthday: Boolean
+    handlers: String
   }
+
   input CommunityPreferencesfilterInput {
-    community_name: Int
+    community_name: String
     nsfw: Boolean
     allowppltofollow: Boolean
     newuserreq: Boolean
     reportonpost: Boolean
     reportoncmnt: Boolean
     reportonuser: Boolean
-    activityincommunity: Boolean
     birthday: Boolean
+    activityincommunity: Boolean
   }
+
   input RemoveCommunityPreferencesInput {
     community_name: Int!
   }

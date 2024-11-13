@@ -1,12 +1,12 @@
-export interface communities {
+export interface communitytype {
   id: number;
+  about: string;
   communityname: string;
-  description: string;
 }
 
 export interface searchdropprops {
-  community: communities;
   search?: boolean;
+  community: communitytype;
 }
 
 export interface searchboxprops {

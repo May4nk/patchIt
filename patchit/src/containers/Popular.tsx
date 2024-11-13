@@ -1,47 +1,32 @@
 import React, { useEffect, useState } from "react";
-import { useQuery, useLazyQuery } from "@apollo/client";
+import { useLazyQuery } from "@apollo/client";
 
 //components
-import Loadingpage from "../components/Loadingpage";
-import Post from "../components/Post";
-import Infosection from "../components/infosection/Info";
-import Popularpagecard from "../components/Popularpagecard";
+import Post from "../components/post/Post";
 import Sortpanel from "../components/Sortpanel";
+import Loadingpage from "../components/Loadingpage";
+import Infosection from "../components/infosection/Info";
+import Popularpagecard from "../components/cards/Popularpagecard";
 
 //queries
-import { GETALLPOSTS } from "./queries/common";
-import { GETPOPULARCARDPOSTS } from "./queries/popular";
+import { GETALLPOSTS, GETPOPULARCARDPOSTS } from "./queries/common";
 
 //css
 import "./css/main.css";
 import "./css/popular.css";
-import { popularcardtype } from "./types/popular";
-import { posttype } from "../types/posttype";
+import { posttype, popularcardtype } from "../utils/main/types";
 
-const Popular = () => {  
+const Popular = () => {
+  //states
   const [sortby, setSortby] = useState<string>("likes");
- 
-  const [getPopularPosts, { data: popularPostsData, loading: popularPostsLoading }] = useLazyQuery(GETALLPOSTS);
 
-  const { data: cardPostsData, loading: cardPostsLoading } = useQuery(GETPOPULARCARDPOSTS, {
-    variables: {
-      sort: [
-        {
-          column: "likes",
-          nulls: "last",
-          order: "desc"
-        }
-      ],
-      limit: 4,
-      filter: {
-        status: "ACTIVE",
-        privacy: "PUBLIC"
-      }
-    }
-  });
+  //queries
+  const [getPopularCards, { data, loading, error }] = useLazyQuery(GETPOPULARCARDPOSTS);
+  const [getPosts, { data: postsData, loading: postsLoading, error: postsError }] = useLazyQuery(GETALLPOSTS);
 
+  //handlers
   useEffect(() => {
-    getPopularPosts({
+    getPosts({
       variables: {
         "sort": [
           {
@@ -49,48 +34,83 @@ const Popular = () => {
             "nulls": "last",
             "order": "desc"
           }
-        ],    
+        ],
         filter: {
           privacy: "PUBLIC",
           status: "ACTIVE"
         }
       }
     });
-  }, [sortby, getPopularPosts]);
+  }, [sortby]);
 
-  if (cardPostsLoading) {
-    return ( <Loadingpage /> )
+  useEffect(() => {
+    getPopularCards({
+      variables: {
+        sort: [
+          {
+            column: "likes",
+            nulls: "last",
+            order: "desc"
+          }
+        ],
+        limit: 4,
+        filter: {
+          status: "ACTIVE",
+          privacy: "PUBLIC"
+        }
+      }
+    });
+  }, []);
+
+  if (loading) {
+    return (
+      <Loadingpage />
+    )
+  } else if (error) {
+    return (
+      <Loadingpage err={error.message} />
+    )
   } else {
     return (
       <>
-        <div className="contenttitle"> Trending </div>
-        <div className="contentfilter">
-          { cardPostsData?.listPosts?.map((post: popularcardtype, idx: number) => (
-            <Popularpagecard data={ post } key={ idx }/>
-          ))}
-        </div>
-        <div className="contenttitle">Popular</div>
-        <div className="flexy">
-          <div className="contentpost">
-            <div className="postsort">
-              <Sortpanel sort={ sortby } setSort={ setSortby } />
-            </div>
-            { !popularPostsLoading ? (
-              popularPostsData?.listPosts?.map((post: posttype, idx: number) => (
-                <Post 
-                  key={ idx } 
-                  postData={ post } 
-                  showcommunity={ post.community_id === null ? false : true }
+        {data?.listPosts?.length > 0 && (
+          <>
+            <div className="popularpagetitle"> Trending </div>
+            <div className="popularpagecards">
+              {data?.listPosts?.map((post: popularcardtype, idx: number) => (
+                <Popularpagecard
+                  key={idx}
+                  data={post}
                 />
-              ))) : (
-                <Loadingpage />
-              )
-            } 
-          </div>
-          <div className="contentinfo">
-            <Infosection />
-          </div>
-        </div>
+              ))}
+            </div>
+          </>
+        )}
+        {(postsLoading) ? (
+          <Loadingpage />
+        ) : (postsError) ? (
+          <Loadingpage err={postsError.message} />
+        ) : (
+          postsData?.listPosts.length > 0 && (
+            <div className="flexy">
+              <div className="patchcontent">
+                <div className="postsort">
+                  <Sortpanel sort={sortby} setSort={setSortby} />
+                </div>
+                {postsData?.listPosts?.map((post: posttype, idx: number) => (
+                  <Post
+                    key={idx}
+                    postData={post}
+                    showcommunity={post.community_id !== null}
+                  />
+                ))}
+              </div>
+              <div className="contentinfo">
+                <Infosection />
+              </div>
+            </div>
+          ))
+        }
       </>
     );
   }

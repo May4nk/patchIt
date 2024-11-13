@@ -1,0 +1,153 @@
+.commentcard {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  flex-direction: column;
+  color: grey;
+  border-radius: 0.5rem;
+  margin-top: 1rem;
+  background: #090808e8;
+  box-shadow: 1px 1px black;
+  padding: 0.5rem;
+  width: 100%;
+}
+
+.commentcardpost {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.commentcardpostpicwrapper {
+  width: 2vw;
+  height: 2vw;
+  border-radius: 50%;
+}
+
+.commentcardpostpic {
+  height: 100%;
+  width: 100%;
+  border-radius: 50%;
+}
+
+.commentcardcommunityname {
+  font-size: 0.9vw;
+  color: rgba(255, 255, 255, 0.7);
+  padding: 0 0.5rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.commentcardcommunityname:hover {
+  color: white;
+}
+
+.commentcardposttitle {
+  padding: 0.5rem;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.cmntoverviewcontent {
+  background: rgba(0, 0, 0, 0.336);
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  font-size: 1vw;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  width: 100%;
+  max-width: 51vw;
+}
+
+.cmntoverviewmetacontent {
+  padding-left: 1rem;
+  color: rgba(255, 255, 255, 0.9);
+  border-radius: 0.5rem;
+  font-size: 1vw;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  max-width: 100%;
+  width: 100%;
+  display: inline-block;  
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+.parentcmnt {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  flex-direction: column;
+  font-size: 0.9vw;
+}
+
+.cmntheader,
+.parentcmntheader {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  font-size: 0.8rem;
+}
+
+.cmntpicwrapper,
+.parentcmntpicwrapper {
+  height: 1.5rem;
+  width: 1.5rem;
+  border-radius: 50%;
+  margin-right: 0.5rem;
+}
+
+.cmntpic,
+.parentcmntpic {
+  height: 100%;
+  width: 100%;
+  border-radius: 50%;
+}
+
+.cmntheaderusername,
+.cmntheaderreplyusername {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.cmntheaderreplyusername {
+  margin-left: 0.3rem;
+}
+
+.cmntheaderusername:hover,
+.cmntheaderreplyusername:hover {
+  color: white;
+  cursor: pointer;
+}
+
+.parentcmnttxt {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.8vw;
+  background: rgba(255, 255, 255, 0.005);
+  margin: 0.5rem 0.9rem;  
+  padding-left: 0.7rem;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  max-width: 45vw;
+  width: 100%;
+}
+
+.parentcmntcreated {
+  margin-left: 0.3rem;
+  font-size: 0.7vw;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.commenttxt {
+  padding: 0.3rem;
+  font-size: 1vw;
+  color: rgba(255, 255, 255, 0.9);
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  max-width: 100%;
+  display: inline-block;
+  width: 100%;
+  overflow-wrap: break-word;
+}

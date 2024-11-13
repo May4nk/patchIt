@@ -1,18 +1,19 @@
 import React, { useState } from 'react';
+
 //components
-import Patchip from '../../components/html/Patchip';
+import Settingtab from '../../components/settings/Settingtab';
+import Blockedbox from '../../components/settings/Blockedbox';
+
 //css & types
 import "./profilesettings.css";
-import { privacystatetype } from './profilesettingtypes';
-interface privacyprops {
-  handleChange: (e: any, statename: string) => void;
-  privacyState: privacystatetype;
-}
+import { privacytabpropstype } from './types';
 
-function Privacytab(privacyprops: privacyprops) {
+function Privacytab(privacyprops: privacytabpropstype) {
   const { privacyState, handleChange } = privacyprops;
 
-  const [showBox, setShowBox] = useState<boolean>(false);  
+  //states
+  const [showMutedBox, setShowMutedBox] = useState<boolean>(false);
+  const [showBlockedBox, setShowBlockedBox] = useState<boolean>(false);
 
   return (
     <>
@@ -26,10 +27,10 @@ function Privacytab(privacyprops: privacyprops) {
               Blocked people can’t send you chat requests or private messages.
             </div>
           </div>
-          <div className="waves-effect waves-light black-text blue usettingitembtn"
-            onClick={() => setShowBox(!showBox)}
+          <div className="waves-effect waves-light black-text usettingitembtn"
+            onClick={() => setShowBlockedBox(!showBlockedBox)}
           >
-            Update
+            {showBlockedBox ? "hide" : "Update"}
           </div>
         </div>
         <div className="usettingitems">
@@ -39,69 +40,44 @@ function Privacytab(privacyprops: privacyprops) {
               Posts from muted communities won't show up in your feeds or recommendations.
             </div>
           </div>
-          <div className="waves-effect waves-light black-text blue usettingitembtn">
-            Change
+          <div className="waves-effect waves-light black-text usettingitembtn"
+            onClick={() => setShowMutedBox(!showMutedBox)}
+          >
+            {showMutedBox ? "hide" : "Update"}
           </div>
         </div>
         <div className="usettingtitlemeta"> privacy </div>
-        <div className="usettingitems">
-          <div className="usettingitemlabels">
-            <div className="usettingitemtitle"> Show up in search result </div>
-          </div>
-          <div className="switch">
-            <label>
-              <input
-                type="checkbox"
-                className="blue-text"
-                checked={privacyState.searchshowprofile}
-                name="searchshowprofile"
-                onChange={(e: any) => handleChange(e, "privacy")}
-              />
-              <span className="lever"></span>
-            </label>
-          </div>
-        </div>
+        <Settingtab
+          title={"Show up in search result"}
+          type={"switch"}
+          name={"searchshowprofile"}
+          value={privacyState.searchshowprofile}
+          handleChange={(e: any) => handleChange(e, "privacy")}
+        />
         <div className="usettingtitlemeta"> advanced security </div>
-        <div className="usettingitems">
-          <div className="usettingitemlabels">
-            <div className="usettingitemtitle"> Use two-factor authentication </div>
-          </div>
-          <div className="switch">
-            <label>
-              <input
-                type="checkbox"
-                className="blue-text"
-                name="auth_twofactor"
-                checked={privacyState.auth_twofactor}
-                onChange={(e: any) => handleChange(e, "privacy")}
-              />
-              <span className="lever"></span>
-            </label>
-          </div>
-        </div>
+        <Settingtab
+          title={"Use two-factor authentication"}
+          type={"switch"}
+          name={"auth_twofactor"}
+          value={privacyState.auth_twofactor}
+          handleChange={(e: any) => handleChange(e, "privacy")}
+        />
       </div>
-      {showBox && (
-        <div className="privacybox">
-          <div className="privacyboxtitle">
-            blocked people
-          </div>
-          <div className="privacyboxbody">
-            {privacyState?.blocked && (
-              privacyState?.blocked?.map((uname: string, idx: number) => (
-                <Patchip
-                  key={idx}
-                  title={uname}
-                />
-              ))
-            )}
-          </div>
-          <div className="privacyboxfooter">
-            <div className="blue black-text waves-effect waves-light privacyboxbtn">
-              update
-            </div>
-          </div>
-        </div>
-      )}
+      <div className="actionboxes">
+        {showBlockedBox && (
+          <Blockedbox
+            blockedUsers={privacyState?.blocked}
+            setShowBlockedBox={setShowBlockedBox}
+          />
+        )}
+        {showMutedBox && (
+          <Blockedbox
+            title={"Muted"}
+            blockedUsers={privacyState?.blocked}
+            setShowBlockedBox={setShowMutedBox}
+          />
+        )}
+      </div>
     </>
   )
 }

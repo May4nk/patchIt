@@ -1,132 +1,197 @@
-import React from 'react';
-//css & types
+import React, { useEffect, useState } from 'react';
+
+//component
+import Settingtab from '../../components/settings/Settingtab';
+import Socialbox from '../../components/settings/Socialbox';
+import Askinput from '../../components/html/Askinput';
+
+//css, image & types
 import "./profilesettings.css";
-import { profilestatetype, userdatatype, modalstatetype } from './profilesettingtypes';
-let pic: string = require("../../img/a.jpg");
-interface profileprops {
-  handleChange: (e: any, statename: string) => void;
-  profileState: profilestatetype;
-  userData: userdatatype;
-  handleModalState: (mstate: modalstatetype) => void;
-}
+import { profileprops } from './types';
+import { PRIVACY } from '../../utils/main/types';
+import { defaultUserPic } from '../../constants/const';
+import { droppertype, profiletype } from '../../components/html/patdrop/types';
+let defaultBackgroundPic: string = require("../../img/defaultbgpic.png");
 
 function Profiletab(profileprops: profileprops) {
-  const { handleChange, profileState, userData, handleModalState } = profileprops;
+  const {
+    handleChange,
+    profileState,
+    setUserData,
+    userData,
+    handleUserUpdate,
+    profileRef,
+    wallpicRef,
+  } = profileprops;
+
+  //states
+  const [showInput, setShowInput] = useState<boolean>(false);
+  const [updatedLinks, setUpdatedLinks] = useState<string>("");
+  const [showSocialBox, setShowSocialBox] = useState<boolean>(false);
+
+  //handlers 
+  const handleUserPrivacy: (val: PRIVACY) => void = (val: PRIVACY) => {
+    setUserData({ ...userData, privacy: val });
+    handleUserUpdate("privacy", val);
+  }
+
+  const profiletypeDropperprofile: profiletype = { set: userData.privacy };
+  const profiletypeDroppers: droppertype[] = [
+    {
+      title: "PUBLIC", icn: "person_outline",
+      state: "CLICKED", event: () => handleUserPrivacy("PUBLIC")
+    },
+    {
+      title: "PRIVATE", icn: "lock_outline",
+      state: "CLICKED", event: () => handleUserPrivacy("PRIVATE")
+    },
+  ];
+
+  useEffect(() => {
+    if (updatedLinks.length > 0) {
+      setUserData({ ...userData, social_links: updatedLinks });
+    }
+  }, [updatedLinks]);
+
   return (
-    <div className="usetting">
-      <div className="usettingtitle"> Customize profile </div>
-      <div className="usettingtitlemeta"> PROFILE INFO </div>
-      <div className="usettingitems">
-        <div className="usettingitemlabels">
-          <div className="usettingitemtitle"> Background Pic </div>
-          <div className="usettingitemmetatitle"> Your Profile wall pic. </div>
-        </div>
-        <div className="waves-effect waves-light wallpicwrapper">
-          <img className="wallpic" src={pic} alt="wall_pic" />
-        </div>
-      </div>
-      <div className="usettingitems">
-        <div className="usettingitemlabels">
-          <div className="usettingitemtitle"> Profile Pic </div>
-        </div>
-        <div className="waves-effect waves-light picwrapper">
-          <img className="pic" src={pic} alt="profile_pic" />
-        </div>
-      </div>
-      <div className="usettingitems">
-        <div className="usettingitemlabels">
-          <div className="usettingitemtitle"> About </div>
-          <div className="usettingitemmetatitle">
-            {userData.about || "A brief description of yourself shown on your profile."}
-          </div>
-        </div>
-        <div className="waves-effect waves-light black-text blue usettingitembtn"
-          onClick={() => {
-            handleModalState({
-              txt: "Tell us about yourself.",
-              btntxt: "update",
-              placeholder: "About",
-              toUpdate: "about"
-            })
-          }}
-        >
-          Update
-        </div>
-      </div>
-      <div className="usettingitems">
-        <div className="usettingitemlabels">
-          <div className="usettingitemtitle"> Social links </div>
-          <div className="usettingitemmetatitle">
-            People who visit your profile will see your social links.
-          </div>
-        </div>
-        <div className="waves-effect waves-light black-text blue usettingitembtn">
-          Update
-        </div>
-      </div>
-      <div className="usettingtitlemeta"> PROFILE CATEGORY </div>
-      <div className="usettingitems">
-        <div className="usettingitemlabels">
-          <div className="usettingitemtitle"> NSFW (Not Safe For Work)</div>
-          <div className="usettingitemmetatitle">
-            This content is NSFW (may contain nudity, pornography, profanity or inappropriate content for those under 18).
-          </div>
-        </div>
-        <div className="switch">
-          <label>
-            <input
-              type="checkbox"
-              className="blue-text"
-              name="nsfw"
-              checked={profileState.nsfw}
-              onChange={(e: any) => handleChange(e, "profile")}
+    <>
+      <div className="usetting">
+        <div className="usettingtitle"> Customize profile </div>
+        <div className="usettingtitlemeta"> PROFILE INFO </div>
+        <div className="usettingitems">
+          <div className="waves-effect waves-light picwrapper">
+            <img
+              className="pic"
+              alt="profile_pic"
+              src={userData?.profile_pic || defaultUserPic}
             />
-            <span className="lever"></span>
+          </div>
+          <div className="waves-effect waves-light wallpicwrapper">
+            <img
+              alt="wall_pic"
+              className="wallpic"
+              src={userData?.background_pic || defaultBackgroundPic}
+            />
+          </div>
+        </div>
+        <div className="usettingitems">
+          <input
+            type="file"
+            accept="image/*"
+            name="profile_pic"
+            id="profileinput"
+            ref={profileRef}
+            onChange={() => handleUserUpdate("profile_pic")}
+          />
+          <label htmlFor="profileinput">
+            <div className="waves-effect waves-light blue lighten-3 black-text usettingitembtn">
+              update
+            </div>
+          </label>
+          <input
+            type="file"
+            accept="image/*"
+            id="wallpicinput"
+            name="background_pic"
+            ref={wallpicRef}
+            onChange={() => handleUserUpdate("background_pic")}
+          />
+          <label htmlFor="wallpicinput">
+            <div className="waves-effect waves-light blue lighten-3 black-text usettingitembtn">
+              update
+            </div>
           </label>
         </div>
-      </div>
-      <div className="usettingtitlemeta"> ADVANCED </div>
-      <div className="usettingitems">
-        <div className="usettingitemlabels">
-          <div className="usettingitemtitle"> Allow people to follow you </div>
-          <div className="usettingitemmetatitle">
-            Followers will be notified about posts you make to your profile and see them in their home feed.
+        <div className="usettingitems">
+          <div className="usettingitemlabels">
+            <div className="usettingitemtitle"> About </div>
+            <div className="usettingitemmetatitle">
+              {showInput ? (
+                <div className="updateinput">
+                  <Askinput
+                    name="about"
+                    value={userData?.about}
+                    placeholder={userData.about || `I m ${userData.username}, A guy with some powers.`}
+                    onChange={(e: any) => setUserData({ ...userData, about: e.target.value })}
+                  />
+                </div>
+              ) : (
+                <>
+                  {userData.about || "A brief description of yourself shown on your profile."}
+                </>
+              )}
+            </div>
+          </div>
+          <div
+            className={`waves-effect waves-light black-text usettingitembtn ${showInput && userData.about.length === 0 ? "red lighten-3" : "blue lighten-3"}`
+            }
+            onClick={showInput
+              ? userData?.about.length === 0
+                ? () => setShowInput(false)
+                : () => { handleUserUpdate("about"); setShowInput(false) }
+              : () => setShowInput(true)}
+          >
+            {showInput ? userData.about.length === 0 ? "cancel" : "update" : "change"}
           </div>
         </div>
-        <div className="switch">
-          <label>
-            <input
-              type="checkbox"
-              className="blue-text"
-              name="allowppltofollow"
-              checked={profileState.allowppltofollow}
-              onChange={(e: any) => handleChange(e, "profile")}
-            />
-            <span className="lever"></span>
-          </label>
-        </div>
-      </div>
-      <div className="usettingitems">
-        <div className="usettingitemlabels">
-          <div className="usettingitemtitle"> Content Visibility </div>
-          <div className="usettingitemmetatitle">
-            Posts to this profile can appear in c/popular or home feed of users who are following you.
+        <div className="usettingitems">
+          <div className="usettingitemlabels">
+            <div className="usettingitemtitle"> Social links </div>
+            <div className="usettingitemmetatitle">
+              People who visit your profile will see social links.
+            </div>
+          </div>
+          <div
+            onClick={() => setShowSocialBox(!showSocialBox)}
+            className="waves-effect waves-light black-text usettingitembtn"
+          >
+            {showSocialBox ? "hide" : "Update"}
           </div>
         </div>
-        <div className="switch">
-          <label>
-            <input
-              type="checkbox"
-              className="blue-text"
-              name="contentvisiblity"
-              checked={profileState.contentvisiblity}
-              onChange={(e: any) => handleChange(e, "profile")}
-            />
-            <span className="lever"></span>
-          </label>
-        </div>
+        <div className="usettingtitlemeta"> PROFILE CATEGORY </div>
+        <Settingtab
+          type={"drop"}
+          title={"Profile"}
+          droppers={profiletypeDroppers}
+          dropperProfile={profiletypeDropperprofile}
+        />
+        <Settingtab
+          name={"nsfw"}
+          type={"switch"}
+          value={profileState.nsfw}
+          title={"NSFW (Not Safe For Work)"}
+          handleChange={(e: any) => handleChange(e, "profile")}
+          metatitle={"This content is NSFW (may contain nudity, pornography, profanity or inappropriate content for those under 18)."}
+        />
+        <div className="usettingtitlemeta"> ADVANCED </div>
+        <Settingtab
+          type={"switch"}
+          name={"allowppltofollow"}
+          title={"Allow people to follow you"}
+          value={profileState?.allowppltofollow}
+          handleChange={(e: any) => handleChange(e, "profile")}
+          metatitle={"Followers will be notified about posts you make to your profile and see them in their home feed."}
+        />
+        <Settingtab
+          type={"switch"}
+          name={"contentvisiblity"}
+          title={"Content Visibility"}
+          value={profileState.contentvisiblity}
+          handleChange={(e: any) => handleChange(e, "profile")}
+          metatitle={"Posts to this profile can appear in c/popular or home feed of users who are following you."}
+        />
       </div>
-    </div>
+      {showSocialBox && (
+        <div className="actionboxes">
+          <Socialbox
+            setUpdatedLinks={setUpdatedLinks}
+            setShowSocialBox={setShowSocialBox}
+            socialMediaLinks={userData.social_links}
+            handleUpdate={() => handleUserUpdate("social_links")}
+          />
+        </div>
+      )}
+    </>
   )
 }
 

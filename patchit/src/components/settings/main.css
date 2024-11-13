@@ -1,0 +1,224 @@
+/* setting tab -----------------------------------*/
+.usettingitems {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin: 0.7rem 0;
+}
+
+.usettingitemlabels {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  flex-direction: column;
+  width: 100%;
+}
+
+.usettingitemtitle {
+  color: white;
+  margin: 0.3rem 0;
+}
+
+.usettingitemmetatitle {
+  font-size: 0.7rem;
+  color: grey;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+}
+
+.usettingitemchange {
+  width: 7%;
+  height: 53%;
+}
+
+.usettingitemdrop {
+  margin-left: auto;
+  height: 2.1rem;
+  width: 25%;
+  border-radius: 2rem;
+}
+
+.usettingitemdrop .patdropdown:hover {
+  border-radius: 2rem;
+}
+
+.usettingitemdrop .patdropdownprofile {
+  color: rgba(255, 255, 255, 0.7);
+  background-color: black;
+  font-size: 0.9rem;
+  border-radius: 2rem;
+}
+
+.usettingitemdrop .patprofile {
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+/* blocked, text & social box -----------------------------*/
+
+.privacybox,
+.socialbox,
+.textbox {
+  margin-left: 1rem;
+  width: 83%;
+  background: rgba(0, 0, 0, 0.7);
+  border-radius: 1vw;
+  padding: 0.7rem;
+  display: flex;
+  max-height: 80%;
+  height: auto !important;
+  justify-content: flex-start;
+  align-items: center;
+  flex-direction: column;
+  align-self: center;
+  margin-top: 1rem;
+}
+
+.privacyboxtitle,
+.socialboxtitle,
+.textboxtitle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #4081b9;
+  font-size: 1vw;
+  font-weight: 500;
+  width: 100%;
+  text-transform: capitalize;
+}
+
+.textboxactions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.textboxactionicns {
+  height: 100%;
+  font-size: 1vw;
+  margin-right: 0.5rem;
+  cursor: pointer;
+}
+
+.privacyboxbody,
+.socialboxbody,
+.textboxbody {
+  width: 100%;
+  height: 21vh;
+  max-height: 33vh;
+  overflow-y: auto;
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  background-image: url("../../img/prison_panda.png");
+  background-size: 32vh;
+  background-attachment: center;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.textboxbody {
+  height: 37vh;
+  max-height: 39vh;
+}
+
+.textboxarea {
+  border: none;
+  height: 100%;
+  width: 100%;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9vw;
+}
+
+.socialboxbody {
+  background-image: url("../../img/social_panda.png");
+}
+
+.sociallinks {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+}
+
+.privacyboxfooter,
+.socialboxfooter,
+.textboxfooter {
+  width: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  margin-top: 0.5rem;
+}
+
+.addsocial {
+  cursor: pointer;
+  border: 0.1px solid;
+  border-radius: 0.5rem;
+  font-size: 1.3rem !important;
+}
+
+.socialchipbody {
+  height: 3rem;
+  width: 3rem;
+  cursor: pointer;
+}
+
+.socialicn {
+  height: 100%;
+  width: 100%;
+  opacity: 0.5;
+}
+
+.socialicn:hover {
+  opacity: 1;
+}
+
+.socialicnlink {
+  opacity: 1;
+}
+
+.socialpic {
+  height: 2rem;
+  width: 2rem;
+  cursor: pointer;
+}
+
+.sociallinkinp {
+  height: 2rem;
+  width: 83%;
+  background-color: #151f27 !important;
+  border-radius: 2rem !important;
+}
+
+.sociallinkinp .custominput {
+  border: 0px !important;
+  border-radius: 2rem !important;
+}
+
+.upsertsocial {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  width: 100%;
+}
+
+.socialactionbtn {
+  border-radius: 1.5rem;
+  font-size: 0.8vw;
+  font-weight: 500;
+  text-transform: capitalize;
+  padding: 0.2rem 0.7rem;
+  margin: 0 0.3rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #436079;
+}

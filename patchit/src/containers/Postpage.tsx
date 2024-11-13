@@ -1,175 +1,188 @@
 import React, { useState, useEffect } from "react";
-import { useLazyQuery, useMutation } from "@apollo/client";
+import { useLazyQuery } from "@apollo/client";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../common/hooks/useAuth";
-import { dateFormatter } from "../common/helpers";
+
+//utils
+import { dateFormatter, defaultUPic } from "../utils/helpers";
+import { useAuth } from "../utils/hooks/useAuth";
+import {
+  getUserActionState,
+  handlePostLikes,
+  handleSavingPost,
+  updateDBPostLikeDislikes,
+  updateDBSavingPost
+} from "../utils/postopx";
+
 //component
 import Inforecommended from "../components/infosection/Inforecommended";
-import Loadingpage from "../components/Loadingpage";
+import Infocreatecard from "../components/infosection/Infocreatecard";
 import Commentspace from "../components/comments/Commentspace";
 import Patdrop from "../components/html/patdrop/Patdrop";
+import Loadingpage from "../components/Loadingpage";
 import Postpoll from "../components/post/Postpoll";
+import Postimg from "../components/post/Postimg";
+
 //queries
-import { GETPOST, SUBSCRIBETOMORECOMMENT, GETUSERALLREACTIONS } from "./queries/postpage";
-import { POSTLIKEDISLIKE, UPSERTSAVEDPOST, UPDATEPOST } from "../components/queries/post";
-//css & types & constants
+import { GETUSERALLREACTIONS } from "../components/queries/post";
+import { GETPOST, SUBSCRIBETOMORECOMMENT, GETPOSTCOMMENTS } from "./queries/postpage";
+
+//css & types, images & constants
 import "./css/main.css";
 import "./css/postpage.css";
-import { parsedimgtype } from "../components/types/posttypes";
-import { commenttype } from "../components/comments/types";
 import { authcontexttype } from "../context/types";
-import { droppertype } from "../components/html/patdrop/types";
-import { sortprofile } from "../constants/patdropconst";
-import { postdblikestype } from "../components/types/posttypes";
+import { parsedimgtype } from "../components/post/types";
+import { commenttype } from "../components/comments/types";
+import { droppertype, profiletype } from "../components/html/patdrop/types";
+import { infocreatecardprops } from "../components/infosection/types";
 import {
-  commentsubscriptiondatatype,
+  newpostlikedislikestate,
+  newpostsavingpinningstate,
+  updatedbposttype,
+  useractionstatetype
+} from "../utils/types";
+import {
+  postlikeactiontype,
+  postlikestatetype,
+  postsaveopxtype,
+  useractiontype,
+} from "../components/types/posttypes";
+import {
+  tagtype,
   subdatatype,
   postpagetype,
-  usersavedtype,
-  reactedposttype,
-  savedposttype,
-  tagtype
+  commentsubscriptiondatatype,
 } from "./types/postpage";
-//image
-let pic: string = require("../img/a.jpg");
+import { STATUS } from "../utils/main/types";
 
 const Postpage = () => {
-  const { postid } = useParams<Record<string, string>>();
-  const { user }: authcontexttype = useAuth();
-  const userId: number | null = user && Number(user["id"] || user["user_id"]);
   const navigate = useNavigate();
+
+  const { user }: authcontexttype = useAuth();
+  const { postid } = useParams<Record<string, string>>();
+  const userId: number | null = user && Number(user["id"]);
+
   //queries & mutations
-  const [getPost, { data, loading, error, subscribeToMore }] = useLazyQuery(GETPOST);
-  const [likedislikepost] = useMutation(POSTLIKEDISLIKE);
-  const [upsertSavedPost] = useMutation(UPSERTSAVEDPOST);
-  const [upsertPost] = useMutation(UPDATEPOST);
-  const [getUserReactions, {
-    data: userreactionData,
-    loading: userreactionLoading
-  }] = useLazyQuery(GETUSERALLREACTIONS);
+  const [getPost, { data, loading, error }] = useLazyQuery(GETPOST);
+  const [getUserReactions] = useLazyQuery(GETUSERALLREACTIONS);
+  const [getPostComments, {
+    data: commentsData,
+    loading: commentsLoading,
+    subscribeToMore
+  }] = useLazyQuery(GETPOSTCOMMENTS);
+
   //constants
-  const postData: postpagetype = !loading ? data?.post : {};
-  const parsedimgData: parsedimgtype[] = postData?.type === "IMAGE" ? JSON.parse(postData.content) : [];
-  const totalimg: number = parsedimgData.length;
-  const sortdroppers: droppertype[] = [
-    { value: "popular", icn: "whatshot" },
-    { value: "newest", icn: "trending_up" }
+  const postData: postpagetype = data?.post;
+  const parsedImgData: parsedimgtype[] = postData?.type === "IMAGE"
+    ? JSON.parse(postData?.content || "")
+    : [];
+
+  const sortComments: profiletype = { set: "Hot" };
+
+  const sortCommentDroppers: droppertype[] = [
+    { title: "Hot", icn: "trending_up", state: "CLICKED", event: () => setCommentSort("likes") },
+    { title: "New", icn: "timeline", state: "CLICKED", event: () => setCommentSort("created_at") },
   ];
+
   //states
-  const [currentImg, setCurrentImg] = useState<number>(0);
+  const [inCommunity, setInCommunity] = useState(false);
   const [postLikes, setPostLikes] = useState<number>(0);
   const [savedState, setSavedState] = useState<boolean>(false);
   const [pinnedState, setPinnedState] = useState<boolean>(false);
-  const [likeState, setLikeState] = useState<string>("none");
+  const [commentSort, setCommentSort] = useState<string>("likes");
+  const [likeState, setLikeState] = useState<postlikestatetype>(0);
+  const [postOwnerStatus, setPostOwnerStatus] = useState<STATUS>("ACTIVE");
 
-  const allUserActions: usersavedtype = !userreactionLoading && userreactionData?.listUsers[0];
-  //handlers
-  const postdblikes: postdblikestype = (userreact: number, type: string, postlikenumber: number) => {
-    likedislikepost({
-      variables: {
-        data: {
-          reaction: userreact,
-          post_id: Number(postData.id),
-          user_id: userId
+  //handlers  
+  const createCardData: infocreatecardprops["data"] = {
+    inCommunity,
+    ...postData?.community_id
+  }
+
+  const handlePostLikeDislike: (action: postlikeactiontype) => Promise<void> = async (action) => {
+    const updatedPostLikes: newpostlikedislikestate = await handlePostLikes(
+      userId,
+      action,
+      { likeState, postLikes }
+    );
+
+    if (updatedPostLikes?.navigateTo) {
+      navigate(updatedPostLikes.navigateTo);
+      return;
+    }
+
+    try {
+      const { newPostLikes, newLikeState } = updatedPostLikes;
+
+      let userReact: postlikestatetype = 1;
+
+      if (action === "LIKE") {
+        if (likeState === null) {
+          userReact = 1;
+        } else if (likeState === 1) {
+          userReact = 0;
+        } else if (likeState === 0) {
+          userReact = 1;
+        }
+      } else if (action === "DISLIKE") {
+        if (likeState === null) {
+          userReact = -1;
+        } else if (likeState === 0) {
+          userReact = 0;
+        } else if (likeState === 1) {
+          userReact = -1;
         }
       }
-    });
-    if (type === "+") {
-      upsertPost({
-        variables: {
-          data: {
-            id: postData.id,
-            likes: postData.likes + postlikenumber
-          }
-        }
-      });
-    } else if (type === "-") {
-      upsertPost({
-        variables: {
-          data: {
-            id: postData.id,
-            likes: postData.likes - postlikenumber
-          }
-        }
-      });
-    }
-  }
 
-  const handleLike = () => {
-    if (user) {
-      if (likeState === "none") {
-        postdblikes(1, "+", 1);
-        setPostLikes(postLikes + 1);
-        setLikeState("like");
-      } else if (likeState === "like") {
-        postdblikes(0, "-", 1);
-        setPostLikes(postLikes - 1);
-        setLikeState("none");
-      } else if (likeState === "dislike") {
-        postdblikes(1, "+", 2);
-        setPostLikes(postLikes + 2);
-        setLikeState("like");
+      const updatingDb: updatedbposttype = await updateDBPostLikeDislikes(
+        newPostLikes,
+        userReact,
+        Number(postid),
+        userId!
+      );
+
+      if (updatingDb.status !== 200) {
+        throw new Error(updatingDb.message);
       }
-    } else {
-      navigate("/account/login")
+
+      setPostLikes(newPostLikes);
+      setLikeState(newLikeState);
+
+    } catch (err) {
+      console.log(`Error updating likes: ${err}`);
     }
   }
 
-  const handleDislike = () => {
-    if (user) {
-      if (likeState === "none") {
-        postdblikes(-1, "-", 1);
-        setPostLikes(postLikes - 1);
-        setLikeState("dislike");
-      } else if (likeState === 'dislike') {
-        postdblikes(0, "+", 1);
-        setPostLikes(postLikes + 1);
-        setLikeState("none");
-      } else if (likeState === "like") {
-        postdblikes(-1, "-", 2);
-        setPostLikes(postLikes - 2);
-        setLikeState("dislike");
+  const handlePostSavingPinning: (useraction: postsaveopxtype) => Promise<void> = async (useraction: postsaveopxtype) => {
+    const updatedPostSaveState: newpostsavingpinningstate = await handleSavingPost(
+      useraction,
+      userId,
+      { savedState, pinnedState }
+    );
+
+    if (updatedPostSaveState.navigateTo) {
+      navigate(updatedPostSaveState.navigateTo);
+    };
+
+    try {
+      const { newSavedState, newPinnedState } = updatedPostSaveState;
+
+      const updatingDb: updatedbposttype = await updateDBSavingPost(
+        useraction,
+        userId,
+        Number(postid),
+        newSavedState,
+        newPinnedState,
+      );
+
+      if (updatingDb.status !== 200) {
+        throw new Error(updatingDb.message);
       }
-    } else {
-      navigate("/account/login")
-    }
-  };
 
-  const handleSavingPost: (savestate: string) => void = (savestate) => {
-    if (savestate === "save") {
-      setSavedState(!savedState);
-      upsertSavedPost({
-        variables: {
-          data: {
-            user_id: Number(userId),
-            post_id: Number(postid),
-            saved: savedState ? false : true
-          }
-        }
-      });
-    } else if (savestate === "pin") {
-      setPinnedState(!pinnedState);
-      upsertSavedPost({
-        variables: {
-          data: {
-            user_id: Number(userId),
-            post_id: Number(postid),
-            pinned: pinnedState ? false : true
-          }
-        }
-      });
-    }
-  }
+      setSavedState(newSavedState);
+      setPinnedState(newPinnedState);
 
-  const prevImg: () => void = () => {
-    if (currentImg !== 0) {
-      setCurrentImg(currentImg - 1)
-    }
-  }
-
-  const nextImg: () => void = () => {
-    if (currentImg !== (Number(totalimg) - 1)) {
-      setCurrentImg(currentImg + 1)
+    } catch (err) {
+      console.log(err);
     }
   }
 
@@ -177,16 +190,13 @@ const Postpage = () => {
     let unsubscribe = subscribeToMore({
       document: SUBSCRIBETOMORECOMMENT,
       onError: err => console.log(err),
-      updateQuery: (prev: { post: postpagetype }, { subscriptionData }: commentsubscriptiondatatype) => {
+      updateQuery: (prev: { listComments: commenttype[] }, { subscriptionData }: commentsubscriptiondatatype) => {
         const subdata: subdatatype = subscriptionData?.data;
         if (!subdata) return prev;
         const newComment: commenttype[] = subdata?.newComment;
-        return Object.assign({}, prev, {
-          post: {
-            ...prev?.post,
-            comments: [...prev?.post.comments, ...newComment]
-          }
-        });
+        return {
+          listComments: [...prev?.listComments, ...newComment,]
+        };
       }
     });
 
@@ -194,60 +204,85 @@ const Postpage = () => {
   }, [subscribeToMore]);
 
   useEffect(() => {
+    if (postid && !commentsLoading) {
+      getPostComments({
+        variables: {
+          filter: {
+            post_id: Number(postid!)
+          },
+          sort: [{ column: commentSort, order: "asec", nulls: "last" }]
+        }
+      });
+    }
+  }, [postid, commentSort])
+
+  useEffect(() => {
     if (postid) {
       getPost({
         variables: {
           postId: Number(postid!)
-        }
-      }).then(({ data }: { data: { post: postpagetype } }) => {
-        if (data) {
-          setPostLikes(data?.post?.likes);
-        }
-      });
-    }
-  }, [postid, getPost]);
+        },
+        onCompleted: ({ post }: { post: postpagetype }) => {
+          if (post) {
+            setPostLikes(post?.likes);
+            if (post?.owner?.status !== "ACTIVE") {
+              setPostOwnerStatus(post?.owner?.status);
+            }
 
-  useEffect(() => {
-    if (userId !== null) {
-      getUserReactions({
-        variables: {
-          filter: {
-            id: userId!
+            if (userId) {
+              getUserReactions({
+                variables: {
+                  filter: {
+                    id: userId
+                  }
+                },
+                onCompleted: ({ listUsers }) => {
+                  if (listUsers) {
+                    const userActions: useractiontype = listUsers[0];
+
+                    const userSaved: useractiontype["savedposts"] = userActions?.savedposts;
+                    const userReacted: useractiontype["reactedposts"] = userActions?.reactedposts;
+                    const userCommunities: useractiontype["communities"] = userActions?.communities;
+
+                    const getUserActions: useractionstatetype = getUserActionState(
+                      Number(post?.community_id.id),
+                      Number(postid),
+                      userSaved,
+                      userReacted,
+                      userCommunities
+                    );
+
+                    const { savedState, pinnedState, likedState, joinedState } = getUserActions;
+
+                    setSavedState(savedState);
+                    setPinnedState(pinnedState);
+                    setLikeState(likedState);
+                    setInCommunity(joinedState);
+                  }
+                }
+              });
+            } else {
+              setLikeState(0);
+              setPinnedState(false);
+              setSavedState(false);
+            }
           }
         }
-      });
-      setLikeState("none");
-      setPinnedState(false);
-      setSavedState(false);
-
-      const userSaved: usersavedtype["savedposts"] = allUserActions?.savedposts;
-      const userReacted: usersavedtype["reactedposts"] = allUserActions?.reactedposts;
-
-      if (userSaved?.length > 0) {
-        if (userSaved?.some((post: savedposttype) => (post.saved && post?.post_id?.id === Number(postid!)))) {
-          setSavedState(true);
-        }
-
-        if (userSaved?.some((post: savedposttype) => (post.pinned && post?.post_id?.id === Number(postid!)))) {
-          setPinnedState(true);
-        }
-      }
-
-      if (userReacted?.length > 0) {
-        if (userReacted?.some((post: reactedposttype) => (post.reaction === 1 && post?.post_id?.id === Number(postid!)))) {
-          setLikeState("like");
-        }
-
-        if (userReacted?.some((post: reactedposttype) => (post.reaction === -1 && post?.post_id?.id === Number(postid!)))) {
-          setLikeState("dislike");
-        }
-      }
-    } else {
-      setLikeState("none");
-      setPinnedState(false);
-      setSavedState(false);
+      })
     }
-  }, [userId, allUserActions, postid, getUserReactions])
+  }, [userId, postid]);
+
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (hash.includes("#comment") && !commentsLoading) {
+      setTimeout(() => {
+        const commentsSection = document.getElementById(hash.substring(1));
+        if (commentsSection) {
+          commentsSection.scrollIntoView({ behavior: "smooth" });
+        }
+      }, 500)
+    }
+  }, [postid]);
 
   if (loading) {
     return (<Loadingpage />)
@@ -256,25 +291,38 @@ const Postpage = () => {
   } else {
     return (
       <div className="flexy">
-        <div className="contentpost">
+        <div className="patchcontent">
           <div className="postpageheader">
             <div className="userpicwrapper">
-              <img src={pic} className="userpic" alt={"user_profile_pic"} />
+              <img
+                className="userpic"
+                alt={"user_profile_pic"}
+                src={postData?.owner?.profile_pic}
+                onError={defaultUPic}
+              />
             </div>
             <div className="postpageheadlineinfo" >
               <div className="postpageinfo">
-                <Link to={`/u/${postData?.owner?.username}`} className="username">
-                  u/{postData?.owner?.username}
-                </Link>
-                {postData?.community_id !== null && (
-                  <div className="communityname">
-                    in
-                    <Link to={`/c/${postData?.community_id?.communityname}`}>
-                      <div className="communitynametxt">
-                        c/{postData?.community_id?.communityname}
-                      </div>
-                    </Link>
+                {postOwnerStatus !== "ACTIVE" ? (
+                  <div className="username">
+                    deleted
                   </div>
+                ) : (
+                  <>
+                    <Link to={`/u/${postData?.owner?.username}`} className="username">
+                      u/{postData?.owner?.username}
+                    </Link>
+                    {postData?.community_id !== null && (
+                      <div className="communityname">
+                        in
+                        <Link to={`/c/${postData?.community_id?.communityname}`}>
+                          <div className="communitynametxt">
+                            c/{postData?.community_id?.communityname}
+                          </div>
+                        </Link>
+                      </div>
+                    )}
+                  </>
                 )}
               </div>
               <div className="created">
@@ -297,18 +345,8 @@ const Postpage = () => {
           )}
           {postData?.type === "IMAGE" ? (
             <div className="postpagepostwrapper">
-              <img src={require(`../img/${parsedimgData[currentImg].postSrc}`)} className="postpagepost" alt={"pic"} />
-              {totalimg > 1 && (
-                <>
-                  <div className="allimages"> {`${currentImg + 1} / ${totalimg}`} </div>
-                  <i className="material-icons leftimagebutton" onClick={prevImg}> chevron_left </i>
-                  <i className="material-icons rightimagebutton" onClick={nextImg}> chevron_right </i>
-                </>
-              )}
-              {parsedimgData[currentImg]?.postCaption && (
-                <div className="postpage_caption">
-                  {parsedimgData[currentImg]?.postCaption}
-                </div>
+              {postData?.content && (
+                <Postimg postImgData={parsedImgData} />
               )}
             </div>
           ) : postData?.type === "BLOG" ? (
@@ -327,40 +365,71 @@ const Postpage = () => {
               {postData?.content}
             </a>
           )}
-          <div className="postpagepostinfo">
-            <div className="postpagepostinfotabs">
-              <i className={`material-icons icnspaceup ${likeState === "like" && "blue-text"}`} onClick={handleLike}>
+          <div className="postpagefooter">
+            <div className="postpagefootertabs">
+              <i
+                onClick={() => handlePostLikeDislike("LIKE")}
+                className={`material-icons icnspaceup ${likeState === 1 && "blue-text"}`}
+              >
                 mood
               </i>
               {postLikes || 0}
-              <i className={`material-icons icnspacedown ${likeState === "dislike" && "red-text"}`} onClick={handleDislike}>
+              <i
+                onClick={() => handlePostLikeDislike("DISLIKE")}
+                className={`material-icons icnspacedown ${likeState === -1 && "red-text"}`}
+              >
                 sentiment_very_dissatisfied
               </i>
             </div>
             {user && (
-              <div className="postpagepostinfotabs waves-effect waves-light" onClick={() => handleSavingPost("save")}>
-                <i className={`material-icons icnspacesave ${savedState && "blue-text"}`}>
-                  bookmark_outline
-                </i>
-                Save
-              </div>
+              <>
+                <div
+                  onClick={() => handlePostSavingPinning("SAVE")}
+                  className="postpagefootertabs waves-effect waves-light"
+                >
+                  <i className={`material-icons icnspacesave ${savedState && "blue-text"}`}>
+                    bookmark_outline
+                  </i>
+                  Save
+                </div>
+                <div
+                  onClick={() => handlePostSavingPinning("PIN")}
+                  className="postpagefooterpintab waves-effect waves-light"
+                >
+                  <i className={`material-icons icnspacesave ${pinnedState && "red-text text-lighten-2"}`}>
+                    location_on
+                  </i>
+                  Pin
+                </div>
+
+              </>
             )}
           </div>
           <div className="postpagesortby">
-            {postData?.comments.length > 1 && (
+            {commentsData?.listComments?.length > 1 && (
               <div className="sortcomments">
-                <Patdrop profile={sortprofile} droppers={sortdroppers} />
+                <Patdrop profile={sortComments} droppers={sortCommentDroppers} />
               </div>
             )}
             <div className="postpagesortbytrim">
-              {postData?.comments.length || 0} comments
+              {commentsData?.listComments?.length || 0} comments
             </div>
           </div>
-          <div className="commentsection">
-            <Commentspace postId={Number(postData?.id)} comments={postData?.comments} />
+          <div className="commentsection" id={"comments"}>
+            {commentsLoading ? (
+              <Loadingpage />
+            ) : (
+              <Commentspace
+                postId={Number(postData?.id)}
+                comments={commentsData?.listComments}
+              />
+            )}
           </div>
         </div>
         <div className="contentinfo">
+          {postOwnerStatus !== "INACTIVE" && postData?.community_id && (
+            <Infocreatecard data={createCardData} />
+          )}
           <Inforecommended />
         </div>
       </div>

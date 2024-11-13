@@ -1,137 +1,192 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { useQuery, useMutation } from "@apollo/client";
 import { useNavigate } from 'react-router-dom';
-import { useAuth, useLogged } from "../common/hooks/useAuth";
+
+import { changeToBase64 } from "../utils/opx";
+import { useAuth, useLogged } from "../utils/hooks/useAuth";
 
 //components
 import Askinput from "../components/html/Askinput";
 import Loadingpage from "../components/Loadingpage";
 
 //queries
-import { GETPOPULARCOMMUNITIES, UPDATEUSER, JOINCOMMUNITYINBATCH } from "./queries/newusersetup";
+import { UPDATEUSER } from "../utils/loginqueries";
+import { GETPOPULARCOMMUNITIES, JOINCOMMUNITYINBATCH } from "./queries/newusersetup";
 
-//css
+//css, images & types
 import "./css/newusersetup.css";
-import { newusersetuptype, newusersetupprops, selectedcommunitytype, communitytype } from "./types/newusersetuptypes";
 import { authcontexttype } from "../context/types";
-
-const logo:string = require("../img/logo.png");
+import { newusersetuptype, newusersetupprops, selectedcommunitytype, communitytype } from "./types/newusersetuptypes";
+const logo: string = require("../img/logo.png");
 
 const Newusersetup = (newusersetupprops: newusersetupprops) => {
   const { newUser } = newusersetupprops;
-  const active:string = newUser ? "block" : "none" ;
-  
+  const active: string = newUser ? "block" : "none";
+
   const navigate = useNavigate();
+  const profileRef = useRef<HTMLInputElement | null>(null);
+  const wallpicRef = useRef<HTMLInputElement | null>(null);
+
   const { updateLoggedUser } = useLogged();
-  const { user }: authcontexttype = useAuth(); 
-  const userId:number|null = user && Number(user["id"] || user["user_id"]);
+  const { user }: authcontexttype = useAuth();
+  const userId: number | null = user && Number(user["id"]);
 
   //states 
   const [level, setLevel] = useState<number>(0);
   const [userCommunities, setUserCommunities] = useState<selectedcommunitytype[]>([]);
-  const [error, setError] = useState<string>("");
-  const [usersetup, setUsersetup] = useState<newusersetuptype>({ 
+  const [userSetup, setUserSetup] = useState<newusersetuptype>({
     id: userId!,
     about: "",
+    profile_pic: "",
     new_user: false,
     background_pic: "",
-    profile_pic: ""
-  }); 
+  });
 
   //queries
   const { loading, data } = useQuery(GETPOPULARCOMMUNITIES);
-  const [updateUser, { loading: updateUserLoading }] = useMutation(UPDATEUSER);
   const [joincommunity] = useMutation(JOINCOMMUNITYINBATCH);
+  const [updateUser, { loading: updateUserLoading }] = useMutation(UPDATEUSER);
 
   //handlers
-  const handleUserinputs: (e: any) => void = (e) => {
-    setUsersetup({
-      ...usersetup,
-      [e.target.name]: e.target.value
-    })
+  const handleUserinputs: (e: any) => Promise<void> = async (e: any) => {
+    const toUpdate: string = e.target.name;
+
+    if (toUpdate === "profile_pic" || toUpdate === "background_pic") {
+      const profileFiles = profileRef.current?.files;
+      const wallpicFiles = wallpicRef.current?.files;
+
+      const picBlob = (profileFiles && profileFiles.length > 0 ? profileFiles[0] : null) ||
+        (wallpicFiles && wallpicFiles.length > 0 ? wallpicFiles[0] : null);
+
+      if (picBlob) {
+        const pic = await changeToBase64(picBlob);
+        setUserSetup((prev) => ({ ...prev, [toUpdate]: pic }));
+      }
+    } else {
+      setUserSetup((prev) => ({ ...prev, [toUpdate]: e.target.value }));
+    }
   }
- 
-  const handleUpdateCommunities:(e: any, communityObj: communitytype) => void = (e, communityObj) => {
-    if(e.currentTarget.classList.contains("selectedcommunity")) {
+
+  const handleDefault: () => void = () => {
+    setLevel(0);
+    setUserCommunities([]);
+    setUserSetup({
+      id: userId!,
+      about: "",
+      profile_pic: "",
+      new_user: false,
+      background_pic: "",
+    });
+  }
+
+  const handleUpdateCommunities: (e: any, communityObj: communitytype) => void = (e, communityObj) => {
+    const classExistInElement = e.currentTarget.classList.contains("selectedcommunity");
+
+    if (classExistInElement) {
       e.currentTarget.classList.remove("selectedcommunity");
-      const tempUserCommunities = userCommunities.filter((community: selectedcommunitytype) => ( community.community_id !== Number(communityObj.id)));
+
+      const tempUserCommunities: selectedcommunitytype[] = userCommunities.filter((community: selectedcommunitytype) => {
+        return community.community_id !== Number(communityObj.id);
+      })
+
       setUserCommunities(tempUserCommunities);
     } else {
       e.currentTarget.classList.add("selectedcommunity");
-      setUserCommunities([ ...userCommunities, { user_id: userId!, community_id: Number(communityObj.id) }]);
-    }       
+
+      setUserCommunities([...userCommunities, { user_id: userId!, community_id: Number(communityObj.id) }]);
+    }
   }
 
-  const handleUpdate: (e: any) => void = (e) => { 
-    e.preventDefault();    
-    if(userCommunities.length > 3) {
-      joincommunity({
+  const handleUpdate: (e: any) => Promise<void> = async (e: any) => {
+    e.preventDefault();
+    try {
+      if (userCommunities.length > 0) {
+        await joincommunity({
+          variables: {
+            data: [...userCommunities]
+          }
+        });
+      }
+
+      await updateUser({
         variables: {
-          data: [ ...userCommunities]
+          data: userSetup
         }
-      });
-      updateUser({
-        variables: {
-          data: usersetup
-        } 
-      }).then(() => {     
-        setError("");
-        updateLoggedUser({ new_user: false });
+      }).then(() => {
+        updateLoggedUser({
+          new_user: false,
+          profile_pic: userSetup.profile_pic,
+        });
+
+        handleDefault();
         navigate("/c/popular");
       });
-    } else {
-      setError("You have to join atleast 4 communities for your home feed.");
+    } catch (err) {
+      console.log(err);
     }
   }
 
   return (
-    <div className={ active }>
+    <div className={active}>
       <div className="setuserboxoverlay" >
         <div className="setuserbox">
           <div className="newusersetuplogowrapper">
-            <img src={ logo } className="newusersetuplogo" alt={"patch_logo"}/>
-            { level < 3 && (
-              <div className="skipbtn" onClick={() => setLevel(3) }> skip </div>
+            <img src={logo} className="newusersetuplogo" alt={"patch_logo"} />
+            {level < 3 && (
+              <div className="skipbtn" onClick={() => setLevel(3)}> skip </div>
             )}
           </div>
-          { level === 0 ? (
-            <>              
+          {level === 0 ? (
+            <>
               <div className="newuserusernametitle">
                 <i className="material-icons blue-text text-lighten-3 left"> mood </i>
                 Setting up your profile,
               </div>
-              <div className="newuserusernametitle1">Let's start by telling something about you.</div>
+              <div className="newuserusernametitle1">
+                Let's start by telling something about you.
+              </div>
               <div className="newuserusername">
-                <Askinput 
-                  name={ "about" } 
-                  placeholder={ "about" } 
-                  maxlength={70} 
-                  onChange={ handleUserinputs } 
-                  value={ usersetup.about }
+                <Askinput
+                  name={"about"}
+                  placeholder={"about"}
+                  maxlength={70}
+                  onChange={handleUserinputs}
+                  value={userSetup.about}
                 />
               </div>
             </>
           ) : level === 1 ? (
             <>
-              <h5 className="newuserusernametitle"> Wall pic ... </h5>
-              { usersetup?.background_pic.length > 0 && (
+              <h5 className="newuserusernametitle">Your wall</h5>
+              {userSetup?.background_pic.length > 0 && (
                 <div className="bgpicdel">
-                  <i className="material-icons delicn" onClick={ () => setUsersetup({...usersetup, background_pic: ""})}> delete </i>
+                  <i
+                    className="material-icons delicn"
+                    onClick={() => setUserSetup({ ...userSetup, background_pic: "" })}
+                  >
+                    delete
+                  </i>
                 </div>
               )}
               <div className="newuserbackgroundbox">
-                { usersetup?.background_pic.length > 0 ? (
-                  <div className="newuserbackgroundpic">
-                    <img src={ require(`../img/${usersetup.background_pic.substr(12,)}`) } alt="unable to load pic" className="newuserbackgroundpic" />
+                {userSetup?.background_pic.length > 0 ? (
+                  <div className="newuserpicwrapper">
+                    <img
+                      alt="unable to load pic"
+                      className="newuserpic"
+                      src={userSetup.background_pic}
+                    />
                   </div>
                 ) : (
                   <>
-                    <input type="file" 
-                      accept="image/*" 
+                    <input
+                      type="file"
+                      accept="image/*"
+                      ref={wallpicRef}
                       id="newuserbgpic"
-                      onChange={ handleUserinputs }
-                      name="background_pic"                                      
-                    />  
+                      name="background_pic"
+                      onChange={handleUserinputs}
+                    />
                     <label htmlFor="newuserbgpic">
                       <i className="material-icons newuserpicicn"> add </i>
                     </label>
@@ -141,46 +196,58 @@ const Newusersetup = (newusersetupprops: newusersetupprops) => {
             </>
           ) : level === 2 ? (
             <>
-              <h6 className="newuserusernametitle"> Profile pic... </h6>
+              <h6 className="newuserusernametitle"> Profile pic </h6>
+              {userSetup?.profile_pic.length > 0 && (
+                <div className="bgpicdel">
+                  <i
+                    className="material-icons delicn"
+                    onClick={() => setUserSetup({ ...userSetup, profile_pic: "" })}
+                  >
+                    delete
+                  </i>
+                </div>
+              )}
               <div className="newuserprofilepicbox">
-                { usersetup?.profile_pic.length > 0 ? (
+                {userSetup?.profile_pic.length > 0 ? (
                   <>
-                    <div className="newuserprofilepic">
-                      <img src={ require(`../img/${usersetup.profile_pic.substr(12,)}`) } alt="unable to load pic" className="newuserprofilepic" />
+                    <div className="newuserpicwrapper">
+                      <img
+                        alt="unable to load pic"
+                        className="newuserpic"
+                        src={userSetup.profile_pic}
+                      />
                     </div>
                   </>
                 ) : (
                   <>
-                    <input type="file" 
+                    <input
+                      type="file"
+                      id="newuserdp"
                       accept="image/*"
-                      id="newuserdp" 
-                      onChange={ handleUserinputs }
-                      name="profile_pic"                                      
-                    />  
+                      ref={profileRef}
+                      name="profile_pic"
+                      onChange={handleUserinputs}
+                    />
                     <label htmlFor="newuserdp">
                       <i className="material-icons newuserpicicn"> add </i>
                     </label>
                   </>
                 )}
-              </div>                           
-              { usersetup?.profile_pic.length > 0 && (
-                <div className="profilepicdel">
-                  <i className="material-icons delicn" onClick={ () => setUsersetup({...usersetup, profile_pic: ""})}> delete </i>
-                </div>
-              )}
+              </div>
             </>
           ) : level === 3 ? (
-            <>  
+            <>
               <h6 className="newuserusernametitle"> Link Some communities to your home... </h6>
               <div className="metatitle"> (You can add or remove them later) </div>
-              { error.length > 1 && (
-                <div className="metatitle red-text"> { error } </div>
-              )}
               <div className="newusercommunitiesbox">
-                { loading === false ? (
+                {!loading ? (
                   data?.listCommunities.map((community: communitytype, idx: number) => (
-                    <div className="communityspace" key={ idx } onClick={ (e) => handleUpdateCommunities(e, community)}> 
-                      { community.communityname }
+                    <div
+                      key={idx}
+                      className="communityspace"
+                      onClick={(e) => handleUpdateCommunities(e, community)}
+                    >
+                      {community.communityname}
                     </div>
                   ))
                 ) : (
@@ -188,23 +255,26 @@ const Newusersetup = (newusersetupprops: newusersetupprops) => {
                 )}
               </div>
             </>
-          ) : updateUserLoading === true && (            
+          ) : updateUserLoading && (
             <>
-              <div className="newuserusernametitle">             
+              <div className="newuserusernametitle">
                 Hi,
               </div>
-              <div className="newuserusernametitle1">             
+              <div className="newuserusernametitle1">
                 Setting up your profile...
               </div>
             </>
           )}
-          { level <= 3 && (
+          {level <= 3 && (
             <div className="setusername">
-              <div className="waves-effect waves-light btn blue lighten-1 black-text setusernamebtn" onClick={ level === 3 ? handleUpdate : () => setLevel(level+1) }>
-                { level === 3 ? "done" : "next" }
-                { level === 3 && (
+              <div
+                onClick={level === 3 ? handleUpdate : () => setLevel(level + 1)}
+                className="waves-effect waves-light setusernamebtn"
+              >
+                {level === 3 ? "done" : "next"}
+                {level === 3 && (
                   <i className="material-icons right">mood</i>
-                )}  
+                )}
               </div>
             </div>
           )}

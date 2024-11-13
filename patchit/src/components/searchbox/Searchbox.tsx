@@ -1,54 +1,69 @@
-import React, { useRef, useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useRef, useState, useEffect, useMemo } from "react";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { useLazyQuery } from "@apollo/client";
 
 //components
-import Askinput from "../html/Askinput"; 
 import Searchdrop from "./Searchdrop";
+import Askinput from "../html/Askinput";
 
-import { COMMUNITIESNAME }  from "./queries"; //queries
+//queries
+import { COMMUNITIESNAME } from "../queries/searchbox";
 
-import "./searchbox.css"; //css
-import { communities, searchboxprops } from "./types";
+//css & types
+import "./searchbox.css";
+import { askinputprefixestype } from "../html/types";
+import { communitytype, searchboxprops } from "./types";
 
 const Searchbox = (searchboxprops: searchboxprops) => {
   const { showSearchbox, setShowSearchbox } = searchboxprops;
 
-  const thisRef = useRef<HTMLDivElement>(null);
+  const { cname } = useParams();
+  const location = useLocation();
   const navigate = useNavigate();
-  
-  const [searchInput, setSearchInput] = useState<string>("");
+  const thisRef = useRef<HTMLDivElement>(null);
 
+  //states
+  const [searchInput, setSearchInput] = useState<string>("");
+  const [searchPrefixes, setSearchPrefixes] = useState<askinputprefixestype>(["ICsearch"]);
+
+  //queries
   const [getCommunitiesNames, { data, loading }] = useLazyQuery(COMMUNITIESNAME);
 
   //handlers
-  const handleSearchInput: (e: any) => void = (e: any) => {
-    setSearchInput(e.target.value);
-  }
-  
-  const searchCommunity: communities[] = !loading ?  data?.listCommunities?.filter((community: communities) => {
-    return community.communityname.startsWith(searchInput);
-  }): [];
+  const searchCommunity: communitytype[] = useMemo(() => {
+    if (searchPrefixes.length === 1 && !loading) {
+      return data?.listCommunities?.filter((community: communitytype) => (
+        community.communityname.startsWith(searchInput)
+      ));
+    }
 
-  const suggestCommunity: communities[] = !loading ? data?.listCommunities?.filter((community: communities) => {
-    return community.communityname.includes(searchInput) && !searchCommunity.includes(community);
-  }): [];
+    return [];
+  }, [searchPrefixes, searchInput, data, loading]);
 
-  const handleSearch: (e: any) => void = (e: any)=> {
+  const suggestCommunity: communitytype[] = useMemo(() => {
+    if (!loading && searchPrefixes.length === 1) {
+      return data?.listCommunities?.filter((community: communitytype) => (
+        (community?.communityname?.includes(searchInput) && !searchCommunity.includes(community))
+      ))
+    }
+  }, [searchInput, data, loading, searchCommunity]);
+
+  const handleSearch: (e: any) => void = (e: any) => {
     e.preventDefault();
     setShowSearchbox(false);
-    navigate(`search/${searchInput}`);
+    navigate(searchPrefixes.length === 1 ? `/search/${searchInput}` : `/c/${cname}/search/${searchInput}`);
   }
 
-  const closeDrop: (e: any) => void = (e: any) => {   
-    if(thisRef.current && showSearchbox && !thisRef.current.contains(e.target)){
-      setShowSearchbox(false)
+  const closeDrop: (e: any) => void = (e: any) => {
+    if (thisRef.current && showSearchbox && !thisRef.current.contains(e.target)) {
+      setShowSearchbox(false);
     }
-  }  
+  }
+
   document.addEventListener('mousedown', closeDrop);
-  
+
   useEffect(() => {
-    if(searchInput.length > 1) {      
+    if (searchInput.length > 1) {
       getCommunitiesNames({
         variables: {
           filter: {
@@ -60,51 +75,80 @@ const Searchbox = (searchboxprops: searchboxprops) => {
       setShowSearchbox(true);
     } else {
       setShowSearchbox(false)
-    }   
+    }
   }, [searchInput]);
 
+  useEffect(() => {
+    if (location.pathname.includes("/c/")
+      && !location.pathname.includes(`/c/${cname}/settings`)
+      && !location.pathname.includes("/c/popular")
+    ) {
+      setSearchPrefixes(prev => [prev[0], `TAB${cname}`]);
+    } else {
+      setSearchPrefixes(["ICsearch"]);
+    }
+  }, [location.pathname]);
+
   return (
-    <div className="searchdrop" ref={ thisRef }>   
-      <form className="searchbar" onSubmit={(e: any) => handleSearch(e)}>
-        <Askinput 
-          placeholder={ "Search here" } 
-          name={ "search" } 
-          prefix={ "ICsearch" } 
-          onChange={ handleSearchInput } 
+    <div className="searchdrop" ref={thisRef}>
+      <form className="searchbar" onSubmit={handleSearch}>
+        <Askinput
+          name={"search"}
+          prefixes={searchPrefixes}
+          value={searchInput}
+          placeholder={`Search ${searchPrefixes.length > 1 ? `in c/${cname}` : "here"}`}
+          onChange={(e) => setSearchInput(e.target.value)}
         />
       </form>
-      { showSearchbox && (
+      {showSearchbox && (
         <div className="searchdropcontent">
-          { searchInput.length !== 0 && (
-            searchCommunity.length === 0 ? (
+          {searchInput?.length > 0 && (
+            searchCommunity?.length === 0 || searchPrefixes.length > 1 ? (
               <>
-                <Link to={`search/${searchInput}`} className="communitysearchresult waves-effect waves-light" onClick={(e: any) => handleSearch(e)}>
-                  <i className="material-icons grey-text text-darken-3"> search </i>
-                  <div className="errsearchcomunityname">
-                    Search for 
-                  </div>
+                <Link
+                  onClick={(e: any) => handleSearch(e)}
+                  to={searchPrefixes.length === 1 ? `/search/${searchInput}` : `/c/${cname}/search/${searchInput}`}
+                  className="communitysearchresult waves-effect waves-light"
+                >
+                  <i className="material-icons grey-text text-darken-3 communitysearchicn"> search </i>
+                  <div className="errsearchcomunityname"> Search for </div>
                   <div className="errsearchinput"> "{searchInput}" </div>
-                </Link>      
-                { data?.listCommunities.map((community: communities, idx: number) => (
-                  <Searchdrop community={ community } key={ idx }/>
-                ))}    
+                  {searchPrefixes.length > 1 && (
+                    <div className="errsearchcomunityname"> in c/{cname} </div>
+                  )}
+                </Link>
+                {searchPrefixes.length === 1 && (
+                  data?.listCommunities.map((community: communitytype, idx: number) => (
+                    <Searchdrop
+                      key={idx}
+                      community={community}
+                    />
+                  ))
+                )}
               </>
-            ) : ( 
+            ) : (
               <>
-                { searchCommunity?.map((community: communities, idx: number) => (
-                  <Searchdrop community={ community } key={ idx } search={ true }/>
+                {searchCommunity?.map((community: communitytype, idx: number) => (
+                  <Searchdrop
+                    key={idx}
+                    search={true}
+                    community={community}
+                  />
                 ))}
-                { suggestCommunity?.map((community: communities, idx: number) => (
-                  <Searchdrop community={ community } key={ idx } search={ true }/>
-                ))}
-                { data?.listCommunities.slice(0,10).map((community: communities, idx: number) => (
-                  <Searchdrop community={ community } key={ idx }/>
-                ))}    
+                {searchPrefixes?.length === 1 && (
+                  suggestCommunity?.map((community: communitytype, idx: number) => (
+                    <Searchdrop
+                      key={idx}
+                      search={true}
+                      community={community}
+                    />
+                  ))
+                )}
               </>
             ))}
         </div>
       )}
-    </div> 
+    </div>
   )
 }
 

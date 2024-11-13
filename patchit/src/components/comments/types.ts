@@ -1,11 +1,16 @@
-import { comments } from "../../containers/types/postpage";
+import { idstype, usernametype } from "../../utils/main/types";
+
+export interface parentcommenttype {
+  id: number;
+  comment: string;
+}
 
 export interface commenttype {
   id: number;
-  parent_id: commenttype|null;
+  parent_id: parentcommenttype | null;
   comment: string;
-  post_id: { id: number, title: string, community_id: { communityname: string}};
-  user_id: { id: number, username: string };
+  likes: number;
+  user_id: usernametype;
   created_at: string;
 }
 
@@ -17,29 +22,37 @@ export interface newcommenttype {
 }
 
 export interface commentlistprops {
+  newComment: newcommenttype;
   rootcomments: commenttype[];
   allcomments: Record<number, commenttype[]>;
-  setNewComment: any;
-  newComment: newcommenttype;
-  setParentComment: any;
+  setNewComment: React.Dispatch<React.SetStateAction<newcommenttype>>;
+  setParentComment: React.Dispatch<
+    React.SetStateAction<parentcommenttype | undefined>
+  >;
 }
 
 export interface commentprops {
   data: commenttype;
-  childcomments: Record<number, commenttype[]>;
-  setNewComment: any;
   newComment: newcommenttype;
-  setParentComment: any;
+  childcomments: Record<number, commenttype[]>;
+  setNewComment: React.Dispatch<React.SetStateAction<newcommenttype>>;
+  setParentComment: React.Dispatch<
+    React.SetStateAction<parentcommenttype | undefined>
+  >;
 }
 
 export interface commentspaceprops {
   postId: number;
-  comments: comments[];
+  comments: commenttype[];
 }
 
-export type handleparentidtype = (parentId: number, parentComment: string) => void;
+export type handleparentidtype = (
+  parentId: number,
+  parentComment: string
+) => void;
 
-export interface parentcommenttype {
+export interface listusercommentliketype {
   id: number;
-  comment: string;
+  user_id: idstype;
+  comment_id: idstype;
 }

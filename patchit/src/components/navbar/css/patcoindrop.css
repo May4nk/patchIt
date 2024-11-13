@@ -1,0 +1,84 @@
+.patcoindrop {
+  position: relative;
+  display: inline-block;
+}
+
+.navpatcoinwrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  width: 1.5vw;
+  height: 1.7vw;
+  margin: 0 0.3rem;
+}
+
+.navpatcoin {
+  width: 3.5vw;
+  height: 3.5vw;
+}
+
+.patcoindropcontent {
+  position: absolute;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  flex-direction: column;
+  background-color: rgba(0, 0, 0);
+  border-radius: 0.5rem;
+  color: white;
+  z-index: 1000;
+  margin-left: -8rem;
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  height: 19rem;
+  width: 21rem;
+  line-height: 16px;
+}
+
+.patcoinwrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+}
+
+.patcoin {
+  animation-name: animatedicns;
+  animation-duration: 7s;
+  animation-iteration-count: 1;
+}
+
+.patcoinamnt {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 500;
+  padding: 0.3rem 1rem;
+  border-radius: 1rem;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.patcoinamnt:hover {
+  background: #263238;
+  color: white;
+}
+
+.patcoinabout {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #cfd8dc;
+  padding: 0.5rem;
+  margin-top: 1rem;
+  border-radius: 1.5rem;
+}
+
+.patcoinabout:hover {
+  background: #2624245c;
+}

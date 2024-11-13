@@ -1,0 +1,293 @@
+button:focus {
+  background: transparent !important;
+}
+
+.loginpage {
+  height: 100vh;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: radial-gradient(circle, #223748, black, black);
+}
+
+.loginbody,
+.signupbody {
+  width: 25%;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex-direction: column;
+  background-color: #0d0d0d;
+  box-shadow: 1px 1px rgba(255, 255, 255, 0.1);
+  border-radius: 2rem;
+  padding: 2rem 1rem;
+}
+
+.loginbodypic {
+  height: 70%;
+  width: 55%;
+}
+
+.loginwelcomepic {
+  width: 100%;
+  height: 100%;
+}
+
+.loginbodyheader,
+.signupbodyheader {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  flex-direction: column;
+  margin: 0.5rem 0;
+  width: 100%;
+}
+
+.loginpagelogopic {
+  width: 7vw;
+  height: 7vw;
+}
+
+.loginpagetitle {
+  font-size: 1.3vw;
+  font-weight: 500;
+  color: white;
+  width: 100%;
+  text-transform: capitalize;
+}
+
+.loginpagemetatitle {
+  font-size: 0.8vw;
+  font-weight: 450;
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.ortxt {
+  color: white;
+}
+
+.loginbodycontent,
+.signupbodycontent {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.loginbodycontentheader,
+.signupbodycontentheader {
+  width: 100%;
+  height: 100%;
+}
+
+.loginpagebackarrow {
+  color: grey;
+  cursor: pointer;
+  align-self: flex-start;
+}
+
+.loginpagebackarrow:hover {
+  color: white;
+}
+
+.loginbodycontentbody,
+.signupbodycontentbody {
+  margin-top: auto;
+  width: 100%;
+}
+
+.loginpageform {
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  width: 97%;
+  align-items: center;
+  flex-direction: column;
+}
+
+.loginpageinputs {
+  width: 100%;
+  height: 2.5vw;
+  color: rgba(255, 255, 255, 0.3);
+  background: rgba(43, 37, 37, 0.1);
+  margin: 0.5rem 0;
+  border-radius: 0.3rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.loginpageinputs:focus {
+  color: rgba(26, 137, 204, 0.4);
+}
+
+.loginpagebtn {
+  background: #64b5f6;
+  border-radius: 1.3rem;
+  font-weight: 500;
+  font-size: 1vw;
+  text-transform: capitalize;
+  margin: 0.7rem 0;
+  height: 2vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.loginpagebtn:focus,
+.loginpagebtn:hover {
+  background: #64b5f6 !important;
+}
+
+.loginpagebtnicn {
+  margin-left: auto;
+  font-size: 1.3vw !important;
+}
+
+.loginbodyfooter {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  margin: 0 1rem;
+}
+
+.loginpageforgotpass {
+  font-size: 0.9vw;
+  font-weight: 450;
+  color: rgba(255, 255, 255, 0.3);
+  display: flex;
+  width: 100%;
+}
+
+.loginpageextrapd {
+  padding: 0 0.3rem;
+  color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+}
+
+.loginpageextrapd:hover {
+  text-decoration: underline;
+  color: #64b5f6;
+}
+
+.loginpagesignup {
+  margin-top: 0.5rem;
+  font-size: 0.9vw;
+  font-weight: 450;
+  color: rgba(255, 255, 255, 0.3);
+  display: flex;
+  align-self: flex-start;
+}
+
+.signuppageback {
+  cursor: pointer;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-bottom: 8.3rem;
+  color: #cfd8dc;
+}
+
+.clicksignupbox {
+  width: 100%;
+  padding: 0.5rem 0rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  color: white;
+}
+
+.clicksignuppic {
+  height: 100%;
+  width: 100%;
+}
+
+.clicksignuptitle {
+  font-weight: 500;
+  padding: 0.5rem 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.clicksignuptitleicn {
+  color: #2196f3;
+  font-size: 20px;
+  margin-left: 0.3rem;
+}
+
+.clicksignupmetatitle {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 500;
+}
+
+.magiclinkicon {
+  width: 10%;
+}
+
+.check {
+  font-size: 0.7rem;
+  font-weight: 400;
+  margin-top: -0.3rem;
+  margin-left: -2.3rem;
+}
+
+/* other logins ----------------------------------------*/
+.loginwithother {
+  margin: 0;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.loginthrough {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  width: 100%;
+  margin-top: 1vw;
+}
+
+.loginthroughbtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1vw;
+  font-weight: 500;
+  padding: 0.1rem 0.8rem;
+  color: rgba(195, 228, 250, 0.774);
+  background-color: #0d0d0d;
+  border: 0.1rem solid rgba(255, 255, 255, 0.1);
+  border-radius: 1.5rem;
+}
+
+.loginthroughbtn:hover {
+  color: white;
+  border-color: rgba(255, 255, 255, 0.7);
+}
+
+.loginthroughbtnicn {
+  font-size: 1.3vw;
+  margin-right: 0.5rem;
+}
+
+.magiclinkbtnicon {
+  height: 1vw;
+  width: 1.3vw;
+  padding-right: 0.3rem;
+}
+
+.googlelogoicnwrapper,
+.googlelogoicn {
+  height: 1vw;
+  width: 1vw;
+}

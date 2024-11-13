@@ -9,22 +9,24 @@ import { GETCOMMUNITIES } from "./queries"; //query
 //css & types
 import "./css/sidenavtab.css";
 import { communitytype, sidenavtabprops } from "./types";
-
-let pic: string = require("../../img/a.jpg");
+import { defaultCommunityPic } from "../../constants/const";
 
 const Sidenavtab = (sidenavtabprops: sidenavtabprops) => {
   const { icon, colname, category } = sidenavtabprops;
 
-  const [open,setOpen] = useState<boolean>(false);
+  //states
+  const [open, setOpen] = useState<boolean>(false);
 
+  //queries
   const [getCommunities, { data, loading }] = useLazyQuery(GETCOMMUNITIES);
 
+  //handlers
   const handleOpen = () => {
     setOpen(!open);
   }
 
   useEffect(() => {
-    if(open && category) {
+    if (open && category) {
       getCommunities({
         variables: {
           filter: {
@@ -35,23 +37,23 @@ const Sidenavtab = (sidenavtabprops: sidenavtabprops) => {
         }
       });
     }
-  },[open]);
+  }, [open]);
 
-  return(
-    <div className="sidenavcomponents" onClick={ handleOpen }>
+  return (
+    <div className="sidenavcomponents" onClick={handleOpen}>
       <div className="sidenavcomponentheader waves-effect waves-light">
-        <i className="material-icons sidenavcomponenticon">{ icon }</i>
-        <span className="componentname">{ colname }</span>  
+        <i className="material-icons sidenavcomponenticon">{icon}</i>
+        <span className="componentname">{colname}</span>
       </div>
-      {( open && data?.listCommunities.length > 0 ) && (
+      {(open && data?.listCommunities.length > 0) && (
         <div className="sidenavcomponentcontent">
-          { !loading ? (
+          {!loading ? (
             data?.listCommunities.map((community: communitytype, idx: number) => (
-              <Link to={`c/${community.communityname}`} key={ idx } className="sidenavcomponentcontenttab">
+              <Link to={`c/${community.communityname}`} key={idx} className="sidenavcomponentcontenttab">
                 <div className="sidenavtabimgwrapper">
-                  <img src={ pic } className="sidenavtabimg" alt={ "community_pp" } />
+                  <img src={defaultCommunityPic} className="sidenavtabimg" alt={"community_pp"} />
                 </div>
-                { community.communityname }
+                {community.communityname}
               </Link>
             ))
           ) : (
@@ -59,7 +61,7 @@ const Sidenavtab = (sidenavtabprops: sidenavtabprops) => {
           )}
         </div>
       )}
-    </div>  
+    </div>
   );
 }
 

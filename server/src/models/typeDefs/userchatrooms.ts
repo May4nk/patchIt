@@ -8,16 +8,19 @@ export const userchatroomTypeDefs = `
     status: String
     created_at: String
   }
+
   input InsertUserChatroomInput {
     room_id: String!
     user_id: Int!
   }
+
   input UserChatroomfilterInput {
-    room_id: String
+    room_id: [String]
     user_id: Int
     status: String
   }
+    
   input RemoveUserChatroomInput {
-    id: Int!    
+    id: Int!
   }
 `;

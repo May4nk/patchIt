@@ -31,7 +31,7 @@
   width: auto;
   cursor: pointer;
   height: 60%;
-  padding: 0rem 0.9rem;
+  padding: 0.1vw 0.9vw;
   border: 0.1rem solid rgba(255, 255, 255, 0.3);
   background: rgba(0, 0, 0, 0.1);
   color: rgba(255, 255, 255, 0.6);
@@ -104,4 +104,108 @@
   overflow-y: auto;
   width: 100%;
   height: 89%;
+}
+
+.newchatrequestwrapper {
+  position: relative;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding-top: 0.3vw;
+  padding-right: 0.5vw;
+}
+
+.newchatroomrequest {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 1.5rem;
+  font-size: 0.9vw;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0 0.5rem;
+  background-color: rgb(12, 12, 12);
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.newchatroomrequest:hover {
+  color: #2195f3c9;
+}
+
+.newchatrequestwrapperimg {
+  height: 1.3vw;
+  padding-left: 0.3vw;
+}
+
+.newchatrequests {
+  position: absolute;
+  background-color: rgba(30, 36, 38, 0.95);
+  border-radius: 0.5rem;
+  color: white;
+  width: 13rem;
+  z-index: 10;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  flex-direction: column;
+  margin-left: 13.7vw;
+  margin-top: 0.5vw;
+  line-height: 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom-left-radius: 0.5rem;
+  border-bottom-right-radius: 0.5rem;
+}
+
+.newchatrequest {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  flex-direction: column;
+  width: 100%;
+  padding: 0.5rem;
+  margin: 0.1rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+}
+
+.newchatrequestabtuser,
+.newchatrequestuser,
+.newchatrequestactions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.newchatrequestactions {
+  margin-top: 0.2rem;
+}
+
+.newchatrequestuser {
+  flex-direction: column;
+  padding: 0 0.5rem;
+}
+
+.newchatrequestuserpicwrapper {
+  height: 2rem;
+  width: 2.3rem;
+  border-radius: 50%;
+}
+
+.newchatrequestuserpic {
+  height: 100%;
+  width: 100%;
+  border-radius: inherit;
+}
+
+.newchatrequestusername {
+  font-size: 0.9vw;
+  font-weight: 500;
+  width: 100%;
+}
+
+.newchatrequestuserbio {
+  font-size: 0.7vw;
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 500;
+  width: 100%;
 }

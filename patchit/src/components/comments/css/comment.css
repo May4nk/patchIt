@@ -21,7 +21,7 @@
 }
 
 .nextcmnt {
-  border-left: 0.1rem solid rgba(255,255,255,0.1); 
+  border-left: 0.1rem solid rgba(255, 255, 255, 0.1);
   border-bottom-left-radius: 1rem;
   padding-bottom: 1.3vw;
 }
@@ -48,18 +48,25 @@
   border-radius: 50%;
 }
 
-.commentusername {
+.commentusername,
+.commentdelusername {
   color: white;
-  margin-left: 0.7rem;    
-  font-size: 1vw;
+  margin-left: 0.7rem;
+  font-size: 0.9vw;
   font-weight: 500;
   height: 100%;
   width: auto;
 }
 
+.commentdelusername {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.8vw;
+  font-weight: 400;
+}
+
 .commenttym {
   font-weight: 300;
-  color: rgba(255,255,255,0.3);
+  color: rgba(255, 255, 255, 0.3);
   font-size: 0.7vw;
   font-weight: 500;
   padding-left: 0.3rem;
@@ -72,7 +79,10 @@
   font-size: 1vw;
   word-wrap: break-word;
   white-space: pre-wrap;
-  width: 41vw;
+  overflow-wrap: break-word;
+  width: 100%;
+  max-width: 100%;
+  word-break: break-word;
 }
 
 .commentallactions {
@@ -94,12 +104,12 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  color: rgba(255,255,255,0.7);
+  color: rgba(255, 255, 255, 0.7);
   margin: 0.5rem 0.3rem;
   padding: 0.1rem 0.7rem;
   background: #23282b;
-  border-radius: 1.5rem; 
-  border: 0.1rem solid rgba(0,0,0,0.1);
+  border-radius: 1.5rem;
+  border: 0.1rem solid rgba(0, 0, 0, 0.1);
   font-size: 0.7vw;
 }
 
@@ -111,13 +121,13 @@
 }
 
 .commentaction:hover .commentactionicn {
-  color: #2196F3;
+  color: #74bcf7;
 }
 
 .commentaction:hover {
   color: white;
-  border-color: rgba(255,255,255,0.1);
-}       
+  border-color: rgba(255, 255, 255, 0.1);
+}
 
 .show {
   margin-left: 2.5rem;
@@ -139,5 +149,5 @@
 }
 
 .more:hover {
-  color: #2196F3;
+  color: #74bcf7;
 }

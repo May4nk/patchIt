@@ -8,13 +8,4 @@ export interface savedposttype {
 
 export type rsavedposttype = {
   id: number;
-}
-
-export interface savedpostdatatype {
-  data: savedposttype;
-}
-
-export interface remsavedpostdatatype {
-  data: rsavedposttype;
-}
-
+};

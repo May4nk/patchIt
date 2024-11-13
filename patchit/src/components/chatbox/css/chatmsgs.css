@@ -6,21 +6,34 @@
   height: 100%;
   width: 100%;
   font-size: 1vw;
+  position: relative;
 }
 
 .chattitle {
   display: flex;
   justify-content: flex-start;
   align-items: center;
-  height: 3.3vw;
   width: 100%;
-  padding: 0.3rem 1rem;
+  padding: 0.7rem 1rem;
   font-weight: 430;
   color: #cfd8dc;
 }
 
 .chatuserpage {
   cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.chatuserpageicn {
+  font-size: 1rem !important;
+  height: 100% !important;
+  line-height: 25px !important;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 0.3rem;
 }
 
 .chattitleicnwrapper {
@@ -32,10 +45,11 @@
 
 .chattitleicn {
   color: rgba(255, 255, 255, 0.4);
-  font-size: 1.3rem !important;
-  line-height: 23px !important;
+  font-size: 1.3vw !important;
+  line-height: 16px !important;
   height: 100% !important;
   cursor: pointer;
+  margin: 0 0.1rem;
 }
 
 .chattitleicn:hover {
@@ -45,7 +59,8 @@
 .chatbody {
   display: flex;
   flex-direction: column;
-  height: 73vh;
+  max-height: 75vh;
+  height: 100%;
   width: 100%;
   justify-content: center;
   align-items: center;
@@ -60,13 +75,13 @@
 }
 
 .searchusernametxt {
-  color: rgba(255, 255, 255, 0.3);
+  color: rgba(255, 255, 255, 0.5);
   width: 94%;
   display: flex;
   justify-content: flex-start;
   align-items: flex-start;
   margin-top: 0.7rem;
-  font-size: 0.9vw;
+  font-size: 0.8vw;
 }
 
 .roomcreation {
@@ -134,8 +149,8 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background: rgba(0, 0, 0, 0.3);
-  padding: 0.3rem 0.5rem;
+  background: rgba(242, 236, 236, 0.04);
+  padding: 0.1rem 0.5rem;
   font-size: 0.9vw;
   font-weight: 500;
   margin: 0.5rem;
@@ -145,7 +160,7 @@
 }
 
 .foundedusernames:hover {
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(242, 236, 236, 0.11);
   color: white;
 }
 
@@ -153,7 +168,7 @@
   height: 1.9vw;
   width: 1.9vw;
   border-radius: 50%;
-  margin: 0 0.3rem;
+  margin: 0 0.5rem 0 0;
   border: 0.1rem solid black;
 }
 
@@ -185,54 +200,8 @@
   background: #64B5F6 !important;
 }
 
-.messageinput input,
 .createroom input {
   color: white;
-}
-
-.chat {
-  padding: 0.5rem;
-  overflow: auto;
-  background: #131315;
-  height: 100%;
-  max-height: 66vh;
-  max-width: 100%;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
-  background-image: url("../../../img/logo_bg.png");
-  background-size: 30%;
-  background-attachment: center;
-  background-repeat: no-repeat;
-  background-position: center;
-}
-
-.chatform {
-  display: flex;
-  margin-top: auto;
-  padding: 0 0.3rem;
-  width: 100%;
-  height: 3rem;
-  justify-content: center;
-  align-items: center;
-  color: white;
-  border-top: 0.1rem solid rgba(255, 255, 255, 0.1);
-}
-
-.messageinput {
-  margin: 0 0.5rem;
-  width: 85%;
-  height: 93%;
-  color: transparent;
-  background: rgba(0, 0, 0, 0.3);
-  border-radius: 1rem;
-}
-
-.chatsubmit:hover {
-  cursor: pointer;
-  color: #2196F3 !important;
 }
 
 /* chatroomoptions  */
@@ -247,7 +216,7 @@
   background: rgba(0, 0, 0, 0.9);
   border-radius: 0.5rem;
   width: 8rem;
-  z-index: 5;
+  z-index: 10;
   display: flex;
   justify-content: center;
   align-items: flex-start;
@@ -256,7 +225,7 @@
   margin-top: 0.3rem;
 }
 
-.chatroomoptions {
+.chatroomoption {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -276,39 +245,54 @@
   margin-left: auto;
 }
 
-.chatroomoptions:hover {
+.chatroomoption:hover {
   cursor: pointer;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.chatroomoption:hover .chatroomoptionicn {
   color: #ef9a9a;
 }
 
+/* !chatroomsoptions  */
 .startnewchat {
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  height: 90%;
-}
-
-.startnewchatpicwrapper {
-  height: 10vw;
-  width: 10vw;
-  border-radius: 50%;
-  margin-bottom: 1rem;
-}
-
-.startnewchatpic {
   height: 100%;
   width: 100%;
-  border-radius: 50%;
+}
+
+.chatlogowrapper {
+  height: 9vw;
+  width: 9vw;
+  margin-bottom: auto;
+  margin-right: auto;
+}
+
+.chatlogo {
+  height: 100%;
+  width: 100%;
+}
+
+.startnewchatbody {
+  margin-bottom: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .startnewchattext {
   font-weight: 450;
-  font-size: 0.9vw;
+  font-size: 1vw;
 }
 
-.startnewchattext1 {
-  font-size: 0.9vw;
+.startnewchatmetatext {
+  font-size: 0.8vw;
+  color: #82C2F4;
+  font-weight: 500;
 }
 
 .startnewchatbtnwrapper {
@@ -320,10 +304,13 @@
   justify-content: center;
   align-items: center;
   border-radius: 1.5rem;
+  background: #54acf5d0;
   font-size: 0.9vw;
   font-weight: 500;
-  background: #64B5F6 !important;
-  color: black;
-  padding: 0.2rem 0.9rem;
+  padding: 0.1vw 0.8vw;
   text-transform: capitalize;
+}
+
+.startnewchatbtn:hover {
+  background: #64B5F6;
 }

@@ -4,7 +4,7 @@ export const usercommunityTypeDefs = `
     community_id: Community
     user_id: User
     created_at: String
-  }                                         
+  }
   input InsertUserCommunityInput {
     community_id: Int!
     user_id: Int!
@@ -16,7 +16,6 @@ export const usercommunityTypeDefs = `
     created_at: String
   }
   input RemoveUserCommunityInput {
-    id: Int
     community_id: Int
     user_id: Int
   }

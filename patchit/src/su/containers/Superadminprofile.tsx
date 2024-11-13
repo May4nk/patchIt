@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate} from "react-router-dom";
 import { useLazyQuery } from "@apollo/client";
-import { useAuth } from "../../common/hooks/useAuth";
+import { useAuth } from "../../utils/hooks/useAuth";
 
 //queries
 import { 
@@ -41,7 +41,7 @@ import { authcontexttype } from "../../context/types";
 const Superadminprofile = () => { 
   const navigate = useNavigate();
   const { user }: authcontexttype = useAuth();
-  const userRole: number|null = user && (user["role"] ? user["role"]?.id : user["role_id"]);
+  const userRole: number|null = user && user["role"];
     
   //states
   const [triggeredTab, setTriggeredTab] = useState("users");  

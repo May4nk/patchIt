@@ -1,60 +1,61 @@
 import db from "../../db.js";
-import { findOne } from "../../common/queries.js";
-import {chatroomdatatype, remchatroomdatatype, rchatroomtype } from "./types/chatroommutetypes.js";
-import { ruserchatroomtype } from "./types/userchatroommutetypes.js";
+import { revRoomCode } from "../../utils/chatroomopx.js";
+import { findOne, listAll } from "../../utils/queriesutils.js";
+
+//types
 import { chatroomtype } from "../resolvers/types/chatroomtypes.js";
+import { ruserchatroomtype } from "./types/userchatroommutetypes.js";
+import { userchatroomtype } from "../resolvers/types/userchatroomtypes.js";
+import {
+  chatroomdatatype,
+  remchatroomdatatype,
+  rchatroomtype,
+} from "./types/chatroommutetypes.js";
 
 export const chatroomMutations = {
   Mutation: {
     insertChatroom: async (
-      parent: undefined,
-      { data }: chatroomdatatype,
-      { pubsub }: any
+      _: undefined,
+      { data }: chatroomdatatype
     ): Promise<chatroomtype> => {
       try {
-        const revRoomCode: string = data.room_code
-          .split("-")
-          .reverse()
-          .join("-");
-        const foundChatroom: chatroomtype = await db("chatrooms")
-          .where("room_code", data.room_code)
-          .orWhere("room_code", revRoomCode)
-          .first();
+        const room = revRoomCode(data?.room_code);
 
-        if (!foundChatroom) {
-          const [createChatroom]: chatroomtype[] = await db("chatrooms")
-            .insert(data)
-            .returning("*");
+        if (!room.isRoom) {
+          const isRoomExists: userchatroomtype[] = await listAll<
+            userchatroomtype,
+            { room_id: string[] }
+          >("user_chatrooms", {
+            filter: { room_id: [data?.room_code, room.code] },
+          });
 
-          return createChatroom;
-        } else if (foundChatroom && foundChatroom.status === "INACTIVE") {
-          const [updateChatroom]: chatroomtype[] = await db("chatrooms")
-            .where("room_code", foundChatroom.room_code)
-            .update({ status: "ACTIVE" })
-            .returning("*");
-
-          return updateChatroom;
-        } else {
-          throw new Error(
-            `Chatroom already Exist id: ${foundChatroom.room_code}`
-          );
+          if (isRoomExists?.length > 0) {
+            throw new Error(`Chatroom already Exist`);
+          }
         }
+
+        const [createChatroom]: chatroomtype[] = await db("chatrooms")
+          .insert(data)
+          .returning("*");
+
+        return createChatroom;
       } catch (err) {
         throw err;
       }
     },
     softDeleteChatroom: async (
-      parent: undefined,
-      { data }: chatroomdatatype,
-      { pubsub }: any
+      _: undefined,
+      { data }: chatroomdatatype
     ): Promise<chatroomtype> => {
       try {
         const foundChatroom: chatroomtype = await findOne<
           chatroomtype,
           { room_code: string }
         >("chatrooms", { room_code: data.room_code });
-        if (!foundChatroom)
+
+        if (!foundChatroom) {
           throw new Error(`Chatroom not found id: ${data.room_code}`);
+        }
 
         const [delChatroom]: chatroomtype[] = await db("chatrooms")
           .where("room_code", foundChatroom.room_code)
@@ -74,7 +75,7 @@ export const chatroomMutations = {
       }
     },
     removeChatroom: async (
-      parent: undefined,
+      _: undefined,
       { data }: remchatroomdatatype
     ): Promise<rchatroomtype> => {
       try {

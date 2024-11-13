@@ -1,26 +1,32 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-import "./searchbox.css"; //css
+//css & types
+import "./searchbox.css";
 import { searchdropprops } from "./types";
 
 const Searchdrop = (searchdropprops: searchdropprops) => {
   const { community, search } = searchdropprops;
 
-  return (    
-    <Link to={`c/${community?.communityname}`} className="communitysearchresult waves-effect waves-light">              
-      <i className="material-icons grey-text text-darken-3"> { search ? "search" : "trending_up" } </i>  
-      <div className="searchedcommunityabout"> 
+  return (
+    <Link
+      to={`c/${community?.communityname}`}
+      className="communitysearchresult waves-effect waves-light"
+    >
+      <i className="material-icons grey-text text-darken-3 communitysearchicn">
+        {search ? "search" : "trending_up"}
+      </i>
+      <div className="searchedcommunityabout">
         <div className="searchedcomunityname">
-          { community?.communityname }
+          {community?.communityname}
         </div>
-        { community.description && (
+        {community.about && (
           <div className="searchedcommunitymembers">
-            { community?.description}
+            {community?.about}
           </div>
         )}
-      </div>            
-    </Link>             
+      </div>
+    </Link>
   )
 }
 

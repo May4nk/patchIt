@@ -1,61 +1,30 @@
-.block {
-  display: block;
-}
-
-.none {
-  display: none;
-}
-
-.overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgb(0,0,0,0.7);
-  z-index: 100;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
 .modal {
-  max-width: 30%;
+  line-height: 16px;
   background-color: rgba(1, 11, 17, 0.9);
   box-shadow: 2px 2px #0d0c0c;
+  max-width: 30%;
   display: flex;
   justify-content: center;
   align-items: flex-start;
   flex-direction: column;
-  line-height: 23px;
-  padding: 1rem;
-  padding-bottom: 1.5rem;
+  padding: 1rem 1rem 1.5rem 1rem;
   font-size: 0.9rem;
-  font-weight: 470;  
-  color: rgb(255, 255, 255,0.7);
+  font-weight: 470;
   border-radius: 0.7rem;
 }
 
 .modallogowrapper {
   display: flex;
-  justify-content: flex-start;
+  justify-content: flex-end;
   align-items: center;
-  height: 7rem;
+  height: 5vw;
   width: 100%;
   margin-bottom: 1rem;
 }
 
 .modallogo {
   height: 100%;
-  width: 30%;
-}
-
-.modalinput {
-  height: 2.5rem;
-  width: 100%;
-  color: rgba(255, 255, 255, 0.7);
-  margin-top: 1rem;
-  background: black;
+  width: auto;
 }
 
 .btnwrapper {
@@ -63,18 +32,39 @@
   justify-content: center;
   align-items: center;
   width: 100%;
-  margin-top: 1rem;
+  margin-top: 2rem;
 }
 
-.actionbtn, .closebtn {
-  padding: 0.1rem 0.9rem;
-  font-size: 0.8rem;
-  border-radius: 2rem;
+.actionbtn,
+.closebtn {
   font-weight: 500;
-  text-transform: capitalize;
+  font-size: 0.9vw;
+  border-radius: 2rem;
   cursor: pointer;
+  text-transform: capitalize;
   display: flex;
   justify-content: center;
   align-items: center;
   margin: 0 0.3rem;
+  padding: 0.3rem 0.9rem;
+}
+
+.modaltxt {
+  font-size: 1.3vw;
+  font-weight: 500;
+  margin-bottom: 0.7rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #99c9f0;
+}
+
+.modaltxtlogo {
+  margin-right: 0.3rem;
+}
+
+.modalmetatxt {
+  font-size: 1vw;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.4);
 }

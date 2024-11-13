@@ -1,6 +1,9 @@
 import db from "../../db.js";
-import { findOne } from "../../common/queries.js";
+import { findOne } from "../../utils/queriesutils.js";
+
+//types
 import { commenttype } from "../resolvers/types/commenttypes.js";
+import { usertype } from "../resolvers/types/usertypes.js";
 import {
   commentdatatype,
   remcommentdatatype,
@@ -10,25 +13,27 @@ import {
 export const commentMutations = {
   Mutation: {
     upsertComment: async (
-      parent: undefined,
+      _: undefined,
       { data }: commentdatatype,
-      { user, pubsub }: any
+      { user, pubsub }: { user: usertype; pubsub: any }
     ): Promise<commenttype> => {
       try {
         if (!user) throw new Error("user not authenticated");
         const commentID: number = data.id;
+
         if (commentID) {
           const foundComment: commenttype = await findOne<
             commenttype,
             { id: number }
           >("comments", { id: commentID });
-          
+
           if (!foundComment) throw new Error(`Comment not found...`);
 
           const [updateComment]: commenttype[] = await db("comments")
             .where("id", foundComment["id"])
             .update({
-              comment: data.comment,
+              ...foundComment,
+              ...data,
             })
             .returning("*");
 
@@ -47,7 +52,7 @@ export const commentMutations = {
       }
     },
     removeComment: async (
-      parent: undefined,
+      _: undefined,
       { data }: remcommentdatatype
     ): Promise<rcommenttype> => {
       try {
@@ -71,7 +76,7 @@ export const commentMutations = {
   },
   Subscription: {
     newComment: {
-      subscribe: (parent: undefined, args: undefined, { pubsub }: any) => {
+      subscribe: (parent: undefined, _: undefined, { pubsub }: any) => {
         return pubsub.asyncIterator("NEWCOMMENT");
       },
       resolve: (payload: any) => {

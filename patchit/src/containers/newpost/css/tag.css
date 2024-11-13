@@ -1,0 +1,22 @@
+.tag {
+  border: 1px solid rgba(255,255,255,0.1);
+  margin: 0.5rem;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  border-radius: 1rem;
+  padding: 0.2rem 0.7rem;
+  color: rgba(255,255,255,0.3);
+  font-weight: 500;
+  font-size: 0.8vw;
+}
+
+.tagicn {
+  font-size: 0.9vw !important;
+  margin-right: 0.3rem;
+}
+
+.tag:hover {
+  border: 0.1rem solid #628fb4;
+  color: white;
+}

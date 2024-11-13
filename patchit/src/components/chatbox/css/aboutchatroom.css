@@ -1,0 +1,153 @@
+.aboutchatuser {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+}
+
+.aboutchatuserpicwrapper {
+  margin: 5% 0 1% 0;
+  height: 24vh;
+  width: 11vw;
+  border-radius: 50%;
+}
+
+.aboutchatuserpic {
+  height: 100%;
+  width: 100%;
+  border-radius: inherit;
+}
+
+.chataboutusername {
+  font-size: 0.9vw;
+  font-weight: 500;
+  margin: 0.5rem 0;
+  cursor: pointer;
+  color: var(--main-color);
+}
+
+.chataboutuserabout {
+  font-size: 0.8vw;
+  font-weight: 500;
+  color: var(--main-meta-no-highlight-text-color);
+}
+
+.aboutchatuseroptions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.aboutchatuseroption {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 0.2vw 0.7vw;
+  margin: 0 0.7rem;
+  border-radius: 3rem;
+  font-weight: 410;
+  text-transform: capitalize;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.9vw;
+  background: black;
+}
+
+.aboutchatuseroptionicn {
+  line-height: 25px !important;
+  margin: 0 0.2vw;
+  font-size: 1vw !important;
+  height: auto !important;
+}
+
+.aboutchatuseroption:hover {
+  cursor: pointer;
+  color: white;
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.showinmates {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  flex-direction: column;
+  background: #00000027;
+  border-radius: 1vh;
+  height: 39%;
+  width: 100%;
+  margin: 0.3rem;
+}
+
+.inmateboxtitle {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  font-size: 0.7vw !important;
+  font-weight: 500;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.4);
+  padding: 0.1rem 0.3rem;
+  width: 100%;
+}
+
+.inmateboxtitleicn {
+  margin: 0 0.3rem;
+  font-size: 1vw !important;
+  line-height: 16px !important;
+  height: 100% !important;
+}
+
+.inmateboxbody {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  overflow-y: auto;
+  padding: 0.1rem;
+}
+
+.inmateprofile {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.3rem 0.7rem;
+  border-radius: 2rem;
+  background: black;
+  color: white;
+  cursor: pointer;
+}
+
+.inmateprofile:hover {
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.inmatepicwrapper {
+  height: 1.5vw;
+  width: 1.5vw;
+  border-radius: 50%;
+}
+
+.inmatepic {
+  height: 100%;
+  width: 100%;
+  border-radius: 50%;
+}
+
+.inmatename {
+  font-size: 0.9vw;
+  font-weight: 500;
+  margin: 0 0.2rem;
+}
+
+.grpownericn {
+  font-size: 1.1rem !important;
+  height: 100% !important;
+  line-height: 25px !important;
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+}

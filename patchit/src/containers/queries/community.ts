@@ -1,8 +1,28 @@
 import { gql } from "@apollo/client";
 
-export const GETCOMMUNITY = gql`
-query Community($communityname: String!) {
-  community(communityname: $communityname) {
+const COMMUNITY_POST_FIELDS = gql`
+  fragment communityPostFields on Post {
+    id
+    title
+    type
+    owner {
+      id
+      username
+      status
+      profile_pic
+    }
+    content
+    created_at
+    likes
+    status
+    comments {
+      id
+    }
+  }
+`;
+
+const COMMUNITY_FIELDS = gql`
+  fragment communityFields on Community {
     id
     description
     about
@@ -11,35 +31,35 @@ query Community($communityname: String!) {
     created_at
     privacy
     profile_pic
-    status
     theme
+    status
+    social_links
     owner {
       id
-      username      
+      username
     }
-    posts {
-      id
-      title
-      type
-      owner {
-        id
-        profile_pic
-        username
+  }
+`;
+
+export const GETCOMMUNITY = gql`
+  query Community($communityname: String!) {
+    community(communityname: $communityname) {
+      ...communityFields
+      posts {
+        ...communityPostFields
       }
-      content
-      created_at
-      likes
-      status
-      comments {
+      users {
         id
+        user_id {
+          id
+        }
       }
-    }
-    users {
-      id
-      user_id {
-        id
+      settings {
+        nsfw
+        allowppltofollow
       }
     }
   }
-}
+  ${COMMUNITY_POST_FIELDS},
+  ${COMMUNITY_FIELDS}
 `;

@@ -1,0 +1,91 @@
+.showpicoverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgb(0, 0, 0);
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.closeshowpicbox {
+  width: 95%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.closeshowpicbox:hover {
+  color: #7cbdf1;
+}
+
+.showpicbox {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 93%;
+  width: 100%;
+  overflow-y: auto;
+  background-color: black;
+  border-radius: 1rem;
+  position: relative;
+}
+
+.showpicwrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 1rem;
+  width: 90%;
+  height: 90%;
+}
+
+.showpic {
+  max-height: 100%;
+  max-width: 100%;
+  border-radius: inherit;
+}
+
+.previewpics {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 11%;
+  color: white;
+  bottom: 1rem;
+  opacity: 0.3;
+}
+
+.patpicericn {
+  color: white;
+  margin: 0 1rem;
+  cursor: pointer;
+}
+
+.previewpics:hover {
+  opacity: 1 !important;
+  color: white;
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.showpicpreview {
+  cursor: pointer;
+  width: 8vw;
+  overflow-x: auto;
+  margin-left: 0.5rem;
+  margin-bottom: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 1rem;
+}
+
+.showpicpreview:hover {
+  border-color: #7cbcf169;
+}

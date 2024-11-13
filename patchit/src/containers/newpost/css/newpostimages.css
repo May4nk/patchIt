@@ -1,0 +1,29 @@
+.imageprofile {
+  width: 19%;
+  height: 7rem;
+  margin-right: 0.5rem;
+  border-radius: 2%;
+}
+
+#postimg {
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  opacity: 0.5;
+}
+
+#postimg:hover {
+  opacity: 1;
+}
+
+.delete_icn {
+  margin-bottom: -17%;
+  z-index: 10;
+  position: relative;
+  color: white;
+  font-size: 1.2vw !important
+}
+
+.delete_icn:hover {
+  color: rgb(235, 67, 67);
+}
