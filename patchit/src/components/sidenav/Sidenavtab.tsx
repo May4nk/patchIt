@@ -2,12 +2,20 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useLazyQuery } from "@apollo/client";
 
-import Loadingpage from "../Loadingpage"; //component
+//utils
+import { getSignedUrls } from "../../utils/services/s3";
 
-import { GETCOMMUNITIES } from "./queries"; //query
+//component
+import Loadingpage from "../Loadingpage";
+
+//query
+
+import { GETCOMMUNITIES } from "./queries";
 
 //css & types
 import "./css/sidenavtab.css";
+import { signedurltype } from "../../utils/types";
+import { USER_S_N_TYPE } from "../../utils/main/types";
 import { communitytype, sidenavtabprops } from "./types";
 import { defaultCommunityPic } from "../../constants/const";
 
@@ -16,6 +24,7 @@ const Sidenavtab = (sidenavtabprops: sidenavtabprops) => {
 
   //states
   const [open, setOpen] = useState<boolean>(false);
+  const [communities, setCommunities] = useState<{ [key: string]: string | null }>({});
 
   //queries
   const [getCommunities, { data, loading }] = useLazyQuery(GETCOMMUNITIES);
@@ -34,10 +43,40 @@ const Sidenavtab = (sidenavtabprops: sidenavtabprops) => {
             "status": "ACTIVE",
             "privacy": "PUBLIC"
           }
-        }
-      });
+        },
+        onCompleted: (({ listCommunities }: { listCommunities: communitytype[] }) => {
+          if (listCommunities) {
+            listCommunities.forEach((community: communitytype) => {
+              const profile_pic: USER_S_N_TYPE = community.profile_pic;
+              if (profile_pic !== null && profile_pic.length > 0) {
+                (async function () {
+                  const signedUrls: signedurltype[] = await getSignedUrls({
+                    userId: community.owner.id,
+                    postId: "0",
+                    req: "GET",
+                    files: [{ name: profile_pic }]
+                  });
+
+                  setCommunities(prevCommunities => ({
+                    ...prevCommunities,
+                    [community.name]: signedUrls[0].signedUrl
+                  }));
+                }());
+              } else {
+                setCommunities(prevCommunities => ({
+                  ...prevCommunities,
+                  [community.name]: null
+                }));
+              }
+            })
+          }
+        })
+      })
+    } else {
+      setCommunities({});
     }
-  }, [open]);
+
+  }, [open, category]);
 
   return (
     <div className="sidenavcomponents" onClick={handleOpen}>
@@ -48,12 +87,16 @@ const Sidenavtab = (sidenavtabprops: sidenavtabprops) => {
       {(open && data?.listCommunities.length > 0) && (
         <div className="sidenavcomponentcontent">
           {!loading ? (
-            data?.listCommunities.map((community: communitytype, idx: number) => (
-              <Link to={`c/${community.communityname}`} key={idx} className="sidenavcomponentcontenttab">
+            data?.listCommunities?.map((community: communitytype, idx: number) => (
+              <Link to={`c/${community.name}`} key={idx} className="sidenavcomponentcontenttab">
                 <div className="sidenavtabimgwrapper">
-                  <img src={defaultCommunityPic} className="sidenavtabimg" alt={"community_pp"} />
+                  <img
+                    alt={"community_pp"}
+                    className="sidenavtabimg"
+                    src={communities[community.name] || defaultCommunityPic}
+                  />
                 </div>
-                {community.communityname}
+                {community.name}
               </Link>
             ))
           ) : (

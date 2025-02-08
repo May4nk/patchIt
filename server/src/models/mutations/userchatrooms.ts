@@ -1,24 +1,22 @@
 import db from "../../db.js";
-import { findOne } from "../../utils/queriesutils.js";
+import { findOne } from "../../utils/common/queriesutils.js";
 
 // types
-import { userchatroomtype } from "../resolvers/types/userchatroomtypes.js";
 import {
-  remuserchatroomdatatype,
-  userchatroomdatatype,
+  userchatroomtype,
   rawuserchatroomtype,
-  ruserchatroomtype,
-} from "./types/userchatroommutetypes.js";
+} from "../resolvers/types/userchatroomtypes.js";
+import { IDSTYPE } from "../../utils/common/types.js";
 
 export const userchatroomMutations = {
   Mutation: {
     insertUserChatroom: async (
       _: undefined,
-      { data }: userchatroomdatatype,
+      { data }: { data: rawuserchatroomtype[] },
       { pubsub }: any
-    ): Promise<userchatroomtype[]> => {
+    ): Promise<rawuserchatroomtype[]> => {
       try {
-        const createUserChatroom: userchatroomtype[] = await db
+        const createUserChatroom: rawuserchatroomtype[] = await db
           .batchInsert("user_chatrooms", data)
           .returning("*");
 
@@ -31,19 +29,17 @@ export const userchatroomMutations = {
     },
     removeUserChatroom: async (
       _: undefined,
-      { data }: remuserchatroomdatatype
-    ): Promise<ruserchatroomtype> => {
+      { data }: { data: IDSTYPE }
+    ): Promise<IDSTYPE> => {
       try {
         const foundUserChatroom: userchatroomtype = await findOne<
           userchatroomtype,
-          { id: number }
+          IDSTYPE
         >("user_chatrooms", { id: data.id });
 
         if (!foundUserChatroom) throw new Error("User Chat room not found...");
 
-        const [deleteUserChatroom]: ruserchatroomtype[] = await db(
-          "user_chatrooms"
-        )
+        const [deleteUserChatroom]: IDSTYPE[] = await db("user_chatrooms")
           .where("id", foundUserChatroom.id)
           .del()
           .returning("id");
@@ -61,7 +57,7 @@ export const userchatroomMutations = {
       },
       resolve: (
         payload: rawuserchatroomtype[],
-        { userId }: { userId: number }
+        { userId }: { userId: string }
       ) => {
         const chatroomUsers = payload.filter(
           (chatroom: rawuserchatroomtype) => chatroom.user_id === userId

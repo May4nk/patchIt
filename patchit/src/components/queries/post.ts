@@ -1,27 +1,27 @@
 import { gql } from "@apollo/client";
 
 export const UPDATEPOST = gql`
-mutation UpsertPost($data: UpsertPostInput) {
-  upsertPost(data: $data) {
-    id
+  mutation UpdatePost($data: UpsertPostInput) {
+    updatePost(data: $data) {
+      id
+    }
   }
-}
 `;
 
 export const REMOVEUSERCOMMUNITY = gql`
   mutation RemoveUserCommunity($data: RemoveUserCommunityInput) {
     removeUserCommunity(data: $data) {
-      id,
+      id
     }
   }
 `;
 
-export const POSTLIKEDISLIKE = gql `
-mutation Mutation($data: UpsertPostLikeDislikeInput) {
-  upsertPostLikeDislike(data: $data) {
-    id
+export const POSTLIKEDISLIKE = gql`
+  mutation UpsertPostLikeDislike($data: UpsertPostLikeDislikeInput) {
+    upsertPostLikeDislike(data: $data) {
+      id
+    }
   }
-}
 `;
 
 export const UPSERTSAVEDPOST = gql`
@@ -35,33 +35,33 @@ export const UPSERTSAVEDPOST = gql`
 export const INSERTUSERCOMMUNITY = gql`
   mutation InsertUserCommunity($data: InsertUserCommunityInput) {
     insertUserCommunity(data: $data) {
-      id,
+      id
     }
   }
 `;
 
 export const GETUSERALLREACTIONS = gql`
-query ListUsers($filter: UsersfilterInput) {
-  listUsers(filter: $filter) {
-    id
-    reactedposts {
-      reaction
-      post_id {
-        id
+  query ListUsers($filter: UsersfilterInput) {
+    listUsers(filter: $filter) {
+      id
+      reactedposts {
+        reaction
+        post_id {
+          id
+        }
       }
-    }
-    communities {
-      community_id {
-        id    
+      communities {
+        community_id {
+          id
+        }
       }
-    }
-    savedposts {
-      saved
-      pinned
-      post_id {
-        id
+      savedposts {
+        saved
+        pinned
+        post_id {
+          id
+        }
       }
     }
   }
-}
 `;

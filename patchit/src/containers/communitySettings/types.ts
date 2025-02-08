@@ -1,17 +1,30 @@
-import { ERRORTYPE, PRIVACY } from "../../utils/main/types";
+import {
+  ERRORTYPE,
+  IDSTYPE,
+  PRIVACY,
+  USER_S_N_TYPE,
+  userbasictype,
+} from "../../utils/main/types";
 
-export type statenametype = "profile" | "notifications" | "privacy";
+export type communitysettingtabs = "profile" | "notifications" | "privacy";
 
-export type handlechangetype = (e: any, statename: statenametype) => void;
+export type handlechangetype = (
+  e: any,
+  statename: communitysettingtabs
+) => void;
 
-export interface communitystatetype {
-  profile_pic: string;
-  background_pic: string;
-  about: string;
-  description: string;
-  privacy: PRIVACY;
+type communitysettingtype = {
   theme: string;
-  social_links: string | null;
+  about: string;
+  privacy: PRIVACY;
+  description: string;
+  profile_pic: USER_S_N_TYPE;
+  social_links: USER_S_N_TYPE;
+  background_pic: USER_S_N_TYPE;
+};
+
+export interface communitysetstatetype extends communitysettingtype {
+  owner: string;
 }
 
 export interface privacystatetype {
@@ -19,21 +32,7 @@ export interface privacystatetype {
   handlers: number[];
 }
 
-export type showinputtype = { about: boolean };
-
-interface communitysettingcommunitytype extends communitystatetype {
-  id: number;
-  owner: { id: number; username: string };
-}
-
-export interface communitypreferencetype extends notificationsstatetype {
-  id: number;
-  community_name: communitysettingcommunitytype;
-  nsfw: boolean;
-  handlers: string;
-}
-
-export interface notificationsstatetype {
+export interface notificationstatetype {
   newuserreq: boolean;
   reportonpost: boolean;
   reportoncmnt: boolean;
@@ -42,21 +41,86 @@ export interface notificationsstatetype {
   birthday: boolean;
 }
 
-export interface notificationtabpropstype {
-  handleChange: handlechangetype;
-  notificationsState: notificationsstatetype;
+export interface communitysettingstatetype {
+  error: ERRORTYPE;
+  isUpdating: boolean;
+  deleteCommunity: boolean;
+  privacyState: privacystatetype;
+  communityData: communitysetstatetype;
+  display_profile_pic: USER_S_N_TYPE;
+  display_background_pic: USER_S_N_TYPE;
+  settingActiveTab: communitysettingtabs;
+  notificationState: notificationstatetype;
 }
 
+export type communitysettingstateactiontype =
+  | {
+      type: "UPDATE_COMMUNITYDATA";
+      communityData: Partial<communitysetstatetype>;
+    }
+  | {
+      type: "UPDATE_NOTIFICATION_SETTINGS";
+      notifySettings: Partial<notificationstatetype>;
+    }
+  | {
+      type: "UPDATE_PRIVACY_SETTINGS";
+      privacySettings: Partial<privacystatetype>;
+    }
+  | {
+      type: "UPDATE_PIC";
+      profile_pic: USER_S_N_TYPE;
+    }
+  | {
+      type: "UPDATE_BG_PIC";
+      background_pic: USER_S_N_TYPE;
+    }
+  | { type: "SET_ACTIVE_TAB"; selectedTab: communitysettingtabs }
+  | { type: "SET_UPDATE"; update: boolean }
+  | { type: "DELETE_ACCOUNT"; deleteAcc: boolean }
+  | { type: "SET_ERROR"; error: ERRORTYPE }
+  | { type: "RESET" };
+
+export type handlecommunitysettingstatetype = (
+  state: communitysettingstatetype,
+  action: communitysettingstateactiontype
+) => communitysettingstatetype;
+
+interface communitysettingcommunitytype extends communitysettingtype, IDSTYPE {
+  owner: userbasictype;
+}
+
+export interface communitypreferencetype
+  extends IDSTYPE,
+    notificationstatetype {
+  community_name: communitysettingcommunitytype;
+  nsfw: boolean;
+  handlers: string;
+}
+
+//notification tab -------------------------------------
+export interface notificationtabpropstype {
+  handleChange: handlechangetype;
+  notificationsState: notificationstatetype;
+}
+
+//privacy tab ---------------------------------
 export interface privacytabpropstype {
   privacyState: privacystatetype;
   handleChange: handlechangetype;
-  setPrivacyState: React.Dispatch<React.SetStateAction<privacystatetype>>;
 }
 
+//profile tab --------------------------------------------
 export interface profiletabpropstype {
   cname: string;
-  communityState: communitystatetype;
-  setErrorMessage: React.Dispatch<React.SetStateAction<ERRORTYPE>>;
-  setDeleteCommunity: React.Dispatch<React.SetStateAction<boolean>>;
-  setCommunityState: React.Dispatch<React.SetStateAction<communitystatetype>>;
+  communityState: {
+    data: communitysetstatetype;
+    show_profile_pic: USER_S_N_TYPE;
+    show_background_pic: USER_S_N_TYPE;
+  };
+  handleState: React.Dispatch<communitysettingstateactiontype>;
 }
+
+export type handlecommunityupdatetype = (
+  update: string,
+  val: string
+) => Promise<void>;

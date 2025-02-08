@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 //css & types
 import "./css/popularpagecard.css";
 import { popularcardpropstype } from "./types";
-import { newpolltype } from "../../containers/newpost/types";
+import { postpolltype } from "../../containers/newpost/types";
 
 const Popularpagecard = (popularcardprops: popularcardpropstype) => {
   const { data } = popularcardprops;
@@ -31,7 +31,7 @@ const Popularpagecard = (popularcardprops: popularcardpropstype) => {
             {title?.length > 30 ? title.slice(0, 30) + "..." : title}
           </div>
           <div className="topcontentpoll">
-            {cardContent.map((polls: newpolltype, idx: number) => (
+            {cardContent.map((polls: postpolltype, idx: number) => (
               <div className="popularpostcardpolltext" key={idx}>
                 {polls.value}
               </div>

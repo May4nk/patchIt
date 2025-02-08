@@ -1,17 +1,25 @@
 import db from "../../db.js";
-import { findOne } from "../../utils/queriesutils.js";
+import { findOne } from "../../utils/common/queriesutils.js";
 
 //types
-import { remuserfollowingtype, userfollowingtype } from "./types/userfollowingmutetypes.js";
+import {
+  userfollowingtype,
+  remuserfollowingtype,
+  rawuserfollowingtype,
+  userfollowingfiltertype,
+} from "../resolvers/types/userfollowingtypes.js";
+import { IDSTYPE } from "../../utils/common/types.js";
 
 export const userfollowingMutations = {
   Mutation: {
     insertUserFollowing: async (
       _: undefined,
-      { data }: { data: userfollowingtype }
-    ): Promise<userfollowingtype> => {
+      { data }: { data: rawuserfollowingtype }
+    ): Promise<rawuserfollowingtype> => {
       try {
-        const [createUserFollowing]: userfollowingtype[] = await db("user_user_relation")
+        const [createUserFollowing]: rawuserfollowingtype[] = await db(
+          "user_user_relation"
+        )
           .insert({ ...data })
           .returning("*");
 
@@ -19,24 +27,23 @@ export const userfollowingMutations = {
       } catch (err) {
         throw err;
       }
-    },    
+    },
     removeUserFollowing: async (
       _: undefined,
       { data }: { data: remuserfollowingtype }
-    ): Promise<{ id: number }> => {
+    ): Promise<IDSTYPE> => {
       try {
         const foundUserFollowing: userfollowingtype = await findOne<
           userfollowingtype,
-          { follower: number; following: number }
+          userfollowingfiltertype
         >("user_user_relation", {
           follower: data.follower,
           following: data.following,
         });
 
-        if (!foundUserFollowing)
-          throw new Error("User not following yet...");
+        if (!foundUserFollowing) throw new Error("User not following yet...");
 
-        const [deleteUserFollowing]: { id: number }[] = await db("user_user_relation")
+        const [deleteUserFollowing]: IDSTYPE[] = await db("user_user_relation")
           .where("id", foundUserFollowing.id)
           .del()
           .returning("id");

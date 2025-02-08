@@ -29,7 +29,7 @@ export const LOGINUSER = gql`
       token
       new_user
       role {
-        id
+        role_id
       }
     }
   }
@@ -65,7 +65,7 @@ export const GETMAGICTOKENUSER = gql`
 `;
 
 export const LOGOUTUSER = gql`
-  mutation LogoutUser($userId: Int!) {
+  mutation LogoutUser($userId: String!) {
     logoutUser(userId: $userId)
   }
 `;
@@ -90,5 +90,17 @@ export const CHANGEPASSWORD = gql`
     changePassword(data: $data) {
       id
     }
+  }
+`;
+
+export const REQUESTFORGETPASSWORD = gql`
+  mutation RequestForgetPassword($data: RequestForgetPasswordInput) {
+    requestForgetPassword(data: $data)
+  }
+`;
+
+export const FORGETPASSWORD = gql`
+  mutation ForgetPassword($data: ForgetPasswordInput) {
+    forgetPassword(data: $data)
   }
 `;

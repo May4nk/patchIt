@@ -1,28 +1,42 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+
+//utils
+import { signedurltype } from '../../utils/types';
+import { useAuth, useLogged } from '../../utils/hooks/useAuth';
+import { getSignedUrls, uploadToS3 } from '../../utils/services/s3';
 
 //component
-import Settingtab from '../../components/settings/Settingtab';
-import Socialbox from '../../components/settings/Socialbox';
+import Patbtn from '../../components/html/Patbtn';
 import Askinput from '../../components/html/Askinput';
+import Socialbox from '../../components/settings/Socialbox';
+import Settingtab from '../../components/settings/Settingtab';
 
 //css, image & types
 import "./profilesettings.css";
-import { profileprops } from './types';
-import { PRIVACY } from '../../utils/main/types';
 import { defaultUserPic } from '../../constants/const';
+import { USER_S_N_TYPE } from '../../utils/main/types';
+import { defaultUPic } from '../../utils/helpers/helpers';
+import { handleuserupdatetype, profileprops, userdatatype } from './types';
+import { authcontexttype, loggedusercontexttype } from '../../context/types';
 import { droppertype, profiletype } from '../../components/html/patdrop/types';
 let defaultBackgroundPic: string = require("../../img/defaultbgpic.png");
 
 function Profiletab(profileprops: profileprops) {
   const {
+    update,
+    handleState,
     handleChange,
-    profileState,
-    setUserData,
-    userData,
-    handleUserUpdate,
-    profileRef,
-    wallpicRef,
+    settingState,
   } = profileprops;
+
+  const { userData, profileState } = settingState;
+  const { user }: authcontexttype = useAuth();
+  const userId: USER_S_N_TYPE = user && user["id"];
+  const userRole: number | null = user && user["role"];
+  const { updateLoggedUser }: loggedusercontexttype = useLogged();
+
+  const profileRef = useRef<HTMLInputElement | null>(null);
+  const wallpicRef = useRef<HTMLInputElement | null>(null);
 
   //states
   const [showInput, setShowInput] = useState<boolean>(false);
@@ -30,26 +44,113 @@ function Profiletab(profileprops: profileprops) {
   const [showSocialBox, setShowSocialBox] = useState<boolean>(false);
 
   //handlers 
-  const handleUserPrivacy: (val: PRIVACY) => void = (val: PRIVACY) => {
-    setUserData({ ...userData, privacy: val });
-    handleUserUpdate("privacy", val);
-  }
+  const handleUserUpdate: handleuserupdatetype = async (toUpdate: keyof userdatatype, val: USER_S_N_TYPE) => {
+    if (!userId) return;
+
+    if (toUpdate === "profile_pic" || toUpdate === "background_pic") {
+      const profileFiles = profileRef?.current?.files;
+      const wallpicFiles = wallpicRef?.current?.files;
+
+      const picBlob = (profileFiles && profileFiles.length > 0 ? profileFiles[0] : null) ||
+        (wallpicFiles && wallpicFiles.length > 0 ? wallpicFiles[0] : null);
+
+      if (picBlob) {
+        try {
+          const fileName = `${toUpdate}.${picBlob.type.split('/')[1]}`;
+          const uploadUrls: signedurltype[] = await getSignedUrls({
+            userId: "0",
+            req: "PUT",
+            postId: "0",
+            files: [{ name: fileName, type: picBlob.type }],
+          });
+
+          const pic = uploadUrls[0].fileUrl;
+
+          handleState({ type: "UPDATE_USERDATA", userData: { [toUpdate]: pic } });
+
+          const msg = await update(toUpdate, pic);
+          const file = new File([picBlob], fileName, { type: picBlob.type });
+
+          await uploadToS3({
+            url: uploadUrls[0].signedUrl,
+            file: file,
+            progress: (prog) => { }
+          });
+
+          const signedUrls: signedurltype[] = await getSignedUrls({
+            userId: userId!,
+            postId: "0",
+            req: "GET",
+            files: [{ name: pic }]
+          });
+
+          if (toUpdate === "profile_pic") {
+            handleState({ type: "UPDATE_PIC", profile_pic: signedUrls[0].signedUrl })
+            updateLoggedUser({ "profile_pic": signedUrls[0].signedUrl })
+          } else if (toUpdate === "background_pic") {
+            handleState({ type: "UPDATE_BG_PIC", background_pic: signedUrls[0].signedUrl })
+          }
+
+          handleState({
+            type: "SET_ERROR",
+            error: {
+              show: true,
+              status: 200,
+              message: msg
+            }
+          });
+        } catch (err) {
+          handleState({
+            type: "SET_ERROR",
+            error: {
+              show: true,
+              status: 500,
+              message: "Settings update failed: Something went wrong",
+            }
+          });
+        }
+      }
+    } else {
+      try {
+        const msg = await update(toUpdate, val!);
+
+        handleState({ type: "UPDATE_USERDATA", userData: { [toUpdate]: val } });
+        handleState({
+          type: "SET_ERROR",
+          error: {
+            show: true,
+            status: 200,
+            message: msg
+          }
+        });
+      } catch (err) {
+        handleState({
+          type: "SET_ERROR",
+          error: {
+            show: true,
+            status: 500,
+            message: "Settings update failed: Try again..."
+          }
+        });
+      }
+    }
+  };
 
   const profiletypeDropperprofile: profiletype = { set: userData.privacy };
   const profiletypeDroppers: droppertype[] = [
     {
       title: "PUBLIC", icn: "person_outline",
-      state: "CLICKED", event: () => handleUserPrivacy("PUBLIC")
+      state: "CLICKED", event: () => handleUserUpdate("privacy", "PUBLIC")
     },
     {
       title: "PRIVATE", icn: "lock_outline",
-      state: "CLICKED", event: () => handleUserPrivacy("PRIVATE")
+      state: "CLICKED", event: () => handleUserUpdate("privacy", "PRIVATE")
     },
   ];
 
   useEffect(() => {
     if (updatedLinks.length > 0) {
-      setUserData({ ...userData, social_links: updatedLinks });
+      handleState({ type: "UPDATE_USERDATA", userData: { social_links: updatedLinks } });
     }
   }, [updatedLinks]);
 
@@ -63,14 +164,16 @@ function Profiletab(profileprops: profileprops) {
             <img
               className="pic"
               alt="profile_pic"
-              src={userData?.profile_pic || defaultUserPic}
+              onError={defaultUPic}
+              src={settingState?.display_profile_pic || defaultUserPic}
             />
           </div>
           <div className="waves-effect waves-light wallpicwrapper">
             <img
               alt="wall_pic"
               className="wallpic"
-              src={userData?.background_pic || defaultBackgroundPic}
+              onError={(e: any) => (e.target.src = defaultBackgroundPic)}
+              src={settingState?.display_background_pic || defaultBackgroundPic}
             />
           </div>
         </div>
@@ -78,14 +181,15 @@ function Profiletab(profileprops: profileprops) {
           <input
             type="file"
             accept="image/*"
-            name="profile_pic"
-            id="profileinput"
             ref={profileRef}
-            onChange={() => handleUserUpdate("profile_pic")}
+            id="profileinput"
+            name="profile_pic"
+            disabled={userRole === 1337}
+            onChange={() => handleUserUpdate("profile_pic", "")}
           />
           <label htmlFor="profileinput">
-            <div className="waves-effect waves-light blue lighten-3 black-text usettingitembtn">
-              update
+            <div className="picchangebtn waves-effect waves-light themefontbg">
+              Update
             </div>
           </label>
           <input
@@ -94,11 +198,12 @@ function Profiletab(profileprops: profileprops) {
             id="wallpicinput"
             name="background_pic"
             ref={wallpicRef}
-            onChange={() => handleUserUpdate("background_pic")}
+            disabled={userRole === 1337}
+            onChange={() => handleUserUpdate("background_pic", "")}
           />
           <label htmlFor="wallpicinput">
-            <div className="waves-effect waves-light blue lighten-3 black-text usettingitembtn">
-              update
+            <div className="picchangebtn waves-effect waves-light themefontbg">
+              Update
             </div>
           </label>
         </div>
@@ -110,9 +215,10 @@ function Profiletab(profileprops: profileprops) {
                 <div className="updateinput">
                   <Askinput
                     name="about"
-                    value={userData?.about}
+                    maxlength={89}
+                    value={userData?.about || ""}
                     placeholder={userData.about || `I m ${userData.username}, A guy with some powers.`}
-                    onChange={(e: any) => setUserData({ ...userData, about: e.target.value })}
+                    onChange={(e: any) => handleState({ type: "UPDATE_USERDATA", userData: { about: e.target.value } })}
                   />
                 </div>
               ) : (
@@ -122,17 +228,15 @@ function Profiletab(profileprops: profileprops) {
               )}
             </div>
           </div>
-          <div
-            className={`waves-effect waves-light black-text usettingitembtn ${showInput && userData.about.length === 0 ? "red lighten-3" : "blue lighten-3"}`
-            }
-            onClick={showInput
-              ? userData?.about.length === 0
+          <Patbtn
+            state={showInput && (!userData?.about || userData?.about?.length === 0) ? "clear" : "selected"}
+            text={showInput ? (!userData?.about || userData?.about?.length === 0) ? "cancel" : "update" : "change"}
+            handleClick={showInput
+              ? (!userData?.about || userData?.about?.length === 0)
                 ? () => setShowInput(false)
-                : () => { handleUserUpdate("about"); setShowInput(false) }
+                : () => { handleUserUpdate("about", userData?.about); setShowInput(false) }
               : () => setShowInput(true)}
-          >
-            {showInput ? userData.about.length === 0 ? "cancel" : "update" : "change"}
-          </div>
+          />
         </div>
         <div className="usettingitems">
           <div className="usettingitemlabels">
@@ -141,12 +245,11 @@ function Profiletab(profileprops: profileprops) {
               People who visit your profile will see social links.
             </div>
           </div>
-          <div
-            onClick={() => setShowSocialBox(!showSocialBox)}
-            className="waves-effect waves-light black-text usettingitembtn"
-          >
-            {showSocialBox ? "hide" : "Update"}
-          </div>
+          <Patbtn
+            text={showSocialBox ? "hide" : "Update"}
+            state={!showSocialBox ? "inactive" : "selected"}
+            handleClick={() => setShowSocialBox(!showSocialBox)}
+          />
         </div>
         <div className="usettingtitlemeta"> PROFILE CATEGORY </div>
         <Settingtab
@@ -187,7 +290,7 @@ function Profiletab(profileprops: profileprops) {
             setUpdatedLinks={setUpdatedLinks}
             setShowSocialBox={setShowSocialBox}
             socialMediaLinks={userData.social_links}
-            handleUpdate={() => handleUserUpdate("social_links")}
+            handleUpdate={() => handleUserUpdate("social_links", userData?.social_links)}
           />
         </div>
       )}

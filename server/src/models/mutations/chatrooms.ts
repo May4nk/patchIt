@@ -1,40 +1,41 @@
 import db from "../../db.js";
 import { revRoomCode } from "../../utils/chatroomopx.js";
-import { findOne, listAll } from "../../utils/queriesutils.js";
+import { findOne, listAll } from "../../utils/common/queriesutils.js";
 
 //types
-import { chatroomtype } from "../resolvers/types/chatroomtypes.js";
-import { ruserchatroomtype } from "./types/userchatroommutetypes.js";
-import { userchatroomtype } from "../resolvers/types/userchatroomtypes.js";
 import {
-  chatroomdatatype,
-  remchatroomdatatype,
-  rchatroomtype,
-} from "./types/chatroommutetypes.js";
+  chatroomtype,
+  chatroommutetype,
+  chatroomexisttype,
+} from "../resolvers/types/chatroomtypes.js";
+import { IDSTYPE } from "../../utils/common/types.js";
 
 export const chatroomMutations = {
   Mutation: {
-    insertChatroom: async (
+    upsertChatroom: async (
       _: undefined,
-      { data }: chatroomdatatype
-    ): Promise<chatroomtype> => {
+      { data }: { data: chatroommutetype }
+    ): Promise<chatroommutetype> => {
       try {
-        const room = revRoomCode(data?.room_code);
+        if (data?.id) {
+          const foundChatroom: chatroomtype = await findOne<
+            chatroomtype,
+            IDSTYPE
+          >("chatrooms", { id: data?.id });
 
-        if (!room.isRoom) {
-          const isRoomExists: userchatroomtype[] = await listAll<
-            userchatroomtype,
-            { room_id: string[] }
-          >("user_chatrooms", {
-            filter: { room_id: [data?.room_code, room.code] },
-          });
-
-          if (isRoomExists?.length > 0) {
-            throw new Error(`Chatroom already Exist`);
+          if (!foundChatroom) {
+            throw Error(`Chatroom don't exist with id: ${data?.id}`);
           }
+
+          const [updateChatroom]: chatroommutetype[] = await db("chatrooms")
+            .update(data)
+            .where("id", foundChatroom.id)
+            .returning("*");
+
+          return updateChatroom;
         }
 
-        const [createChatroom]: chatroomtype[] = await db("chatrooms")
+        const [createChatroom]: chatroommutetype[] = await db("chatrooms")
           .insert(data)
           .returning("*");
 
@@ -43,29 +44,48 @@ export const chatroomMutations = {
         throw err;
       }
     },
+    checkRoomExists: async (
+      _: undefined,
+      { data }: { data: chatroomexisttype }
+    ): Promise<boolean> => {
+      try {
+        const room = revRoomCode(data?.roomName);
+
+        const isRoomExists: chatroomtype[] = await listAll<
+          chatroomtype,
+          { roomName: string[] }
+        >("chatrooms", { filter: { roomName: [data?.roomName, room.code] } });
+
+        if (isRoomExists?.length > 0) {
+          return true;
+        }
+
+        return false;
+      } catch (err) {
+        throw err;
+      }
+    },
     softDeleteChatroom: async (
       _: undefined,
-      { data }: chatroomdatatype
+      { data }: { data: chatroommutetype }
     ): Promise<chatroomtype> => {
       try {
         const foundChatroom: chatroomtype = await findOne<
           chatroomtype,
-          { room_code: string }
-        >("chatrooms", { room_code: data.room_code });
+          IDSTYPE
+        >("chatrooms", { id: data.id });
 
         if (!foundChatroom) {
-          throw new Error(`Chatroom not found id: ${data.room_code}`);
+          throw new Error(`Chatroom not found with id: ${data.id}`);
         }
 
         const [delChatroom]: chatroomtype[] = await db("chatrooms")
-          .where("room_code", foundChatroom.room_code)
+          .where("id", foundChatroom.id)
           .update({ status: "INACTIVE" })
           .returning("*");
 
-        const [delUserChatroom]: ruserchatroomtype[] = await db(
-          "user_chatrooms"
-        )
-          .where("room_id", foundChatroom.room_code)
+        const [delUserChatroom]: IDSTYPE[] = await db("user_chatrooms")
+          .where("room_id", foundChatroom.id)
           .del()
           .returning("id");
 
@@ -76,16 +96,17 @@ export const chatroomMutations = {
     },
     removeChatroom: async (
       _: undefined,
-      { data }: remchatroomdatatype
-    ): Promise<rchatroomtype> => {
+      { data }: { data: IDSTYPE }
+    ): Promise<IDSTYPE> => {
       try {
-        const foundChatroom: chatroomtype = await findOne("chatrooms", {
-          id: data.id,
-        });
+        const foundChatroom: chatroomtype = await findOne<
+          chatroomtype,
+          IDSTYPE
+        >("chatrooms", { id: data.id });
 
         if (!foundChatroom) throw new Error("Chatroom not found.");
 
-        const [deleteChatroom]: chatroomtype[] = await db("chatrooms")
+        const [deleteChatroom]: IDSTYPE[] = await db("chatrooms")
           .where("id", foundChatroom.id)
           .del()
           .returning("id");

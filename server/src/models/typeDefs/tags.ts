@@ -1,17 +1,21 @@
 export const tagTypeDefs = `
   type Tag {
-    id: Int!
+    id: String!
     name: String!
+    created_at: String
   }
+
   input UpsertTagInput {
-    id: Int
+    id: String
     name: String!
   }
+
   input TagsfilterInput {
-    id: Int
+    id: String
     name: String
   }
+    
   input RemoveTagInput {
-    id: Int!
+    id: String!
   }
 `;

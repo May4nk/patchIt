@@ -1,20 +1,22 @@
 import React, { useEffect, useState } from "react";
 import { useLazyQuery } from "@apollo/client";
 
+//utils
 import { useAuth } from "../../../utils/hooks/useAuth";
 
 //queries
 import { GETNOTIFICATIONS, SUBSCRIBETONOTIFICATION } from "../../navbar/queries";
 
 //component
+import Patbtn from "../../html/Patbtn";
 import Chatrequest from "./Chatrequest";
 import Chatprofiles from "./Chatprofiles";
 import Loadingpage from "../../Loadingpage";
 
 //css, images & types
 import "../css/chatlist.css";
-import { usernametype } from "../../../utils/main/types";
 import { authcontexttype } from "../../../context/types.js";
+import { USER_S_N_TYPE, usernametype } from "../../../utils/main/types";
 import { chatlistpropstype, chattertype, userchatroomtype } from "../types.js";
 import {
   notificationdatatype,
@@ -22,20 +24,18 @@ import {
   notificationtype,
   notificitionsubdatatype
 } from "../../navbar/types";
-const logo = require("../../../img/loading_logo.png");
 
 const Chatlist = (chatlistprops: chatlistpropstype) => {
   const {
-    newChat,
     chatrooms,
+    chatBoxState,
     handleActiveRoom,
-    setChatgroupUsers,
-    setUsernameSearch,
+    handleChatBoxState,
     handleCreateChatroom,
   } = chatlistprops;
 
   const { user }: authcontexttype = useAuth();
-  const userId: number | null = user && Number(user["id"]);
+  const userId: USER_S_N_TYPE = user && user["id"];
 
   //states
   const [notify, setNotifiy] = useState<boolean>(false);
@@ -57,7 +57,7 @@ const Chatlist = (chatlistprops: chatlistpropstype) => {
     let unsubscribe = subscribeToMore({
       document: SUBSCRIBETONOTIFICATION,
       variables: { type: "CHAT", userId: userId },
-      onError: (err: any) => console.log(err),
+      onError: (err: any) => console.log("Error: fetching chat notifications failed"),
       updateQuery: (prev: notificationprevtype, { subscriptionData }: notificitionsubdatatype) => {
         const subdata: notificationdatatype = subscriptionData.data;
         if (!subdata) return prev;
@@ -71,8 +71,16 @@ const Chatlist = (chatlistprops: chatlistpropstype) => {
             (newnotifier: notificationtype) => newnotifier.status === "PENDING"
           );
 
+          const allPendingNotifications = [...filteredNotifications, ...newPendingNotifications];
+
+          if (allPendingNotifications.length > 0) {
+            setNotifiy(true);
+          } else {
+            setNotifiy(false);
+          }
+
           return {
-            listNotifications: [...newPendingNotifications, ...filteredNotifications]
+            listNotifications: allPendingNotifications
           };
         }
 
@@ -96,10 +104,7 @@ const Chatlist = (chatlistprops: chatlistpropstype) => {
       },
       onCompleted: ({ listNotifications }) => {
         if (listNotifications.length > 0) {
-          setNotifiy(true);          
-        } else {
-          setNotifiy(false);
-          setChatNotification(false);
+          setNotifiy(true);
         }
       }
     })
@@ -111,15 +116,12 @@ const Chatlist = (chatlistprops: chatlistpropstype) => {
         {notify && (
           <>
             <div className="newchatrequestwrapper">
-              <div
-                className="newchatroomrequest waves-effect waves-light"
-                onClick={() => setChatNotification(!chatNotification)}
-              >
-                <div className="chatrequesttext">
-                  New
-                </div>
-                <img src={logo} alt="pic" className="newchatrequestwrapperimg" />
-              </div>
+              <Patbtn
+                text={"new"}
+                size={"small"}
+                icn={"chat_bubble_outline"}
+                handleClick={() => setChatNotification(!chatNotification)}
+              />
             </div>
             {(!error && chatNotification) && (
               <div className="newchatrequests">
@@ -128,8 +130,7 @@ const Chatlist = (chatlistprops: chatlistpropstype) => {
                     <Chatrequest
                       key={idx}
                       notification={notification}
-                      setChatgroupUsers={setChatgroupUsers}
-                      setUsernameSearch={setUsernameSearch}
+                      handleChatBoxState={handleChatBoxState}
                       handleCreateChatroom={handleCreateChatroom}
                     />
                   ))
@@ -149,12 +150,16 @@ const Chatlist = (chatlistprops: chatlistpropstype) => {
         ))}
       </div>
       <div className="newroombtns">
-        <div className="newroombtn waves-effect waves-light" onClick={() => newChat(true)}>
-          New Room
-        </div>
-        <div className="newchatbtn waves-effect waves-light" onClick={() => newChat(false)}>
-          Start Chat
-        </div>
+        <Patbtn
+          text={"new room"}
+          handleClick={() => handleChatBoxState({ type: "NEW_CHAT", isRoom: true })}
+          state={chatBoxState?.level === 101 ? chatBoxState?.createRoom ? "active" : "react" : "react"}
+        />
+        <Patbtn
+          text={"Start Chat"}
+          handleClick={() => handleChatBoxState({ type: "NEW_CHAT", isRoom: false })}
+          state={chatBoxState?.level === 101 ? !chatBoxState?.createRoom ? "active" : "react" : "react"}
+        />
       </div>
     </div>
   )

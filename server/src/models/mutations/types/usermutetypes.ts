@@ -1,14 +1,20 @@
 export interface logintype {
-  username: string;
+  email?: string;
+  username?: string;
   password: string;
 }
 
-export interface magiclinktype {
+export interface requestfpasswordtype {
   message: string;
   email: string;
+}
+
+export interface magiclinktype extends requestfpasswordtype {
   password: string;
 }
 
-export type rusertype = {
-  id: number;
+export type forgetpasswordtype = {
+  token: string;
+  password: string;
+  cpassword: string;
 };

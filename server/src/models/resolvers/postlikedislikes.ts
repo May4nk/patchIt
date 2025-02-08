@@ -1,24 +1,24 @@
-import { listAll, findOne } from "../../utils/queriesutils.js";
+import { listAll, findOne } from "../../utils/common/queriesutils.js";
 
 //types
 import { usertype } from "./types/usertypes.js";
 import { posttype } from "./types/posttypes.js";
-import { filtersorttype } from "../../utils/types.js";
+import { filtersorttype, IDSTYPE } from "../../utils/common/types.js";
 import {
   postlikedislikestype,
-  postlikedislikesfiltertype,
+  rawpostlikedislikestype,
 } from "./types/postlikedisliketypes.js";
 
 export const postlikedislikeResolvers = {
   Query: {
     listPostLikeDislikes: async (
       _: undefined,
-      filter: filtersorttype<postlikedislikesfiltertype>
+      filter: filtersorttype<rawpostlikedislikestype>
     ): Promise<postlikedislikestype[]> => {
       try {
         const allLikeDislikes: postlikedislikestype[] = await listAll<
           postlikedislikestype,
-          postlikedislikesfiltertype
+          rawpostlikedislikestype
         >("post_like_dislikes", filter);
 
         return allLikeDislikes;
@@ -28,13 +28,13 @@ export const postlikedislikeResolvers = {
     },
     postlikedislike: async (
       _: undefined,
-      { id }: { id: number }
+      { id }: IDSTYPE
     ): Promise<postlikedislikestype> => {
       try {
         const postlikedislikeById: postlikedislikestype = await findOne<
           postlikedislikestype,
-          { id: number }
-        >("post_like_dislikes", { id: id });
+          IDSTYPE
+        >("post_like_dislikes", { id });
 
         if (!postlikedislikeById)
           throw new Error(`like/dislikes not found with id: ${id}`);
@@ -46,24 +46,22 @@ export const postlikedislikeResolvers = {
     },
   },
   Postlikedislike: {
-    post_id: async ({ post_id }: { post_id: number }): Promise<posttype> => {
+    post_id: async ({ post_id }: { post_id: string }): Promise<posttype> => {
       try {
-        const postById: posttype = await findOne<posttype, { id: number }>(
-          "posts",
-          { id: post_id }
-        );
+        const postById: posttype = await findOne<posttype, IDSTYPE>("posts", {
+          id: post_id,
+        });
 
         return postById;
       } catch (err) {
         throw err;
       }
     },
-    user_id: async ({ user_id }: { user_id: number }): Promise<usertype> => {
+    user_id: async ({ user_id }: { user_id: string }): Promise<usertype> => {
       try {
-        const userById: usertype = await findOne<usertype, { id: number }>(
-          "users",
-          { id: user_id }
-        );
+        const userById: usertype = await findOne<usertype, IDSTYPE>("users", {
+          id: user_id,
+        });
 
         return userById;
       } catch (err) {

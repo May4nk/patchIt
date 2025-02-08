@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 //utils
-import { dateFormatter, defaultUPic } from '../../utils/helpers';
+import { dateFormatter, defaultUPic } from '../../utils/helpers/helpers';
 
 //css, constants & types
 import "./css/commentcard.css";
@@ -30,9 +30,9 @@ function Commentcard(commentcardprops: commentcardpropstype) {
           ? (
             <Link
               className="commentcardcommunityname"
-              to={`/c/${comment?.post_id?.community_id?.communityname}`}
+              to={`/c/${comment?.post_id?.community_id?.name}`}
             >
-              c/{comment?.post_id?.community_id?.communityname}
+              c/{comment?.post_id?.community_id?.name}
             </Link>
           ) : (
             comment?.user_id?.status === "ACTIVE" ? (
@@ -93,11 +93,11 @@ function Commentcard(commentcardprops: commentcardpropstype) {
                 </div>
               </div>
               <div className="parentcmnttxt">
-                {comment?.parent_id?.comment}
+                {comment?.parent_id?.text}
               </div>
             </div>
             <Link to={`/post/${comment?.post_id?.id}/#comment${comment?.id}`} className="cmntoverviewmetacontent">
-              {comment?.comment}
+              {comment?.text}
             </Link>
           </>
         ) : (
@@ -125,7 +125,7 @@ function Commentcard(commentcardprops: commentcardpropstype) {
               </div>
             </div>
             <Link to={`/post/${comment?.post_id?.id}/#comment${comment?.id}`} className="commenttxt">
-              {comment.comment}
+              {comment.text}
             </Link>
           </>
         )}

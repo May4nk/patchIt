@@ -1,7 +1,7 @@
-import { listAll, findOne } from "../../utils/queriesutils.js";
+import { listAll, findOne } from "../../utils/common/queriesutils.js";
 
 //types
-import { filtersorttype } from "../../utils/types.js";
+import { filtersorttype } from "../../utils/common/types.js";
 import { commenttype } from "./types/commenttypes.js";
 import { usertype } from "./types/usertypes.js";
 import {
@@ -28,12 +28,12 @@ export const usercommentResolvers = {
     },
     userCommentLike: async (
       _: undefined,
-      { id }: { id: number }
+      { id }: { id: string }
     ): Promise<usercommenttype> => {
       try {
         const userCommnetById: usercommenttype = await findOne<
           usercommenttype,
-          { id: number }
+          { id: string }
         >("user_comment_relation", { id: id });
 
         if (!userCommnetById) throw new Error(`User not liked this comment`);
@@ -45,9 +45,9 @@ export const usercommentResolvers = {
     },
   },
   UserComment: {
-    user_id: async ({ user_id }: { user_id: number }): Promise<usertype> => {
+    user_id: async ({ user_id }: { user_id: string }): Promise<usertype> => {
       try {
-        const userById: usertype = await findOne<usertype, { id: number }>(
+        const userById: usertype = await findOne<usertype, { id: string }>(
           "users",
           { id: user_id }
         );
@@ -60,12 +60,12 @@ export const usercommentResolvers = {
     comment_id: async ({
       comment_id,
     }: {
-      comment_id: number;
+      comment_id: string;
     }): Promise<commenttype> => {
       try {
         const commentById: commenttype = await findOne<
           commenttype,
-          { id: number }
+          { id: string }
         >("comments", { id: comment_id });
 
         return commentById;

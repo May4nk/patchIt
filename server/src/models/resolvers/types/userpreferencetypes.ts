@@ -1,3 +1,4 @@
+import { ALLOWTOMSG, IDSTYPE } from "../../../utils/common/types";
 import { usertype } from "./usertypes";
 
 type usersettingtype = {
@@ -6,7 +7,7 @@ type usersettingtype = {
   show_nsfw: boolean;
   allowppltofollow: boolean;
   contentvisiblity: boolean;
-  chatreq: boolean;
+  chatreq: ALLOWTOMSG;
   mentionusername: boolean;
   activityonpost: boolean;
   activityoncmnt: boolean;
@@ -19,11 +20,16 @@ type usersettingtype = {
   auth_twofactor: boolean;
 };
 
-export interface userpreferencetype extends usersettingtype {
-  id: number;
-  user_id: usertype;
+export interface userpreferencetype extends usersettingtype, IDSTYPE {
+  user: usertype;
 }
 
 export interface userpreferencefiltertype extends usersettingtype {
-  user_id: number;
+  user: string;
 }
+
+export type rawuserpreferencetype = userpreferencefiltertype & IDSTYPE;
+
+export type ruserpreferencetype = IDSTYPE & {
+  user: string;
+};

@@ -1,25 +1,22 @@
-import { idstype } from "../../utils/main/types";
+import {
+  communitynametype,
+  IDSTYPE,
+  usernametype,
+} from "../../utils/main/types";
 
-export interface communitytype {
-  id: number;
-  communityname: string;
-  profile_pic: string;
+export interface communitytype extends communitynametype {
   privacy: string;
   about: string;
   status: string;
   theme: string;
-  users: idstype[];
-  posts: idstype[];
+  users: IDSTYPE[];
+  posts: IDSTYPE[];
 }
 
-export interface usertype {
-  id: string;
+export interface usertype extends usernametype {
   email: string;
-  username: string;
-  profile_pic: string;
   about: string;
-  status: string;
-  posts: idstype[];
+  posts: IDSTYPE[];
 }
 
 export interface searchcardpropstype {

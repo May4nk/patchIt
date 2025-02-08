@@ -1,14 +1,14 @@
 import { usertype } from "./usertypes";
 import { chatroomtype } from "./chatroomtypes";
+import { CHATMEDIA, IDSTYPE } from "../../../utils/common/types";
 
-export interface chatpreferencetype {
-  id: number;
+export interface chatpreferencetype extends IDSTYPE {
   owner: usertype;
   room: chatroomtype;
   blocked: string;
   about: string;
   group_profile: string;
-  allowedmedia: String;
+  allowedmedia: CHATMEDIA;
   chatgrouptheme: String;
   admin: usertype | null;
   co_admin: usertype | null;
@@ -17,13 +17,20 @@ export interface chatpreferencetype {
 }
 
 export interface chatpreferencefiltertype {
-  owner: number;
+  owner: string;
   room: string;
   blocked: string;
-  allowedmedia: String;
+  allowedmedia: CHATMEDIA;
   chatgrouptheme: String;
   admin: String;
   co_admin: String;
   acceptor: String;
   operator: String;
+}
+
+export interface rawchatpreferencetype
+  extends IDSTYPE,
+    chatpreferencefiltertype {
+  about: string;
+  group_profile: string;
 }

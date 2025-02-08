@@ -1,10 +1,12 @@
 export interface roletype {
-  id: number;
+  id: string;
   role: string;
+  role_id: number;
   access: string;
 }
 
 export interface rolefiltertype {
-  id: number;
+  id: string;
   role: string;
+  role_id: number;
 }

@@ -1,11 +1,11 @@
 import db from "../../db.js";
-import { listAll, findOne } from "../../utils/queriesutils.js";
+import { listAll, findOne } from "../../utils/common/queriesutils.js";
 
 //types
 import { roletype } from "./types/roletypes.js";
 import { posttype } from "./types/posttypes.js";
 import { commenttype } from "./types/commenttypes.js";
-import { filtersorttype } from "../../utils/types.js";
+import { filtersorttype } from "../../utils/common/types.js";
 import { savedposttype } from "./types/savedposttypes.js";
 import { communitytype } from "./types/communitiestypes.js";
 import { usertype, userfiltertype } from "./types/usertypes.js";
@@ -17,19 +17,25 @@ import { postlikedislikestype } from "./types/postlikedisliketypes.js";
 
 export const userResolvers = {
   Query: {
-    listUsers: async (_: undefined, filter?: filtersorttype<userfiltertype>): Promise<usertype[]> => {
+    listUsers: async (
+      _: undefined,
+      filter?: filtersorttype<userfiltertype>
+    ): Promise<usertype[]> => {
       try {
         const alluserswithconstraints: usertype[] = await listAll<
           usertype,
           userfiltertype
         >("users", filter);
-        
+
         return alluserswithconstraints;
       } catch (err) {
         throw err;
       }
     },
-    user: async (_: undefined, { username }: { username: string }): Promise<usertype> => {
+    user: async (
+      _: undefined,
+      { username }: { username: string }
+    ): Promise<usertype> => {
       try {
         const userByUsername: usertype = await findOne<
           usertype,
@@ -46,27 +52,31 @@ export const userResolvers = {
     },
   },
   User: {
-    posts: async ({ id }: { id: number }): Promise<posttype[]> => {
+    posts: async ({ id }: { id: string }): Promise<posttype[]> => {
       try {
         const allUsersPosts: posttype[] = await listAll<
           posttype,
-          { owner: number }
+          { owner: string }
         >("posts", { filter: { owner: id } });
         return allUsersPosts;
       } catch (err) {
         throw err;
       }
     },
-    reactedposts: async ({ id }: { id: number }): Promise<postlikedislikestype[]> => {
+    reactedposts: async ({
+      id,
+    }: {
+      id: string;
+    }): Promise<postlikedislikestype[]> => {
       try {
         const allUsersReaction: postlikedislikestype[] = await listAll<
           postlikedislikestype,
-          { user_id: number }
+          { user_id: string }
         >("post_like_dislikes", { filter: { user_id: id } });
 
         const allUserDoneReaction: postlikedislikestype[] =
           allUsersReaction.filter(
-            (post: postlikedislikestype) => post.reaction !== 0
+            (post: postlikedislikestype) => post.reaction !== "NONE"
           );
 
         return allUserDoneReaction;
@@ -74,11 +84,15 @@ export const userResolvers = {
         throw err;
       }
     },
-    communities: async ({ id }: { id: number }): Promise<userscommunitytype[]> => {
+    communities: async ({
+      id,
+    }: {
+      id: string;
+    }): Promise<userscommunitytype[]> => {
       try {
         const allUsersCommunity: userscommunitytype[] = await listAll<
           userscommunitytype,
-          { user_id: number }
+          { user_id: string }
         >("user_community_relation", { filter: { user_id: id } });
 
         return allUsersCommunity;
@@ -86,14 +100,16 @@ export const userResolvers = {
         throw err;
       }
     },
-    chatrooms: async ({ id }: { id: number }): Promise<userchatroomtype[]> => {
+    chatrooms: async ({ id }: { id: string }): Promise<userchatroomtype[]> => {
       try {
         const userRooms: userchatroomtype[] = await listAll<
           userchatroomtype,
-          { user_id: number }
+          { user_id: string }
         >("user_chatrooms", { filter: { user_id: id } });
 
-        const allSpecificUserChatrooms: userchatroomtype[] = await db("user_chatrooms")
+        const allSpecificUserChatrooms: userchatroomtype[] = await db(
+          "user_chatrooms"
+        )
           .select("*")
           .havingIn(
             "room_id",
@@ -113,11 +129,11 @@ export const userResolvers = {
         throw err;
       }
     },
-    comments: async ({ id }: { id: number }): Promise<commenttype[]> => {
+    comments: async ({ id }: { id: string }): Promise<commenttype[]> => {
       try {
         const allUsersComments: commenttype[] = await listAll<
           commenttype,
-          { user_id: number }
+          { user_id: string }
         >("comments", { filter: { user_id: id } });
 
         return allUsersComments;
@@ -125,11 +141,11 @@ export const userResolvers = {
         throw err;
       }
     },
-    savedposts: async ({ id }: { id: number }): Promise<savedposttype[]> => {
+    savedposts: async ({ id }: { id: string }): Promise<savedposttype[]> => {
       try {
         const allUsersSavedPosts: savedposttype[] = await listAll<
           savedposttype,
-          { user_id: number }
+          { user_id: string }
         >("saved", { filter: { user_id: id } });
 
         const allUsersDoneSaved: savedposttype[] = allUsersSavedPosts.filter(
@@ -141,12 +157,16 @@ export const userResolvers = {
         throw err;
       }
     },
-    settings: async ({ id }: { id: number }): Promise<userpreferencetype> => {
+    settings: async ({
+      username,
+    }: {
+      username: string;
+    }): Promise<userpreferencetype> => {
       try {
         const userSettings: userpreferencetype = await findOne<
           userpreferencetype,
-          { user_id: number }
-        >("user_preferences", { user_id: id });
+          { user: string }
+        >("user_preferences", { user: username });
 
         return userSettings;
       } catch (err) {
@@ -155,17 +175,24 @@ export const userResolvers = {
     },
     role: async ({ role }: { role: number }): Promise<roletype> => {
       try {
-        const userRole: roletype = await findOne<roletype, { id: number }>("roles", { id: role });
+        const userRole: roletype = await findOne<roletype, { role_id: number }>(
+          "roles",
+          { role_id: role }
+        );
         return userRole;
       } catch (err) {
         throw err;
       }
     },
-    ownedCommunities: async ({ id }: { id: number }): Promise<communitytype[]> => {
+    ownedCommunities: async ({
+      id,
+    }: {
+      id: string;
+    }): Promise<communitytype[]> => {
       try {
         const allUserPatchers: communitytype[] = await listAll<
           communitytype,
-          { owner: number }
+          { owner: string }
         >("communities", { filter: { owner: id } });
 
         return allUserPatchers;
@@ -173,11 +200,11 @@ export const userResolvers = {
         throw err;
       }
     },
-    followers: async ({ id }: { id: number }): Promise<userfollowingtype[]> => {
+    followers: async ({ id }: { id: string }): Promise<userfollowingtype[]> => {
       try {
         const allFollowers: userfollowingtype[] = await listAll<
           userfollowingtype,
-          { following: number }
+          { following: string }
         >("user_user_relation", { filter: { following: id } });
 
         return allFollowers;

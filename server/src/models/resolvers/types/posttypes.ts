@@ -1,47 +1,25 @@
 import { usertype } from "./usertypes.js";
+import { posttagtype } from "./posttagstypes.js";
 import { communitytype } from "./communitiestypes.js";
-import { tagtype } from "./tagtypes.js";
-import { posttagstype } from "./posttagstypes.js";
+import { DELSTATUS, IDSTYPE, POSTTYPE } from "../../../utils/common/types.js";
 
-enum STATUS {
-  "ACTIVE",
-  "INACTIVE"
-}
-
-enum PRIVACY {
-  "PUBLIC",
-  "PRIVATE"
-}
-
-enum TYPE {
-  "BLOG",
-  "POLL",
-  "IMAGE",
-  "LINK"
-}
-
-export interface posttype {
-  id: number;
+export interface posttype extends IDSTYPE {
   title: string;
   owner: usertype;
   community_id: communitytype;
   content: string;
-  tags: [posttagstype];
-  type: TYPE;
-  status: STATUS;
-  privacy: PRIVACY;
+  tags: [posttagtype];
+  type: POSTTYPE;
+  status: DELSTATUS;
   likes: number;
   created_at: string;
 }
 
-export interface postfiltertype {
-  id: number;
-  owner: number;
-  community_id: number;
+export interface postfiltertype extends IDSTYPE {
+  owner: string;
+  community_id: string;
   tag: string;
-  type: TYPE;
-  status: STATUS;
-  privacy: PRIVACY;
+  type: POSTTYPE;
+  status: DELSTATUS;
   likes: number;
 }
-

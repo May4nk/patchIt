@@ -1,13 +1,19 @@
 import { commenttype } from "../../components/comments/types";
 import { infocreatecardtype } from "../../components/infosection/types";
-import { usernametype } from "../../utils/main/types";
+import {
+  ERRORTYPE,
+  IDSTYPE,
+  POSTTYPE,
+  usernametype,
+} from "../../utils/main/types";
 
 export type tagtype = { tag_id: { name: string } };
 
-export interface postpagetype {
-  id: number;
+export type seterrortype = (error: ERRORTYPE) => void;
+
+export interface postpagetype extends IDSTYPE {
   title: string;
-  type: string;
+  type: POSTTYPE;
   status: string;
   content: string;
   likes: number;

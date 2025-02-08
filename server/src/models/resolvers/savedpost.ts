@@ -1,58 +1,68 @@
-import { listAll, findOne } from "../../utils/queriesutils.js";
+import { listAll, findOne } from "../../utils/common/queriesutils.js";
 
 //types
 import { usertype } from "./types/usertypes.js";
 import { posttype } from "./types/posttypes.js";
-import { filtersorttype } from "../../utils/types.js";
-import { savedpostfiltertype, savedposttype } from "./types/savedposttypes.js";
+import { filtersorttype, IDSTYPE } from "../../utils/common/types.js";
+import { rawsavedposttype, savedposttype } from "./types/savedposttypes.js";
 
 export const savedpostResolvers = {
   Query: {
     listSavedPost: async (
       _: undefined,
-      filter: filtersorttype<savedpostfiltertype>
+      filter: filtersorttype<rawsavedposttype>
     ): Promise<savedposttype[]> => {
       try {
         const allSavedPost: savedposttype[] = await listAll<
           savedposttype,
-          savedpostfiltertype
+          rawsavedposttype
         >("saved", filter);
-        
+
         return allSavedPost;
-      } catch(err) {
+      } catch (err) {
         throw err;
       }
     },
-    savedPost: async (_: undefined, { id }: { id: number }): Promise<savedposttype> => {
+    savedPost: async (
+      _: undefined,
+      { id }: IDSTYPE
+    ): Promise<savedposttype> => {
       try {
-        const savedPost: savedposttype = await findOne<savedposttype, { id: number }>("saved", { "id": id });
+        const savedPost: savedposttype = await findOne<savedposttype, IDSTYPE>(
+          "saved",
+          { id }
+        );
 
-        if(!savedPost) throw new Error(`Saved Post not found with Id: ${ id }`);
+        if (!savedPost) throw new Error(`Saved Post not found with Id: ${id}`);
 
         return savedPost;
-      } catch(err) {
-        throw err;
-      }
-    }
-  },
-  SavedPost: {
-    user_id: async ({ user_id }: { user_id: number } ): Promise<usertype> => {
-      try {
-        const userById: usertype = await findOne<usertype, { id: number }>("users", { "id": user_id });
-
-        return userById;
-      } catch(err) {
+      } catch (err) {
         throw err;
       }
     },
-    post_id: async ({ post_id }: { post_id: number }): Promise<posttype> => {
+  },
+  SavedPost: {
+    user_id: async ({ user_id }: { user_id: string }): Promise<usertype> => {
       try {
-        const postById: posttype = await findOne<posttype, { id: number }>("posts", { "id": post_id });
+        const userById: usertype = await findOne<usertype, IDSTYPE>("users", {
+          id: user_id,
+        });
 
-        return postById;
-      } catch(err) {
+        return userById;
+      } catch (err) {
         throw err;
       }
-    }
-  }
-}
+    },
+    post_id: async ({ post_id }: { post_id: string }): Promise<posttype> => {
+      try {
+        const postById: posttype = await findOne<posttype, IDSTYPE>("posts", {
+          id: post_id,
+        });
+
+        return postById;
+      } catch (err) {
+        throw err;
+      }
+    },
+  },
+};

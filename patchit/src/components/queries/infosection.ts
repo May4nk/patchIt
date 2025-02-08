@@ -1,12 +1,14 @@
 import { gql } from "@apollo/client";
+import { COMMUNITY_BASIC_FIELDS } from "../../containers/queries/community";
 
 export const GETCOMMUNITIES = gql`
   query ListCommunities($filter: CommunitiesfilterInput, $limit: Int) {
     listCommunities(filter: $filter, limit: $limit) {
-      id
-      communityname
-      profile_pic
+      ...communityBasicFields
       posts {
+        id
+      }
+      owner {
         id
       }
       users {
@@ -14,6 +16,7 @@ export const GETCOMMUNITIES = gql`
       }
     }
   }
+  ${COMMUNITY_BASIC_FIELDS}
 `;
 
 export const GETRECOMMENDEDPOSTS = gql`
@@ -33,12 +36,14 @@ export const GETRECOMMENDEDPOSTS = gql`
         id
       }
       community_id {
-        id
-        communityname
-        profile_pic
+        ...communityBasicFields
+        owner {
+          id
+        }
       }
     }
   }
+  ${COMMUNITY_BASIC_FIELDS}
 `;
 
 export const INSERTUSERCOMMUNITY = gql`

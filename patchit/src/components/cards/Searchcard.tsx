@@ -1,27 +1,30 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-import { defaultCPic, defaultUPic } from '../../utils/helpers';
-
 //css, constants & types
 import { searchcardpropstype } from '../../containers/Search/types';
+import { defaultCPic, defaultUPic } from '../../utils/helpers/helpers';
+import { defaultCommunityPic, defaultUserPic } from '../../constants/const';
 
 function Searchcard(searchcardprops: searchcardpropstype) {
   const { usertype, user, community } = searchcardprops;
 
   return (
-    <Link to={usertype ? `/u/${user?.username}` : `/c/${community?.communityname}`} className="searchbycard">
+    <Link to={usertype ? `/u/${user?.username}` : `/c/${community?.name}`} className="searchbycard">
       <div className="searchbycardpicwrapper">
         <img
-          alt={"search_card_profile_pic"}
+          alt={"profile_pic"}
           className="searchbycardpic"
-          src={usertype ? user?.profile_pic : community?.profile_pic}
+          src={usertype
+            ? user?.profile_pic || defaultUserPic
+            : community?.profile_pic || defaultCommunityPic
+          }
           onError={usertype ? () => defaultUPic : () => defaultCPic}
         />
       </div>
       <div className="searchbycardcontent">
         <div className="searchbycardcontentheader">
-          {usertype ? user?.username : `c/${community?.communityname}`}
+          {usertype ? user?.username : `c/${community?.name}`}
         </div>
         <div className="searchbycardcontentabout">
           {usertype

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 //components
 import Askinput from "../../components/html/Askinput";
@@ -6,59 +6,106 @@ import Typepostpreviewimage from "./Typepostpreviewimage";
 
 //css & types
 import "./css/typepostimage.css";
-import { posttypeimageprops, imagetype } from "./types";
+import { posttypeimageprops, postimagetype } from "./types";
 
 const Posttypeimage = (posttypeimageprops: posttypeimageprops) => {
   const {
-    onChange,
-    image,
-    setImage,
-    currentpreviewImage,
-    setCurrentpreviewImage,
-    handleRemovepreviewImage
+    images,
+    setImages,
   } = posttypeimageprops;
 
+  //states
+  const [currentpreviewImg, setCurrentpreviewImg] = useState<number | null>(null);
+
   //handlers
-  const setImg: (id: number) => void = (id: number) => {
-    setCurrentpreviewImage(id);
+  const handleRemovePreviewImg: (imgobjid: number) => void = (imgobjid: number) => {
+    setImages({ type: "DEL_IMAGE", imgIdx: imgobjid });
+
+    if (currentpreviewImg === imgobjid) {
+      setCurrentpreviewImg(images.length > 0 ? Math.max(0, imgobjid - 1) : null)
+    } else if (currentpreviewImg !== null && currentpreviewImg > imgobjid) {
+      setCurrentpreviewImg(currentpreviewImg - 1);
+    }
   }
+
+  const handlePreview = (previewIdx: number) => {
+    const currentHighlightedImg = document.querySelector(`.previewimg`);
+    if (currentHighlightedImg) {
+      currentHighlightedImg.classList.remove("previewimg");
+    }
+
+    const newHighlightedImg = document.querySelector(`.prev${previewIdx}`);
+    if (newHighlightedImg) {
+      newHighlightedImg.classList.add("previewimg");
+    }
+  }
+
+  const handlePic = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files) {
+      setImages({
+        type: "ADD_IMAGES",
+        images: [
+          ...images,
+          ...([...files].map((file: File, idx: number) => ({
+            postCaption: "",
+            postLink: "",
+            postSrc: file
+          })))
+        ]
+      })
+
+      const currentFileIdx: number = (images.length + files.length) - 1;
+      setCurrentpreviewImg(currentFileIdx);
+    }
+  };
 
   const handleChangepostimgdata: (e: React.ChangeEvent<HTMLInputElement>) => void = (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
-    let tempImage: imagetype[] = [...image];
-    (tempImage[currentpreviewImage] as any)[e.target.name as keyof imagetype] = e.target.value;
-    setImage(tempImage);
+    let tempImages: postimagetype[] = [...images];
+    if (currentpreviewImg !== null) {
+      tempImages[currentpreviewImg][e.target.name] = e.target.value;
+      setImages({
+        type: "ADD_IMAGES",
+        images: tempImages
+      })
+    }
   }
+
+  useEffect(() => {
+    if (currentpreviewImg !== null) {
+      handlePreview(currentpreviewImg);
+    }
+  }, [currentpreviewImg])
 
   return (
     <div className="newpostpic">
       <input
         id="img"
-        required
+        multiple
         type="file"
         name="content"
-        accept="image/*"
-        onChange={onChange}
+        accept="image/* video/*"
+        onChange={handlePic}
       />
-      {image.length <= 1 && (
+      {images.length < 1 && (
         <label htmlFor="img">
           <span className="uploadpic">
             "Upload pic"
           </span>
         </label>
       )}
-      {image.length > 1 && (
+      {images.length > 0 && (
         <div className="multiimageprofiles">
           <div className="multiimage">
-            {image.slice(1,).map((img: imagetype, idx: number) => (
+            {images.map((img: postimagetype, idx: number) => (
               <Typepostpreviewimage
                 key={idx}
-                idx={idx + 1}
-                img_id={img.id}
-                setImg={setImg}
+                img_id={idx}
                 src={img.postSrc}
-                handleRemoveImage={handleRemovepreviewImage}
+                setImg={setCurrentpreviewImg}
+                handleRemoveImage={handleRemovePreviewImg}
               />
             ))}
             <label htmlFor="img">
@@ -67,35 +114,37 @@ const Posttypeimage = (posttypeimageprops: posttypeimageprops) => {
               </span>
             </label>
           </div>
-          <div className="currentimage">
-            <div className="imageoutline">
-              <img
-                id="currentimg"
-                src={image[currentpreviewImage]?.postSrc}
-                alt="We are unable to upload your pic."
-              />
-            </div>
-            <div className="currentimagetitle">
-              <div className="currentpostcaption">
-                <Askinput
-                  maxlength={20}
-                  name={"postCaption"}
-                  placeholder={"Add a caption"}
-                  onChange={handleChangepostimgdata}
-                  value={image[currentpreviewImage]?.postCaption}
+          {currentpreviewImg !== null && (
+            <div className="currentimage">
+              <div className="imageoutline">
+                <img
+                  id="currentimg"
+                  src={URL.createObjectURL(images[currentpreviewImg]?.postSrc)}
+                  alt="We are unable to upload your pic."
                 />
               </div>
-              <div className="currentpostcaption">
-                <Askinput
-                  maxlength={100}
-                  name={"postLink"}
-                  placeholder={"Add a Link"}
-                  onChange={handleChangepostimgdata}
-                  value={image[currentpreviewImage]?.postLink}
-                />
+              <div className="currentimagetitle">
+                <div className="currentpostcaption">
+                  <Askinput
+                    maxlength={80}
+                    name={"postCaption"}
+                    placeholder={"Add Caption"}
+                    onChange={handleChangepostimgdata}
+                    value={images[currentpreviewImg]?.postCaption}
+                  />
+                </div>
+                <div className="currentpostcaption">
+                  <Askinput
+                    maxlength={100}
+                    name={"postLink"}
+                    placeholder={"Add a Link"}
+                    onChange={handleChangepostimgdata}
+                    value={images[currentpreviewImg]?.postLink}
+                  />
+                </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
       )}
     </div>

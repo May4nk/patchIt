@@ -1,11 +1,11 @@
 import db from "../../db.js";
-import { listAll, findOne } from "../../utils/queriesutils.js";
-import { generateTokens, setCookies } from "../../utils/tokenutils.js";
+import { listAll, findOne } from "../../utils/common/queriesutils.js";
+import { generateTokens, setCookies } from "../../utils/common/tokenutils.js";
 
 //types
 import { Response } from "express";
 import { usertype } from "./types/usertypes.js";
-import { filtersorttype } from "../../utils/types.js";
+import { filtersorttype } from "../../utils/common/types.js";
 import {
   magictokentype,
   magictokenfiltertype,
@@ -14,7 +14,10 @@ import {
 
 export const magictokenResolvers = {
   Query: {
-    listMagicTokens: async (_: undefined, filter?: filtersorttype<magictokenfiltertype>): Promise<magictokentype[]> => {
+    listMagicTokens: async (
+      _: undefined,
+      filter?: filtersorttype<magictokenfiltertype>
+    ): Promise<magictokentype[]> => {
       try {
         const allMagicTokens: magictokentype[] = await listAll<
           magictokentype,
@@ -26,7 +29,10 @@ export const magictokenResolvers = {
         throw err;
       }
     },
-    magicToken: async (_: undefined, { email }: { email: string }): Promise<magictokentype> => {
+    magicToken: async (
+      _: undefined,
+      { email }: { email: string }
+    ): Promise<magictokentype> => {
       try {
         const magicTokenUser: magictokentype = await findOne<
           magictokentype,

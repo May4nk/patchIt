@@ -1,11 +1,14 @@
 import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useLazyQuery } from "@apollo/client";
+
 //components
 import Sidenavtab from "./Sidenavtab";
 import Loadingpage from "../Loadingpage";
+
 //queries
 import { GETCATEGORIES } from "./queries";
+
 //css & types
 import "./css/sidenav.css";
 import { categorytype } from "./types";

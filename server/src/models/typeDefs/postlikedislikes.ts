@@ -1,24 +1,33 @@
 export const postlikedislikeTypeDefs = `
+  enum REACTION {
+    TRUE
+    NONE
+    FALSE    
+  }
+
   type Postlikedislike {
-    id: Int!
+    id: String!
     post_id: Post!
-    reaction: Int
+    reaction: REACTION
     user_id: User!
     created_at: String
   }
+
   input UpsertPostLikeDislikeInput {
-    id: Int
-    post_id: Int!
-    user_id: Int!
-    reaction: Int!
+    id: String
+    post_id: String!
+    user_id: String!
+    reaction: REACTION!
   }
+
   input PostlikedislikefilterInput {
-    id: Int
-    post_id: Int
-    user_id: Int
-    reaction: Int
+    id: String
+    post_id: String
+    user_id: String
+    reaction: REACTION
   }
+        
   input RemovePostLikeDislikeInput {
-    id: Int!
+    id: String!
   }
 `;

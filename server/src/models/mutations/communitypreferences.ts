@@ -1,20 +1,21 @@
 import db from "../../db.js";
-import { findOne } from "../../utils/queriesutils.js";
-import { usertype } from "../resolvers/types/usertypes.js";
+import { findOne } from "../../utils/common/queriesutils.js";
 
 //types
+import { IDSTYPE, loggedusertype } from "../../utils/common/types.js";
 import {
-  rcommunitypreferencetype,
   communitypreferencetype,
-} from "./types/communitypreferencemutetypes.js";
+  rawcommunitypreferencetype,
+  rcommunitypreferencetype,
+} from "../resolvers/types/communitypreferencetypes.js";
 
 export const communitypreferenceMutations = {
   Mutation: {
     upsertCommunityPreference: async (
       _: undefined,
-      { data }: { data: communitypreferencetype },
-      { user }: { user: usertype }
-    ): Promise<communitypreferencetype> => {
+      { data }: { data: rawcommunitypreferencetype },
+      { user }: { user: loggedusertype }
+    ): Promise<rawcommunitypreferencetype> => {
       try {
         if (!user) throw new Error("user not authenticated");
 
@@ -24,7 +25,7 @@ export const communitypreferenceMutations = {
         >("community_preferences", { community_name: data.community_name });
 
         if (communityPreferenceFound) {
-          const [updateCommunityPreference]: communitypreferencetype[] =
+          const [updateCommunityPreference]: rawcommunitypreferencetype[] =
             await db("community_preferences")
               .where("community_name", communityPreferenceFound.community_name)
               .update(data)
@@ -33,11 +34,8 @@ export const communitypreferenceMutations = {
           return updateCommunityPreference;
         }
 
-        const [createCommunityPreference]: communitypreferencetype[] = await db(
-          "community_preferences"
-        )
-          .insert(data)
-          .returning("*");
+        const [createCommunityPreference]: rawcommunitypreferencetype[] =
+          await db("community_preferences").insert(data).returning("*");
 
         return createCommunityPreference;
       } catch (err) {
@@ -47,7 +45,7 @@ export const communitypreferenceMutations = {
     removeCommunityPreference: async (
       _: undefined,
       { data }: { data: rcommunitypreferencetype }
-    ): Promise<rcommunitypreferencetype> => {
+    ): Promise<IDSTYPE> => {
       try {
         const communityPreferenceFound: communitypreferencetype = await findOne<
           communitypreferencetype,
@@ -57,11 +55,12 @@ export const communitypreferenceMutations = {
         if (!communityPreferenceFound)
           throw Error("Community not found with settings...");
 
-        const [deleteCommunityPreference]: rcommunitypreferencetype[] =
-          await db("community_preferences")
-            .where("community_name", communityPreferenceFound.community_name)
-            .del()
-            .returning("id");
+        const [deleteCommunityPreference]: IDSTYPE[] = await db(
+          "community_preferences"
+        )
+          .where("community_name", communityPreferenceFound.community_name)
+          .del()
+          .returning("id");
 
         return deleteCommunityPreference;
       } catch (err) {

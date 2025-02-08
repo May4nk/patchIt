@@ -36,7 +36,6 @@ const Popular = () => {
           }
         ],
         filter: {
-          privacy: "PUBLIC",
           status: "ACTIVE"
         }
       }
@@ -56,7 +55,6 @@ const Popular = () => {
         limit: 4,
         filter: {
           status: "ACTIVE",
-          privacy: "PUBLIC"
         }
       }
     });

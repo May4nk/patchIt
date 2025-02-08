@@ -1,11 +1,12 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useEffect, useCallback, useReducer } from "react";
 import { useMutation, useLazyQuery } from "@apollo/client";
 import { useNavigate, useParams } from "react-router-dom";
 
+//utils
 import { useAuth } from "../../utils/hooks/useAuth";
-import { changeToThemeColor } from "../../utils/themeopx";
+import { changeToThemeColor, communitySettingsInitState, handleCommunitySettingState } from "../../utils/opx/communityopx";
 
-//coomponents
+//components
 import ProfileTab from "./ProfileTab";
 import PrivacyTab from "./PrivacyTab";
 import Modal from "../../components/Modal";
@@ -15,61 +16,35 @@ import Errorcard from "../../components/cards/Errorcard";
 import Loadingpage from "../../components/Loadingpage";
 
 //queries
+import { getSignedUrls } from "../../utils/services/s3";
 import { GETCOMMUNITYPREFERENCE, UPSERTCOMMUNITY, UPSERTCOMMUNITYPREFERENCE } from "./queries";
 
 //css & types
 import "../css/main.css";
 import "../profileSettings/profilesettings.css";
 import { authcontexttype } from "../../context/types";
+import { USER_S_N_TYPE } from "../../utils/main/types";
 import { communitySettingTabs } from "../../constants/const";
+import { signedfiletype, signedurltype } from "../../utils/types";
 import {
-  notificationsstatetype,
-  communitystatetype,
   handlechangetype,
   communitypreferencetype,
-  statenametype,
-  privacystatetype,
+  communitysettingtabs,
 } from "./types.js";
-import { ERRORTYPE } from "../../utils/main/types";
 
 const Communitysetting = () => {
   const navigate = useNavigate();
   const { cname } = useParams();
   const { user }: authcontexttype = useAuth();
-
-  const userId: number | null = user && user["id"];
+  const userId: USER_S_N_TYPE = user && user["id"];
 
   //queries
   const [updateCommunity] = useMutation(UPSERTCOMMUNITY);
   const [updateCommunitySettings] = useMutation(UPSERTCOMMUNITYPREFERENCE);
   const [getCommunitySettings, { loading, error }] = useLazyQuery(GETCOMMUNITYPREFERENCE);
 
-  //states  
-  const [updateState, setUpdateState] = useState<boolean>(false);
-  const [userOption, setUserOption] = useState<statenametype>("profile");
-  const [deleteCommunity, setDeleteCommunity] = useState<boolean>(false);
-  const [errorMessage, setErrorMessage] = useState<ERRORTYPE>({ status: 0, message: "", show: false });
-  const [privacyState, setPrivacyState] = useState<privacystatetype>({
-    nsfw: false,
-    handlers: []
-  });
-  const [communityState, setCommunityState] = useState<communitystatetype>({
-    theme: "",
-    about: "",
-    privacy: "PUBLIC",
-    profile_pic: "",
-    description: "",
-    social_links: "",
-    background_pic: "",
-  });
-  const [notificationsState, setNotificationState] = useState<notificationsstatetype>({
-    birthday: false,
-    newuserreq: false,
-    reportonpost: false,
-    reportoncmnt: false,
-    reportonuser: false,
-    activityincommunity: false,
-  });
+  //state
+  const [communitySettingState, dispatch] = useReducer(handleCommunitySettingState, communitySettingsInitState);
 
   //handlers 
   const handleDeleteAcc: () => Promise<void> = async () => {
@@ -82,29 +57,38 @@ const Communitysetting = () => {
           }
         }
       });
+
       navigate("/home");
     } catch (err) {
-      setErrorMessage({
-        status: 500,
-        show: true,
-        message: "Something went wrong: Community DELETION FAILED",
+      dispatch({
+        type: "SET_ERROR",
+        error: {
+          show: true,
+          status: 500,
+          message: "Something went wrong: Community DELETION FAILED",
+        }
       });
     }
   }
 
-  const handleChange: handlechangetype = (e: any, statename: statenametype) => {
-    setUpdateState(true);
-    if (statename === "profile") {
-      setPrivacyState({
-        ...privacyState,
-        [e.target.name]: e.target.checked
+  const handleChange: handlechangetype = (e: any, statename: communitysettingtabs) => {
+    if (statename === "privacy") {
+      dispatch({
+        type: "UPDATE_PRIVACY_SETTINGS",
+        privacySettings: {
+          [e.target.name]: e.target.checked
+        }
       });
     } else if (statename === "notifications") {
-      setNotificationState({
-        ...notificationsState,
-        [e.target.name]: e.target.checked
+      dispatch({
+        type: "UPDATE_NOTIFICATION_SETTINGS",
+        notifySettings: {
+          [e.target.name]: e.target.checked
+        }
       });
     }
+
+    dispatch({ type: "SET_UPDATE", update: true });
   }
 
   const handleUpdateChanges: () => void = async () => {
@@ -113,42 +97,50 @@ const Communitysetting = () => {
         variables: {
           data: {
             community_name: cname,
-            handlers: JSON.stringify([userId, ...privacyState.handlers]),
-            nsfw: privacyState?.nsfw,
-            ...notificationsState,
+            handlers: JSON.stringify([userId, ...communitySettingState?.privacyState.handlers]),
+            nsfw: communitySettingState?.privacyState?.nsfw,
+            ...communitySettingState?.notificationState,
           }
         },
         onCompleted: () => {
-          setUpdateState(false);
-          setErrorMessage({
-            status: 200,
-            show: true,
-            message: "Settings updated successfully",
+          dispatch({ type: "SET_UPDATE", update: false });
+          dispatch({
+            type: "SET_ERROR",
+            error: {
+              show: true,
+              status: 200,
+              message: "Settings updated successfully",
+            }
           });
         }
       })
     } catch (err) {
-      setPrivacyState((prev) => ({ ...prev }));
-      setNotificationState((prev) => ({ ...prev }));
-
-      setErrorMessage({
-        status: 500,
-        show: true,
-        message: "Something went wrong: Settings Update failed",
+      dispatch({ type: "RESET" })
+      dispatch({
+        type: "SET_ERROR",
+        error: {
+          show: true,
+          status: 500,
+          message: "Something went wrong: Settings Update failed",
+        }
       });
     }
   }
 
-  const handleUserOptions: (uoption: statenametype) => void = useCallback((uoption: statenametype) => {
-    document.querySelector(`.tab${userOption}`)?.classList?.remove("selected");
-    setUserOption(uoption);
+  const handleUserOptions: (uoption: communitysettingtabs) => void = useCallback((uoption: communitysettingtabs) => {
+    document.querySelector(`.tab${communitySettingState?.settingActiveTab}`)?.classList?.remove("selected");
+
+    dispatch({ type: "SET_ACTIVE_TAB", selectedTab: uoption })
+
     document.querySelector(`.tab${uoption}`)?.classList?.add("selected");
-  }, [userOption]);
+  }, [communitySettingState?.settingActiveTab]);
 
   useEffect(() => {
     if (!user) {
       navigate("/home");
     } else {
+      handleUserOptions("profile");
+
       getCommunitySettings({
         variables: {
           communityName: cname!
@@ -156,31 +148,74 @@ const Communitysetting = () => {
         onCompleted: ({ communitypreference }: { communitypreference: communitypreferencetype }) => {
           if (communitypreference) {
             const csettings: communitypreferencetype = communitypreference;
+            const profile_pic: USER_S_N_TYPE = csettings?.community_name?.profile_pic;
+            const background_pic: USER_S_N_TYPE = csettings?.community_name?.background_pic;
 
-            handleUserOptions("profile");
+            if (profile_pic || background_pic) {
+              const images: signedfiletype[] = [];
 
-            setPrivacyState({
-              nsfw: csettings?.nsfw!,
-              handlers: csettings?.handlers.length > 1 ? JSON.parse(csettings?.handlers) : []
+              if (background_pic !== null && background_pic.length > 0) {
+                images.push({ name: background_pic })
+              }
+
+              if (profile_pic !== null && profile_pic.length > 0) {
+                images.push({ name: profile_pic })
+              }
+
+              if (images.length > 0) {
+                (async function () {
+                  const signedUrls: signedurltype[] = await getSignedUrls({
+                    userId: csettings?.community_name?.owner.id,
+                    postId: "0",
+                    req: "GET",
+                    files: images
+                  });
+
+                  signedUrls.map((url: signedurltype) => {
+                    if (url.fileUrl.includes(`${cname}_profile_pic`)) {
+                      dispatch({ type: "UPDATE_PIC", profile_pic: url.signedUrl })
+                    }
+
+                    if (url.fileUrl.includes(`${cname}_background_pic`)) {
+                      dispatch({ type: "UPDATE_BG_PIC", background_pic: url.signedUrl })
+                    }
+                  })
+                }());
+              }
+            }
+
+            dispatch({
+              type: "UPDATE_PRIVACY_SETTINGS",
+              privacySettings: {
+                nsfw: csettings?.nsfw!,
+                handlers: csettings?.handlers.length > 1 ? JSON.parse(csettings?.handlers) : []
+              }
             });
 
-            setCommunityState({
-              theme: csettings?.community_name?.theme || "",
-              about: csettings?.community_name?.about || "",
-              privacy: csettings?.community_name?.privacy,
-              description: csettings?.community_name?.description || "",
-              profile_pic: csettings?.community_name?.profile_pic,
-              social_links: csettings?.community_name?.social_links,
-              background_pic: csettings?.community_name?.background_pic,
+            dispatch({
+              type: "UPDATE_COMMUNITYDATA",
+              communityData: {
+                owner: csettings?.community_name.owner.id,
+                theme: csettings?.community_name?.theme || "",
+                about: csettings?.community_name?.about || "",
+                privacy: csettings?.community_name?.privacy,
+                profile_pic: csettings?.community_name?.profile_pic,
+                background_pic: csettings?.community_name?.background_pic,
+                social_links: csettings?.community_name?.social_links,
+                description: csettings?.community_name?.description || "",
+              }
             });
 
-            setNotificationState({
-              birthday: csettings?.birthday!,
-              newuserreq: csettings?.newuserreq!,
-              reportonpost: csettings?.reportonpost!,
-              reportoncmnt: csettings?.reportoncmnt!,
-              reportonuser: csettings?.reportonuser!,
-              activityincommunity: csettings?.activityincommunity!,
+            dispatch({
+              type: "UPDATE_NOTIFICATION_SETTINGS",
+              notifySettings: {
+                birthday: csettings?.birthday!,
+                newuserreq: csettings?.newuserreq!,
+                reportonpost: csettings?.reportonpost!,
+                reportoncmnt: csettings?.reportoncmnt!,
+                reportonuser: csettings?.reportonuser!,
+                activityincommunity: csettings?.activityincommunity!,
+              }
             });
           }
         }
@@ -189,15 +224,15 @@ const Communitysetting = () => {
   }, []);
 
   useEffect(() => {
-    if (communityState.theme) {
-      changeToThemeColor(communityState.theme);
+    if (communitySettingState?.communityData.theme) {
+      changeToThemeColor(communitySettingState?.communityData.theme);
     }
-  }, [communityState?.theme, handleUserOptions]);
+  }, [communitySettingState?.communityData.theme, handleUserOptions]);
 
   if (loading) {
     return <Loadingpage />
   } else if (error) {
-    return <Loadingpage err={error?.message} />
+    return <Loadingpage err={"Unable to load community settings: Not authorised"} />
   } else {
     return (
       <>
@@ -206,18 +241,19 @@ const Communitysetting = () => {
           Community Preferences
         </div>
         <div className="useroverview">
-          {communitySettingTabs.map((tab: statenametype, idx: number) => (
+          {communitySettingTabs.map((tab: communitysettingtabs, idx: number) => (
             <Htabs
               key={idx}
               tabname={tab}
               handleClick={() => handleUserOptions(tab)}
             />
           ))}
-          {updateState && (
+          {communitySettingState?.isUpdating && (
             <>
               <div
                 onClick={handleUpdateChanges}
-                className="usettingupdatechangesbtn waves-effect waves-light black-text themebg"
+                className={`usettingupdatechangesbtn waves-effect waves-light black-text ${communitySettingState.communityData.theme && "themebg"}`
+                }
               >
                 Apply
               </div>
@@ -225,39 +261,40 @@ const Communitysetting = () => {
           )}
         </div>
         <div className="flexy">
-          {userOption === "profile" ? (
+          {communitySettingState?.settingActiveTab === "profile" ? (
             <ProfileTab
               cname={cname!}
-              setErrorMessage={setErrorMessage}
-              communityState={communityState}
-              setCommunityState={setCommunityState}
-              setDeleteCommunity={setDeleteCommunity}
+              handleState={dispatch}
+              communityState={{
+                data: communitySettingState?.communityData,
+                show_profile_pic: communitySettingState?.display_profile_pic,
+                show_background_pic: communitySettingState?.display_background_pic
+              }}
             />
-          ) : userOption === "privacy" ? (
+          ) : communitySettingState?.settingActiveTab === "privacy" ? (
             <PrivacyTab
-              privacyState={privacyState}
               handleChange={handleChange}
-              setPrivacyState={setPrivacyState}
+              privacyState={communitySettingState?.privacyState}
             />
-          ) : userOption === "notifications" && (
+          ) : communitySettingState?.settingActiveTab === "notifications" && (
             <NotificationTab
-              notificationsState={notificationsState}
               handleChange={handleChange}
+              notificationsState={communitySettingState?.notificationState}
             />
           )}
         </div>
-        {deleteCommunity && (
+        {communitySettingState?.deleteCommunity && (
           <Modal
             btntxt={"Delete"}
             head={"Delete Community"}
-            txt={"Are you sure, you want to DELETE community?"}
-            showModal={deleteCommunity}
             handleUpdate={handleDeleteAcc}
-            handleClose={() => setDeleteCommunity(false)}
+            txt={"Are you sure, you want to DELETE community?"}
+            showModal={communitySettingState?.deleteCommunity}
+            handleClose={() => dispatch({ type: "DELETE_ACCOUNT", deleteAcc: false })}
           />
         )}
-        {errorMessage.message && (
-          <Errorcard message={errorMessage} />
+        {communitySettingState?.error.message && (
+          <Errorcard message={communitySettingState?.error} />
         )}
       </>
     );

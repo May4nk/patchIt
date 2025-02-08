@@ -15,6 +15,7 @@ function Postimg(postimgprops: postimgprops) {
 
   //states
   const [pic, setPic] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
   const [showPic, setShowPic] = useState<boolean>(false);
   const [currentImg, setCurrentImg] = useState<number>(0);
 
@@ -32,40 +33,60 @@ function Postimg(postimgprops: postimgprops) {
   }
 
   const handleShowPic: (e) => void = (e) => {
-    setPic(postImgData[currentImg].postSrc);
+    setPic(postImgData[currentImg]?.postSrc);
     setShowPic(true);
   }
 
   return (
     <>
       <div className="postimage">
-        <img
-          alt={"post_img"}
-          className="postpic"
-          onClick={handleShowPic}
-          src={postImgData[currentImg].postSrc}
-        />
-        {totalimg && (
-          <div className="imagectrl">
-            <div className="totalimg"> {`${currentImg + 1}/${totalimg}`} </div>
-            {currentImg + 1 > 1 && (
-              <i className="material-icons leftimagebutton" onClick={prevImg}>
-                chevron_left
-              </i>
+        {!loading ? (
+          <>
+            <img
+              alt={"post_img"}
+              className="postpic"
+              onClick={handleShowPic}
+              onError={() => {
+                console.log("error")
+                setLoading(true)
+              }}
+              src={postImgData[currentImg]?.postSrc}
+            />
+            {totalimg && (
+              <div className="imagectrl">
+                <div className="totalimg"> {`${currentImg + 1}/${totalimg}`} </div>
+                {currentImg + 1 > 1 && (
+                  <i className="material-icons leftimagebutton" onClick={prevImg}>
+                    chevron_left
+                  </i>
+                )}
+                {(currentImg + 1 !== totalimg) && (
+                  <i className="material-icons rightimagebutton" onClick={nextImg}>
+                    chevron_right
+                  </i>
+                )}
+              </div>
             )}
-            {(currentImg + 1 !== totalimg) && (
-              <i className="material-icons rightimagebutton" onClick={nextImg}>
-                chevron_right
-              </i>
+            {postImgData && (
+              postImgData[currentImg]?.postCaption && (
+                <div className="post_caption">
+                  {postImgData[currentImg]?.postCaption}
+                </div>
+              )
             )}
-          </div>
-        )}
-        {postImgData && (
-          postImgData[currentImg]?.postCaption && (
-            <div className="post_caption">
-              {postImgData[currentImg]?.postCaption}
+          </>
+        ) : (
+          <div className="preloader-wrapper small active">
+            <div className="spinner-layer spinner-blue-only">
+              <div className="circle-clipper left">
+                <div className="circle"></div>
+              </div><div className="gap-patch">
+                <div className="circle"></div>
+              </div><div className="circle-clipper right">
+                <div className="circle"></div>
+              </div>
             </div>
-          )
+          </div>
         )}
       </div>
       <Patpicer

@@ -1,5 +1,8 @@
 import React, { useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+
+//components
+import Patbtn from "../html/Patbtn";
 
 //css
 import "./css/patcoindrop.css";
@@ -10,7 +13,6 @@ const Patcoindrop = (patcoindropprops: patcoindroppropstype) => {
   const { showPatcoindrop, setShowPatcoindrop } = patcoindropprops;
 
   const thisRef = useRef<HTMLDivElement>(null);
-  const navigate = useNavigate();
 
   //handlers
   const closeDrop = (e: any) => {
@@ -37,12 +39,11 @@ const Patcoindrop = (patcoindropprops: patcoindroppropstype) => {
           <div className="patcoinwrapper">
             <img className="patcoin" src={patcoind_pic} alt={"patcoin_pic"} />
           </div>
-          <div
-            onClick={() => navigate("/patcoin/dashboard")}
-            className="patcoinamnt waves-effect waves-light"
-          >
-            1 Patcoin
-          </div>
+          <Link to={"/patcoin/dashboard"}>
+            <Patbtn
+              text={"0 Patcoin"}
+            />
+          </Link>
           <div className="patcoinabout waves-effect waves-light">
             <div className="patcoinlearn">
               How to earn patcoins?

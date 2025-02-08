@@ -1,10 +1,7 @@
-import React from "react";
-
-import { defaultUPic } from "../../../utils/helpers";
-
 //css & types
 import "../css/chatlist.css";
 import { chatprofileprops, messagetexttype } from "../types";
+import { defaultUPic } from "../../../utils/helpers/helpers";
 import { defaultCommunityPic, defaultUserPic } from "../../../constants/const";
 
 const Chatprofiles = (chatprofileprops: chatprofileprops) => {
@@ -19,11 +16,8 @@ const Chatprofiles = (chatprofileprops: chatprofileprops) => {
 
   return (
     <div
-      className="chatters" id={`${chatroom.room.room_code}`}
-      onClick={() => handleActiveRoom({
-        roomId: chatroom.room.room_code,
-        users: chatroom.users.length
-      })}
+      className="chatters" id={`${chatroom.room.id}`}
+      onClick={() => handleActiveRoom(chatroom.room.id)}
     >
       <div className="chatterspicwrapper">
         <img

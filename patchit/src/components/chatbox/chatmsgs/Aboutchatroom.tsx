@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useMutation } from '@apollo/client';
 import { Link, useNavigate } from 'react-router-dom';
 
-import { defaultCPic, defaultUPic } from '../../../utils/helpers';
+import { defaultCPic, defaultUPic } from '../../../utils/helpers/helpers';
 import { useLogged } from '../../../utils/hooks/useAuth';
 
 //components
@@ -17,6 +17,7 @@ import { aboutchatroompropstype } from '../types';
 import { usernametype } from '../../../utils/main/types';
 import { defaultUserPic } from '../../../constants/const';
 import { loggedusercontexttype } from '../../../context/types';
+import Patbtn from '../../html/Patbtn';
 
 function Aboutchatroom(aboutchatroomprops: aboutchatroompropstype) {
   const { userId, setChatLevel, handleDelete, chatroomInfo } = aboutchatroomprops;
@@ -66,10 +67,10 @@ function Aboutchatroom(aboutchatroomprops: aboutchatroompropstype) {
           className="chataboutusername"
           onClick={chatroomInfo?.isRoom
             ? () => setChatLevel(0)
-            : () => navigate(`/u/${chatroomInfo.roomName}`)
+            : () => navigate(`/u/${chatroomInfo.name}`)
           }
         >
-          {chatroomInfo.roomName}
+          {chatroomInfo.name}
         </div>
         {chatroomInfo?.about && (
           <div className="chataboutuserabout">
@@ -77,18 +78,14 @@ function Aboutchatroom(aboutchatroomprops: aboutchatroompropstype) {
           </div>
         )}
         <div className="aboutchatuseroptions">
-          <div
-            className="aboutchatuseroption waves-effect waves-light"
-            onClick={chatroomInfo?.isRoom ?
+          <Patbtn
+            text={chatroomInfo?.isRoom ? "inmates" : "profile"}
+            icn={chatroomInfo?.isRoom ? "people_outline" : "perm_identity"}
+            handleClick={chatroomInfo?.isRoom ?
               () => setShowInmates(!showInmates) :
-              () => navigate(`/u/${chatroomInfo.roomName}`)
+              () => navigate(`/u/${chatroomInfo.name}`)
             }
-          >
-            <i className="material-icons aboutchatuseroptionicn">
-              {chatroomInfo?.isRoom ? "people_outline" : "perm_identity"}
-            </i>
-            {chatroomInfo?.isRoom ? "inmates" : "profile"}
-          </div>
+          />
           {(chatroomInfo?.isRoom && (userId === chatroomInfo?.ownerId)) && (
             <div className="aboutchatuseroption waves-effect waves-light" onClick={() => setChatLevel(2)}>
               <i className="material-icons aboutchatuseroptionicn">
@@ -97,25 +94,25 @@ function Aboutchatroom(aboutchatroomprops: aboutchatroompropstype) {
               settings
             </div>
           )}
-          <div className="aboutchatuseroption blue-text waves-effect waves-light" onClick={() => setChatLevel(0)}>
-            <i className="material-icons aboutchatuseroptionicn"> chat </i>
-            chat
-          </div>
+          <Patbtn
+            text={"chat"}
+            icn={"chat"}
+            handleClick={() => setChatLevel(0)}
+          />
           {!chatroomInfo?.isRoom && (
-            <div
-              onClick={() => handleBlock(chatroomInfo.roomName)}
-              className="aboutchatuseroption red-text waves-effect waves-light"
-            >
-              <i className="material-icons aboutchatuseroptionicn"> block </i>
-              Block
-            </div>
+            <Patbtn
+              text={"block"}
+              icn={"block"}
+              state={"clear"}
+              handleClick={() => handleBlock(chatroomInfo.name)}
+            />
           )}
-          <div className="aboutchatuseroption red-text waves-effect waves-light" onClick={handleDelete}>
-            <i className="material-icons aboutchatuseroptionicn">
-              {chatroomInfo?.isRoom ? "exit_to_app" : "delete_forever"}
-            </i>
-            {chatroomInfo?.isRoom ? "leave" : "delete"}
-          </div>
+          <Patbtn
+            text={chatroomInfo?.isRoom ? "leave" : "delete"}
+            icn={chatroomInfo?.isRoom ? "exit_to_app" : "delete_forever"}
+            state={"clear"}
+            handleClick={handleDelete}
+          />
         </div>
         {showInmates && (
           <div className="showinmates">

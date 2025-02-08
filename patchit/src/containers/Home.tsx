@@ -15,11 +15,11 @@ import { GETALLPOSTFORHOME } from "./queries/home";
 //css & types
 import "./css/main.css";
 import { authcontexttype } from "../context/types";
-import { homeposttype, posttype } from "../utils/main/types";
+import { homeposttype, posttype, USER_S_N_TYPE } from "../utils/main/types";
 
 const Home = () => {
   const { user }: authcontexttype = useAuth();
-  const userId: number | null = user && Number(user["id"]);
+  const userId: USER_S_N_TYPE = user && user["id"];
 
   //states
   const [sortby, setSortby] = useState<string>("created_at");
@@ -56,7 +56,6 @@ const Home = () => {
           ],
           filter: {
             status: "ACTIVE",
-            privacy: "PUBLIC"
           }
         }
       })

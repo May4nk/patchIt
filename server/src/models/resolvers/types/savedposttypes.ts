@@ -1,18 +1,17 @@
 import { usertype } from "./usertypes";
 import { posttype } from "./posttypes";
+import { IDSTYPE } from "../../../utils/common/types";
 
-export interface savedposttype {
-  id: number;
+export interface savedposttype extends IDSTYPE {
   user_id: usertype;
   post_id: posttype;
   saved: boolean;
   pinned: boolean;
 }
 
-export interface savedpostfiltertype {
-  id: number;
-  user_id: number;
-  post_id: number;
+export interface rawsavedposttype extends IDSTYPE {
+  user_id: string;
+  post_id: string;
   saved: boolean;
   pinned: boolean;
-}  
+}

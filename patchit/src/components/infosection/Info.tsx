@@ -1,5 +1,6 @@
-import React from "react";
-import { useQuery } from "@apollo/client";
+import React, { useEffect } from "react";
+import { useLazyQuery } from "@apollo/client";
+import { useLocation } from "react-router-dom";
 
 //components
 import Infotab from "./Infotab";
@@ -15,17 +16,24 @@ import { communitytype, infosectionprops } from "./types";
 
 const Infosection = (infosectionprops: infosectionprops) => {
   const { communitypatcherdata } = infosectionprops;
+  const location = useLocation();
 
   //query
-  const { loading, data: getpopularcommunitiesdata } = useQuery(GETCOMMUNITIES, {
-    variables: {
-      filter: {
-        status: "ACTIVE",
-        privacy: "PUBLIC"
-      },
-      limit: 10,
+  const [getCommunities, { loading, data: getpopularcommunitiesdata }] = useLazyQuery(GETCOMMUNITIES);
+
+  useEffect(() => {
+    if (location.pathname.includes("/home") || location.pathname.includes("/popular") || location.pathname === "/") {
+      getCommunities({
+        variables: {
+          filter: {
+            status: "ACTIVE",
+            privacy: "PUBLIC"
+          },
+          limit: 10,
+        }
+      });
     }
-  });
+  }, [location.pathname])
 
   return (
     <div className="info">
@@ -36,7 +44,10 @@ const Infosection = (infosectionprops: infosectionprops) => {
           <div className="infotabheading"> Explore Popular </div>
           {loading === false ? (
             getpopularcommunitiesdata?.listCommunities.map((community: communitytype, idx: number) => (
-              <Infotab community={community} key={idx} />
+              <Infotab
+                key={idx}
+                community={community}
+              />
             ))
           ) : (
             <Loadingpage />

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
 //components
+import Patbtn from '../html/Patbtn';
 import Patchip from '../html/Patchip';
 
 //types & css
@@ -39,19 +40,17 @@ function Blockedbox(blockedboxprops: blockedboxpropstype) {
           ))
         )}
       </div>
-      <div className="privacyboxfooter">
-        <div
-          onClick={() => handleDefault()}
-          className="waves-effect waves-light black-text red lighten-2 socialactionbtn"
-        >
-          cancel
-        </div>
-        <div
-          onClick={() => handleDefault()}
-          className="waves-effect waves-light black-text blue lighten-3 socialactionbtn"
-        >
-          update
-        </div>
+      <div className="textboxfooter">
+        <Patbtn
+          text={"cancel"}
+          state="clear"
+          handleClick={handleDefault}
+        />
+        <Patbtn
+          text={"not working"}
+          state="selected"
+          handleClick={handleDefault}
+        />
       </div>
     </div>
   )

@@ -1,15 +1,14 @@
 import { tagtype } from "./tagtypes.js";
 import { posttype } from "./posttypes.js";
+import { IDSTYPE } from "../../../utils/common/types.js";
 
-export interface posttagstype {  
-  id: number;
+export interface posttagtype extends IDSTYPE {
   post_id: posttype;
   tag_id: tagtype;
   created_at: string;
 }
 
-export interface posttagsfiltertype {
-  id: number;
-  post_id: number;
-  tag_id: number;
+export interface rawposttagtype extends IDSTYPE {
+  post_id: string;
+  tag_id: string;
 }

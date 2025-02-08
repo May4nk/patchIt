@@ -1,17 +1,12 @@
+import { imagetype } from "../../containers/newpost/types";
+
 export interface postpollprops {
   pollData: string;
-  pollPostId: number;
-}
-
-export interface parsedimgtype {
-  id: number;
-  postSrc: string;
-  postCaption?: string;
-  postLink?: string;
+  pollPostId: string;
 }
 
 export interface postimgprops {
-  postImgData: parsedimgtype[];
+  postImgData: imagetype[];
 }
 
 export interface polltype {

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 //css & types
@@ -8,7 +8,13 @@ import { zeropostcardcontenttype, zeropostcardpropstype } from "./types";
 const Zeropostcard = (zeropostcardprops: zeropostcardpropstype) => {
   const { title, content, openstate } = zeropostcardprops;
 
-  const [open, setOpen] = useState<boolean>(openstate);
+  const [open, setOpen] = useState<boolean>(true);
+
+  useEffect(() => {
+    if (openstate) {
+      setOpen(openstate);
+    }
+  }, [openstate])
 
   return (
     <div className="zeropostcard">
@@ -48,10 +54,6 @@ const Zeropostcard = (zeropostcardprops: zeropostcardpropstype) => {
       )}
     </div>
   )
-}
-
-Zeropostcard.defaultProps = {
-  openstate: true
 }
 
 export default Zeropostcard;

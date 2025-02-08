@@ -1,16 +1,16 @@
 import { gql } from "@apollo/client";
+import { COMMUNITY_BASIC_FIELDS } from "./community";
 
 export const GETPOPULARCOMMUNITIES = gql`
   query ListCommunities($filter: CommunitiesfilterInput) {
     listCommunities(filter: $filter) {
-      id
-      communityname
+      ...communityBasicFields
       description
       privacy
       status
-      profile_pic
     }
   }
+  ${COMMUNITY_BASIC_FIELDS}
 `;
 
 export const JOINCOMMUNITYINBATCH = gql`

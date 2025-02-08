@@ -147,14 +147,17 @@
   justify-content: space-evenly;
 }
 
-.privacyboxfooter,
-.socialboxfooter,
 .textboxfooter {
   width: 100%;
   display: flex;
   align-items: flex-end;
   justify-content: flex-end;
   margin-top: 0.5rem;
+}
+
+.textboxfooter .patselectedbtn,
+.textboxfooter .patclearbtn {
+  margin: 0 0.3vw;
 }
 
 .addsocial {
@@ -208,17 +211,4 @@
   justify-content: space-around;
   align-items: center;
   width: 100%;
-}
-
-.socialactionbtn {
-  border-radius: 1.5rem;
-  font-size: 0.8vw;
-  font-weight: 500;
-  text-transform: capitalize;
-  padding: 0.2rem 0.7rem;
-  margin: 0 0.3rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: #436079;
 }

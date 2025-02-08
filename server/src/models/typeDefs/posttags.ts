@@ -1,21 +1,24 @@
 export const posttagsTypeDefs = `
   type PostTags {
-    id: Int
+    id: String
     post_id: Post
     tag_id: Tag
     created_at: String
   }
+
   input InsertPostTagsInput {
-    post_id: Int!
-    tag_id: Int!
+    post_id: String!
+    tag_id: String!
   }
+
   input PostTagsfilterInput {
-    id: Int
-    post_id: Int
-    tag_id: Int
+    id: String
+    tag_id: String
+    post_id: String
   }
+    
   input RemovePostTagsInput {
-    id: Int
-    post_id: Int
+    id: String
+    post_id: String
   }
-` ;
+`;

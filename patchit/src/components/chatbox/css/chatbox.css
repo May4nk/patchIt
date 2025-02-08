@@ -9,7 +9,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 80%;
+  height: 77%;
   width: 53%;
   cursor: default;
   line-height: 16px !important;
@@ -24,11 +24,11 @@
 
 .chatlist {
   height: 100%;
-  width: 35%;
+  width: 30%;
   border-right: 0.1rem solid rgba(255, 255, 255, 0.1);
 }
 
 .chatmsgs {
   height: 100%;
-  width: 65%;
+  width: 70%;
 }

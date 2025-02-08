@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 
-import { changeToThemeColor } from '../../utils/themeopx';
+import { changeToThemeColor } from '../../utils/opx/communityopx';
 
 //css & types
 import "./css/infodescription.css"

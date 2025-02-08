@@ -1,7 +1,7 @@
 import { usertype } from "./usertypes.js";
 
 export interface magictokentype {
-  id: number;
+  id: string;
   email: usertype;
   token: string;
   expires_at: string;
@@ -9,18 +9,17 @@ export interface magictokentype {
 }
 
 export interface magictokenmutetype {
-  id: number;
+  id: string;
   email: string;
   token: string;
   expires_at: string;
   created_at: string;
 }
 
-export interface magictokenfiltertype {    
-  id: number;
+export interface magictokenfiltertype {
+  id: string;
   email: string;
   token: string;
   expires_at: string;
   created_at: string;
 }
-

@@ -75,28 +75,28 @@ import {
 
 const Query = ` 
   type Query {
-    tag(id: Int!): Tag
-    post(id: Int!): Post
-    poll(id: Int!): Poll
+    tag(id: String!): Tag
+    post(id: String!): Post
+    poll(id: String!): Poll
     role(role: String!): Role
-    comment(id: Int!): Comment
-    message(id: Int!): Message
-    token(userId: Int!): Token
-    postTag(id: Int!): PostTags
+    comment(id: String!): Comment
+    message(id: String!): Message
+    token(userId: String!): Token
+    postTag(id: String!): PostTags
     chatroom(chatroomId: String!): Chatroom
     user(username: String!): User
-    savedPost(id: Int!): SavedPost
-    userCommentLike(id: Int!): UserComment
-    notification(id: Int!): Notification
+    savedPost(id: String!): SavedPost
+    userCommentLike(id: String!): UserComment
+    notification(id: String!): Notification
     magicToken(email: String!): MagicToken
-    userCommunity(id: Int!): UserCommunity
+    userCommunity(id: String!): UserCommunity
     verifyMagicToken(token: String!): User
-    userFollowing(id: Int!): UserFollowing
+    userFollowing(id: String!): UserFollowing
     category(categoryname: String!): Category
     userChatroom(roomId: String): UserChatroom
-    postlikedislike(id: Int!): Postlikedislike
+    postlikedislike(id: String!): Postlikedislike
     community(communityname: String!): Community
-    userpreference(userId: Int!): UserPreferences
+    userpreference(username: String!): UserPreferences
     chatpreference(chatroomId: String!): ChatPreferences
     communitypreference(communityName: String!): CommunityPreferences
     listTags(filter: TagsfilterInput, sort: [SortInput], limit: Int): [Tag!]!
@@ -118,27 +118,32 @@ const Query = `
     listNotifications(filter: NotificationfilterInput, sort: [SortInput], limit: Int): [Notification]!
     listUserFollowing(filter: UserFollowingfilterInput, sort: [SortInput], limit: Int): [UserFollowing!]!
     listUsersCommunity(filter: UserCommunityfilterInput, sort: [SortInput], limit: Int): [UserCommunity!]!
-    listUserPreferences(filter: UserPreferencesfilterInput, sort: [SortInput], limit: Int): [UserPreferences]!
     listChatPreferences(filter: ChatPreferencesfilterInput, sort: [SortInput], limit: Int): [ChatPreferences]!
     listPostLikeDislikes(filter: PostlikedislikefilterInput, sort: [SortInput], limit: Int): [Postlikedislike!]
     listCommunityPreferences(filter: CommunityPreferencesfilterInput, sort: [SortInput], limit: Int): [CommunityPreferences]!
   }
+
   type Mutation {
     refreshToken: User
-    logoutUser(userId: Int!): String
+    logoutUser(userId: String!): String
     upsertTag(data: UpsertTagInput): Tag
     loginUser(data: LoginUserInput): User
     insertUser(data: InsertUserInput): User
     updateUser(data: InsertUserInput): User
-    upsertPost(data: UpsertPostInput): Post
+    insertPost(data: UpsertPostInput): Post
+    updatePost(data: UpsertPostInput): Post
     upsertPolls(data: InsertPollInput): Poll
+    checkRoomExists(data: CheckRoomExists): Boolean
+    getSignedUrl(data: SignedUrlInput): [signedUrls]
     changePassword(data: ChangePasswordInput): User
     upsertComment(data: UpsertCommentInput): Comment
     insertMessage(data: InsertMessageInput): Message  
+    forgetPassword(data: ForgetPasswordInput): String
     magicloginUser(data: MagicLinkLoginInput): String
-    insertChatroom(data: InsertChatroomInput): Chatroom
+    upsertChatroom(data: InsertChatroomInput): Chatroom
     upsertSavedPost(data: InsertSavedPostInput): SavedPost
     upsertCommunity(data: UpsertCommunityInput): Community
+    requestForgetPassword(data: RequestForgetPasswordInput): String
     insertUserCommentLike(data: InsertUserCommentInput): UserComment
     batchInsertPostTags(data: [InsertPostTagsInput!]!): [PostTags]!
     insertUserFollowing(data: InsertUserFollowingInput): UserFollowing
@@ -174,8 +179,8 @@ const Query = `
   type Subscription {
     newMessage: [Message]
     newComment: [Comment]
-    newNotification(type: NOTIFICATIONTYPE!, userId: Int!): [Notification]
-    newUserChatroom(userId: Int!): UserChatroom
+    newNotification(type: NOTIFICATIONTYPE!, userId: String!): [Notification]
+    newUserChatroom(userId: String!): UserChatroom
   }
 `;
 

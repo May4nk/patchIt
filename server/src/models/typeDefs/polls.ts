@@ -1,23 +1,26 @@
 export const pollTypeDefs = `
   type Poll { 
-    id: Int!
+    id: String!
     user_id: User!
     pollvalue: String!
     post_id: Post!
   }
+
   input InsertPollInput {
-    user_id: Int!
+    user_id: String!
     pollvalue: String!
-    post_id: Int!
+    post_id: String!
   }
+
   input PollfilterInput {
-    user_id: Int
+    user_id: String
     pollvalue: String
-    post_id: Int
+    post_id: String
   }
+
   input RemovePollInput {
-    user_id: Int
+    user_id: String
     pollvalue: String
-    post_id: Int
+    post_id: String
   }
 `;

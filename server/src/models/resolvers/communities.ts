@@ -1,12 +1,15 @@
-import { listAll, findOne } from "../../utils/queriesutils.js";
+import { listAll, findOne } from "../../utils/common/queriesutils.js";
 //types
 import { usertype } from "./types/usertypes.js";
 import { posttype } from "./types/posttypes.js";
-import { filtersorttype } from "../../utils/types.js";
+import { filtersorttype } from "../../utils/common/types.js";
 import { categorytype } from "./types/categorytypes.js";
 import { userscommunitytype } from "./types/userscommunitytypes.js";
 import { communitypreferencetype } from "./types/communitypreferencetypes.js";
-import { communitytype, communityfiltertype, } from "./types/communitiestypes.js";
+import {
+  communitytype,
+  communityfiltertype,
+} from "./types/communitiestypes.js";
 
 export const communityResolvers = {
   Query: {
@@ -25,12 +28,15 @@ export const communityResolvers = {
         throw err;
       }
     },
-    community: async (_: undefined, { communityname }: { communityname: string } ): Promise<communitytype> => {
+    community: async (
+      _: undefined,
+      { communityname }: { communityname: string }
+    ): Promise<communitytype> => {
       try {
         const communityByName: communitytype = await findOne<
           communitytype,
-          { communityname: string }
-        >("communities", { communityname: communityname });
+          { name: string }
+        >("communities", { name: communityname });
 
         if (!communityByName) {
           throw new Error(`Community not found with name: ${communityname}`);
@@ -43,19 +49,23 @@ export const communityResolvers = {
     },
   },
   Community: {
-    owner: async ({ owner }: { owner: number }): Promise<usertype> => {
+    owner: async ({ owner }: { owner: string }): Promise<usertype> => {
       try {
         const communityOwner: usertype = await findOne<
           usertype,
-          { id: number }
+          { id: string }
         >("users", { id: owner });
-        
+
         return communityOwner;
       } catch (err) {
         throw err;
       }
     },
-    category: async ({ category, }: { category: string }): Promise<categorytype> => {
+    category: async ({
+      category,
+    }: {
+      category: string;
+    }): Promise<categorytype> => {
       try {
         const communityCategory: categorytype = await findOne<
           categorytype,
@@ -67,11 +77,11 @@ export const communityResolvers = {
         throw err;
       }
     },
-    users: async ({ id }: { id: number }): Promise<userscommunitytype[]> => {
+    users: async ({ id }: { id: string }): Promise<userscommunitytype[]> => {
       try {
         const allCommunityUsers: userscommunitytype[] = await listAll<
           userscommunitytype,
-          { community_id: number }
+          { community_id: string }
         >("user_community_relation", { filter: { community_id: id } });
 
         return allCommunityUsers;
@@ -79,11 +89,11 @@ export const communityResolvers = {
         throw err;
       }
     },
-    posts: async ({ id }: { id: number }): Promise<posttype[]> => {
+    posts: async ({ id }: { id: string }): Promise<posttype[]> => {
       try {
         const allCommunityPosts: posttype[] = await listAll<
           posttype,
-          { community_id: number }
+          { community_id: string }
         >("posts", { filter: { community_id: id } });
 
         return allCommunityPosts;
@@ -91,12 +101,16 @@ export const communityResolvers = {
         throw err;
       }
     },
-    settings: async ({ communityname }: { communityname: string }): Promise<communitypreferencetype> => {
+    settings: async ({
+      name,
+    }: {
+      name: string;
+    }): Promise<communitypreferencetype> => {
       try {
         const communitySettings: communitypreferencetype = await findOne<
           communitypreferencetype,
           { community_name: string }
-        >("community_preferences", { community_name: communityname });
+        >("community_preferences", { community_name: name });
 
         return communitySettings;
       } catch (err) {

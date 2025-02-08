@@ -1,8 +1,12 @@
+import React, { useEffect, useReducer } from "react";
 import { useMutation, useLazyQuery } from "@apollo/client";
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { v4 as uuid } from "uuid";
 
+//utils
 import { useAuth } from "../../utils/hooks/useAuth";
+import { newPostInitState } from "../../utils/opx/postopx";
+import { uploadToS3, getSignedUrls } from "../../utils/services/s3";
 
 //components
 import Tag from "./Tag";
@@ -10,62 +14,137 @@ import Postrulestab from "./Postrulestab";
 import Typepostpoll from "./Typepostpoll";
 import Typepostimage from "./Typepostimage";
 import Htab from "../../components/html/Htabs";
+import Patbtn from "../../components/html/Patbtn";
 import Askinput from "../../components/html/Askinput";
 import Loadingpage from "../../components/Loadingpage";
+import Errorcard from "../../components/cards/Errorcard";
 import Patdrop from "../../components/html/patdrop/Patdrop";
 import Infocreatecard from "../../components/infosection/Infocreatecard";
 import Infodescription from "../../components/infosection/Infodescription";
 
 //queries & mutations
-import { UPSERTPOST, ALLCOMMUNITIESNAME, GETONECOMMUNITY, ALLTAGS, INSERTTAGS } from "./queries";
+import { ALLCOMMUNITIESNAME, GETONECOMMUNITY, ALLTAGS, INSERTTAGS, CREATEPOST } from "./queries";
 
 //css, types & constants
 import "../css/main.css";
 import "./css/newpost.css";
+import { POSTTYPE } from "../../utils/main/types";
+import { signedurltype } from "../../utils/types";
 import { authcontexttype } from "../../context/types";
-import { communityDropperprofile } from "../../constants/patdropconst";
 import { droppertype, profiletype } from "../../components/html/patdrop/types";
 import { defaultCommunityPic, newpostrules, postgenres } from "../../constants/const";
-import { postdatatypes, postimgtypes, communitynametypes, communitytype, tagtype, newpolltype } from "./types";
+import {
+  communitynametypes,
+  communitytype,
+  genretype,
+  newpoststatetype,
+  newpostactiontype,
+  postimagetype,
+  postpolltype,
+  posttagtype,
+} from "./types";
 
 const Newpost = () => {
   const navigate = useNavigate();
+  const { cname } = useParams();
   const { user }: authcontexttype = useAuth();
-  const loggedInUserId: number | null = user && Number(user["id"]);
+  const userId: string | null = user && user["id"];
 
   //query & mutations
-  const [createPost] = useMutation(UPSERTPOST);
+  const [createPost] = useMutation(CREATEPOST);
   const [insertTags] = useMutation(INSERTTAGS);
   const [getCommunity, { loading, data }] = useLazyQuery(GETONECOMMUNITY);
   const [getTags, { loading: tagLoading, data: tagData }] = useLazyQuery(ALLTAGS);
   const [getCommunities, { data: communitiesData }] = useLazyQuery(ALLCOMMUNITIESNAME);
 
-  //states
-  const [postType, setPostType] = useState<string>("BLOG");
-  const [currentpreviewImg, setCurrentpreviewImg] = useState<number>(1);
-  const [selectedCommunity, setSelectedCommunity] = useState<string>("");
-  const [postTags, setPostTags] = useState<number[]>([]);
-  const [postImg, setPostImg] = useState<postimgtypes[]>([{ id: 0, postCaption: "", postSrc: "", postLink: "" }]);
-  const [polls, setPolls] = useState<newpolltype[]>([
-    { value: "", count: 0 },
-    { value: "", count: 0 }
-  ]);
-  const [postData, setPostData] = useState<postdatatypes>({
-    title: "",
-    content: "",
-    type: postType,
-    owner: loggedInUserId!,
-    community_id: null,
-    privacy: "PUBLIC"
-  });
+  //reducer
+  function handleNewPostState(state: newpoststatetype, action: newpostactiontype): newpoststatetype {
+    switch (action.type) {
+      case "ADD_IMAGES":
+        return { ...state, postImages: action.images };
+
+      case "DEL_IMAGE":
+        return {
+          ...state,
+          postImages: state.postImages?.filter(
+            (image: postimagetype, idx: number) => idx !== action.imgIdx
+          )
+        };
+
+      case "ADD_TAG":
+        return { ...state, postTags: [...state.postTags, action.tagId] };
+
+      case "DEL_TAG":
+        return {
+          ...state,
+          postTags: state.postTags.filter(
+            (tag: number) => tag !== action.tagId
+          )
+        };
+
+      case "ADD_POLLS":
+        return { ...state, postPolls: action.polls };
+
+      case "DEL_POLL":
+        return {
+          ...state, postPolls: state.postPolls?.filter(
+            (poll: postpolltype, idx: number) => idx !== action.pollIdx
+          )
+        }
+
+      case "SET_ERROR":
+        return { ...state, error: action.error };
+
+      case "SET_PROGRESS":
+        return { ...state, uploadProgress: action.payload };
+
+      case "SET_COMMUNITY":
+        return { ...state, selectedCommunity: action.payload };
+
+      case "SET_POSTDATA_FIELD":
+        return {
+          ...state,
+          postData: {
+            ...state.postData,
+            [action.field]: action.value
+          },
+        };
+
+      case "RESET":
+        return {
+          ...newPostInitState,
+          selectedCommunity: state?.selectedCommunity,
+          postData: {
+            ...newPostInitState.postData,
+            type: state.postData.type,
+            community_id: state.postData.community_id
+          },
+        };
+
+      default:
+        return state;
+    }
+  }
+
+  const [newPostState, dispatch] = useReducer(handleNewPostState, newPostInitState);
 
   //constants
+  const communityDropperprofile: profiletype = {
+    state: "INPUT",
+    icn: "people_outline",
+    title: "select community",
+    placeholder: "Search community",
+  };
+
   const communityDroppersearch: droppertype[] = communitiesData?.listCommunities?.map((
     community: communitynametypes) => ({
       state: "CLICKED",
-      title: `c/${community.communityname}`,
+      title: `c/${community.name}`,
       img: community.profile_pic || defaultCommunityPic,
-      event: () => setSelectedCommunity(community.communityname),
+      event: () => dispatch({
+        type: "SET_COMMUNITY",
+        payload: community.name
+      }),
     }
   )) || [];
 
@@ -73,86 +152,25 @@ const Newpost = () => {
     { title: "COMMUNITIES", text: true }, ...communityDroppersearch
   ];
 
-  const privacyDropperprofile: profiletype = { set: postData?.privacy };
-
-  const privacyDroppers: droppertype[] = [
-    {
-      title: "PUBLIC", icn: "person_outline",
-      state: "CLICKED", event: () => setPostData({ ...postData, privacy: "PUBLIC" })
-    },
-    {
-      title: "PRIVATE", icn: "lock_outline",
-      state: "CLICKED", event: () => setPostData({ ...postData, privacy: "PRIVATE" })
-    },
-    {
-      title: "RESTRICTED", icn: "no_encryption",
-      state: "CLICKED", event: () => setPostData({ ...postData, privacy: "RESTRICTED" })
-    }
-  ];
-
   //handlers 
-  const handleposttype: (typeofpost: string) => void = (typeofpost: string) => {
-    setPostData({ ...postData, type: typeofpost });
-    document.querySelector(`.tab${postType.toLowerCase()}`)?.classList?.remove("active");
-    setPostType(typeofpost);
+  const handleposttype: (typeofpost: POSTTYPE) => void = (typeofpost: POSTTYPE) => {
+    document.querySelector(`.tab${newPostState?.postData?.type.toLowerCase()}`)?.classList?.remove("active");
+    dispatch({ type: "SET_POSTDATA_FIELD", field: "type", value: typeofpost });
     document.querySelector(`.tab${typeofpost.toLowerCase()}`)?.classList?.add("active");
   }
 
   const handleTags: (e: any, tagId: number) => void = (e: any, tagId: number) => {
     e.currentTarget.classList.toggle("active");
 
-    setPostTags(prevTags => prevTags.includes(tagId)
-      ? prevTags.filter((tag: number) => tag !== tagId)
-      : [...prevTags, tagId]
-    )
-  }
-
-  const handleRemoveCurrentpreviewimg: (imgobjid: number) => void = (imgobjid: number) => {
-    if (currentpreviewImg === postImg.length - 1 && currentpreviewImg > 1) {
-      setCurrentpreviewImg(currentpreviewImg - 1);
+    if (newPostState.postTags.includes(tagId)) {
+      dispatch({ type: "DEL_TAG", tagId });
+    } else {
+      dispatch({ type: "ADD_TAG", tagId });
     }
-
-    const temppostImages: postimgtypes[] = postImg.filter((image: postimgtypes) => (
-      image.id !== imgobjid
-    ))
-
-    setPostImg(temppostImages);
   }
-
-  const handlePic = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file && postType === "IMAGE") {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPostImg([
-          ...postImg,
-          {
-            id: postImg[postImg.length - 1].id + 1,
-            postCaption: "",
-            postLink: "",
-            postSrc: reader.result as string
-          }
-        ]);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
 
   const handleChangepostdata: (e: any) => void = (e: any) => {
-    if (postType === "IMAGE" && e.target.name === "content") {
-      handlePic(e);
-    } else {
-      setPostData({
-        ...postData,
-        [e.target.name]: e.target.value
-      })
-    }
-  }
-
-  const handleDefault: () => void = () => {
-    setPostData({ ...postData, content: "" });
-    setPolls([{ value: "", count: 0 }, { value: "", count: 0 }]);
-    setPostImg([{ id: 0, postCaption: "", postSrc: "", postLink: "" }]);
+    dispatch({ type: "SET_POSTDATA_FIELD", field: e.target.name, value: e.target.value });
   }
 
   const handleSubmit: (e: any) => Promise<void> = async (e: any) => {
@@ -161,73 +179,123 @@ const Newpost = () => {
       navigate("/login");
       return;
     }
+
+    let content: string = "";
     try {
+      const id: string = uuid();
+      if (newPostState?.postData.type === "IMAGE") {
+        const urlImages = newPostState?.postImages.map((data: postimagetype) => ({
+          name: data?.postSrc.name,
+          type: data?.postSrc.type,
+        }));
+
+        const signedUrls: signedurltype[] = await getSignedUrls({
+          userId: userId!,
+          postId: id,
+          req: "PUT",
+          files: urlImages,
+        });
+
+        const uploadPromises = newPostState.postImages.map((img: postimagetype, idx: number) => {
+          uploadToS3({
+            url: signedUrls[idx].signedUrl,
+            file: img.postSrc,
+            progress: (progress) => {
+              dispatch({ type: "SET_PROGRESS", payload: Math.round(progress) });
+            }
+          });
+
+          return {
+            postSrc: signedUrls[idx].fileUrl,
+            postCaption: img.postCaption,
+            postLink: img.postLink
+          }
+        });
+
+        content = JSON.stringify(uploadPromises);
+      } else if (newPostState?.postData.type === "POLL") {
+        content = JSON.stringify(newPostState?.postTags)
+      } else {
+        content = newPostState?.postData?.content
+      }
+
+      const newPostData = {
+        ...newPostState?.postData,
+        id,
+        content,
+        owner: userId,
+      }
+
       await createPost({
         variables: {
-          data: postData
+          data: newPostData
         },
-        onCompleted: async ({ upsertPost }) => {
-          if (upsertPost && postTags.length !== 0) {
-            await insertTags({
+        onCompleted: ({ insertPost }: { insertPost: { id: string } }) => {
+          if (insertPost && newPostState?.postTags.length > 0) {
+            insertTags({
               variables: {
-                data: postTags.map((tagId: number) => (
+                data: newPostState?.postTags.map((tag: number) => (
                   {
-                    "tag_id": tagId,
-                    "post_id": upsertPost.id
+                    "tag_id": tag,
+                    "post_id": insertPost.id
                   }
                 ))
               }
             });
           }
 
-          navigate(`/post/${upsertPost?.id}`);
+          // if (newPostState?.uploadProgress === 100) {
+          // navigate(`/post/${upsertPost?.id}`);
+          // }
         }
       });
     } catch (err) {
-      console.log(err);
+      dispatch({ type: "RESET" });
+      dispatch({
+        type: "SET_ERROR",
+        error: { status: 500, show: true, message: "Post Creation failed: Something went wrong" },
+      });
     }
   }
 
   useEffect(() => {
-    setPostData({
-      ...postData,
-      content: postType === "IMAGE"
-        ? JSON.stringify(postImg.slice(1,))
-        : postType === "POLL"
-          ? JSON.stringify(polls)
-          : ""
-    });
-  }, [postImg, polls])
+    if (cname) {
+      dispatch({ type: "SET_COMMUNITY", payload: cname });
+    } else {
+      dispatch({ type: "SET_COMMUNITY", payload: "" });
+    }
+  }, [cname])
 
   useEffect(() => {
-    if (selectedCommunity.length > 1) {
+    if (newPostState?.selectedCommunity.length > 1) {
       getCommunity({
         variables: {
-          communityname: selectedCommunity,
+          communityname: newPostState?.selectedCommunity,
         },
         onCompleted: ({ community }: { community: communitytype }) => {
           if (community) {
-            setPostData({
-              ...postData,
-              community_id: Number(community.id)
+            dispatch({
+              type: "SET_POSTDATA_FIELD",
+              field: "community_id",
+              value: Number(community.id),
             })
           }
         }
       });
+    } else {
+      dispatch({ type: "SET_COMMUNITY", payload: "" });
     }
-  }, [selectedCommunity]);
+  }, [newPostState?.selectedCommunity]);
 
   useEffect(() => {
-    handleDefault();
-  }, [postType])
+    dispatch({ type: "RESET" });
+  }, [newPostState?.postData.type])
 
   useEffect(() => {
     if (!user) {
       navigate("/c/popular");
       return;
     };
-
-    handleposttype("BLOG");
 
     getTags();
     getCommunities({
@@ -238,13 +306,15 @@ const Newpost = () => {
         }
       }
     });
-  }, []);  
+
+    handleposttype("BLOG");
+  }, []);
 
   return (
     <div className="flexy">
       <div className="flexcontainerL">
         <div className="createpost">
-          <div className="newposttitle"> 
+          <div className="newposttitle">
             Create Post
           </div>
           <hr className="hr" />
@@ -256,13 +326,10 @@ const Newpost = () => {
                 searchinto={communityDroppersearch}
               />
             </div>
-            <div className="chooseprivacy">
-              <Patdrop profile={privacyDropperprofile} droppers={privacyDroppers} />
-            </div>
           </div>
           <div className="createnewpost">
             <div className="typeofpost">
-              {postgenres.map((genre: Record<"tabname" | "tabicn", string>, idx: number) => (
+              {postgenres.map((genre: genretype, idx: number) => (
                 <Htab
                   key={idx}
                   tabicn={genre.tabicn}
@@ -272,45 +339,48 @@ const Newpost = () => {
               ))}
             </div>
             <form className="newpost" onSubmit={handleSubmit}>
-              <div className="grey-text text-darken-1"> Tags </div>
-              <div className="tags">
-                {!tagLoading && (
-                  tagData?.listTags?.map((tag: tagtype, idx: number) => (
-                    <Tag
-                      info={tag}
-                      key={idx}
-                      handleClick={handleTags}
-                    />
-                  ))
-                )}
-              </div>
               <div className="createposttile">
                 <Askinput
                   type={"text"}
                   name={"title"}
                   required={true}
                   maxlength={100}
-                  placeholder={"Title"}
+                  placeholder={"Heading"}
+                  value={newPostState?.postData?.title}
                   onChange={handleChangepostdata}
                 />
               </div>
-              {postType === "BLOG" ? (
+              <div className="tags">
+                {!tagLoading && (
+                  tagData?.listTags?.map((tag: posttagtype, idx: number) => (
+                    <Tag
+                      key={idx}
+                      info={tag}
+                      handleClick={handleTags}
+                    />
+                  ))
+                )}
+              </div>
+              {newPostState?.postData.type === "BLOG" ? (
                 <textarea
+                  name="content"
                   id="postcontent"
                   placeholder="Text(optional)"
-                  name="content"
                   onChange={handleChangepostdata}
                 ></textarea>
-              ) : postType === "IMAGE" ? (
-                <Typepostimage
-                  image={postImg}
-                  setImage={setPostImg}
-                  onChange={handleChangepostdata}
-                  currentpreviewImage={currentpreviewImg}
-                  setCurrentpreviewImage={setCurrentpreviewImg}
-                  handleRemovepreviewImage={handleRemoveCurrentpreviewimg}
-                />
-              ) : postType === "LINK" ? (
+              ) : newPostState?.postData.type === "IMAGE" ? (
+                <>
+                  {newPostState?.uploadProgress !== 0 && (
+                    <div className="progress">
+                      <div className="determinate" style={{ width: newPostState?.uploadProgress }}></div>
+                    </div>
+                  )}
+                  <Typepostimage
+                    images={newPostState?.postImages}
+                    setImages={dispatch}
+                  />
+                </>
+              ) : newPostState?.postData.type === "LINK" ? (
                 <textarea
                   id="url"
                   required
@@ -318,31 +388,32 @@ const Newpost = () => {
                   placeholder="Url"
                   onChange={handleChangepostdata}
                 ></textarea>
-              ) : postType === "POLL" && (
+              ) : newPostState?.postData.type === "POLL" && (
                 <Typepostpoll
-                  polls={polls}
-                  setPolls={setPolls}
+                  polls={newPostState?.postPolls}
+                  setPolls={dispatch}
                 />
               )}
               <div className="postbtnwrapper">
-                <button
+                <Patbtn
                   type="submit"
-                  disabled={postData.title.length < 3 ? true : false}
-                  className="waves-effect btn waves-light postbtn light-blue lighten-2 black-text"
-                >
-                  Post
-                </button>
+                  text={"post"}
+                  state="active"
+                  disabled={newPostState?.postData.title.length < 3}
+                />
               </div>
             </form>
           </div>
         </div>
       </div>
       <div className="flexcontainerR">
-        {selectedCommunity.length > 1 && (
+        {newPostState?.selectedCommunity.length > 1 && (
           data && (
             !loading ? (
               <>
-                <Infocreatecard data={{ ...data?.community, inCommunity: false }} />
+                <Infocreatecard
+                  data={{ ...data?.community, inCommunity: false }}
+                />
                 {data?.community?.description && (
                   <Infodescription info={data?.community?.description} />
                 )}
@@ -361,10 +432,12 @@ const Newpost = () => {
             <Postrulestab
               key={idx}
               about={rules}
+              active={false}
             />
           ))}
         </div>
       </div>
+      <Errorcard message={newPostState?.error} />
     </div>
   );
 };

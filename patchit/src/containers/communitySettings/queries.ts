@@ -1,23 +1,22 @@
 import { gql } from "@apollo/client";
+import { COMMUNITY_BASIC_FIELDS } from "../queries/community";
+import { USER_ID_USERNAME } from "../queries/user";
 
 export const GETCOMMUNITYPREFERENCE = gql`
   query Communitypreference($communityName: String!) {
     communitypreference(communityName: $communityName) {
       id
       community_name {
-        id
-        communityname
+        ...communityBasicFields
         about
         background_pic
-        profile_pic
         description
         status
         privacy
         social_links
         theme
         owner {
-          id
-          username
+          ...userIdNameFields
         }
       }
       handlers {
@@ -33,6 +32,8 @@ export const GETCOMMUNITYPREFERENCE = gql`
       birthday
     }
   }
+  ${COMMUNITY_BASIC_FIELDS}
+  ${USER_ID_USERNAME}
 `;
 
 export const UPSERTCOMMUNITYPREFERENCE = gql`

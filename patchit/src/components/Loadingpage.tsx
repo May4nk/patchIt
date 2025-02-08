@@ -21,7 +21,7 @@ const Loadingpage = (loadingpageprops: loadingpageprops) => {
         onError ? onError() : navigate("/home");
       }, 3000);
     }
-  }, [err]);
+  }, [err, msg, onError, navigate]);
 
   return (
     <div className="loadingwrapper">

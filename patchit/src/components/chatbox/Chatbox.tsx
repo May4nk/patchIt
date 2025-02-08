@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useReducer } from "react";
+import React, { useEffect, useReducer } from "react";
 import { useLazyQuery } from "@apollo/client";
 
+//utils
 import { useAuth } from "../../utils/hooks/useAuth";
-import { generateRoomCode } from "../../utils/helpers";
-import { chatInfoReducer, createNewChatroom, initialChatroomInfo, upsertChatPrefrences } from "../../utils/chatopx";
+import { chatBoxInitState, createNewChatroom, handleChatBoxState, upsertChatPrefrences } from "../../utils/opx/chatopx";
 
 //components
 import Chatlist from "./chatlist/Chatlist";
@@ -18,100 +18,86 @@ import {
 
 //css & types
 import "./css/chatbox.css";
-import { ERRORTYPE, RESPONSETYPE } from "../../utils/main/types";
 import { authcontexttype } from "../../context/types.js";
-import { chatroominfotype, createchatroomrestype } from "../../utils/types";
+import { createchatroomrestype } from "../../utils/types";
+import { USER_S_N_TYPE } from "../../utils/main/types";
 import {
   chatroomtype,
   chatboxprops,
-  activeroomtype,
   userchatroomtype,
-  chatgroupusertype,
   userchatroomprevtype,
   userchatroomsubdatatype,
+  handledefaultstatetype,
+  handleactiveroomtype,
+  handlecreatechatroomtype,
+  chatroominfotype,
 } from "./types.js";
 
 const Chatbox = (chatboxprops: chatboxprops) => {
   const { isNewChat, showChatbox, setShowChatbox } = chatboxprops;
+
   const show: string = showChatbox ? "block" : "none";
-
   const { user }: authcontexttype = useAuth();
-  const userId: number | null = user && Number(user["id"]);
+  const userId: USER_S_N_TYPE = user && user["id"];
+  const userName: USER_S_N_TYPE = user && user["username"];
 
-  //states
-  //chatLevels -> 100: default, 101: create chat/room, 0: chat, 1: about room, 2: room settings
-  const [chatLevel, setChatLevel] = useState<number>(100);
-  const [roomName, setRoomName] = useState<string>("");
-  const [createRoom, setCreateRoom] = useState<boolean>(false);
-  const [usernameSearch, setUsernameSearch] = useState<string>("");
-  const [chatroomInfo, dispatch] = useReducer(chatInfoReducer, initialChatroomInfo);
-  const [chatgroupUsers, setChatgroupUsers] = useState<chatgroupusertype[]>([]);
-  const [error, setError] = useState<ERRORTYPE>({ show: false, status: 0, message: "" });
-  const [activeRoom, setActiveRoom] = useState<activeroomtype>({
-    roomId: "",
-    users: 0
-  });
+  //state
+  const [chatBoxState, dispatch] = useReducer(handleChatBoxState, chatBoxInitState);
 
   //queries
   const [getChatroom] = useLazyQuery(GETCHATROOM);
   const [getUserChatrooms, { data, subscribeToMore }] = useLazyQuery(GETUSERCHATROOMS);
 
-  //handlers
-  const newChat: (room: boolean) => void = (room: boolean = false) => {
-    setCreateRoom(false);
-    if (room) {
-      setCreateRoom(true);
-    }
-    setActiveRoom({ roomId: "", users: 0 });
-    setChatLevel(101);
-  }
-
-  const handleDefaultState: (def: boolean) => void = (def: boolean = true) => {
-    if (!def) {
+  //handlers  
+  const handleDefaultState: handledefaultstatetype = (toNull: boolean) => {
+    dispatch({ type: "RESET" });
+    if (toNull) {
       setShowChatbox(false);
     }
-    setRoomName("");
-    setChatLevel(100);
-    setCreateRoom(false);
-    setUsernameSearch("");
-    setChatgroupUsers([]);
-    setActiveRoom({ roomId: "", users: 0 });
   }
 
-  const handleActiveRoom: (room: activeroomtype) => void = (room: activeroomtype) => {
+  const handleActiveRoom: handleactiveroomtype = (roomId: string) => {
     const beenActiveRoom = document.querySelector(".activechatter");
     if (beenActiveRoom) {
       beenActiveRoom.classList.remove("activechatter");
     }
 
-    const currentActiveRoom = document.getElementById(`${room.roomId}`);
+    const currentActiveRoom = document.getElementById(`${roomId}`);
     if (currentActiveRoom) {
       currentActiveRoom?.classList.add("activechatter");
     }
 
-    setCreateRoom(false);
-    setActiveRoom({ ...room });
-    setChatLevel(0);
+    dispatch({ type: "SET_ACTIVE_ROOMID", roomId });
   }
 
-  const handleCreateChatroom: () => Promise<RESPONSETYPE> = async () => {
-    if (chatgroupUsers.length < 1) {
+  const handleCreateChatroom: handlecreatechatroomtype = async () => {
+    if (chatBoxState?.roomUsers.length === 0) {
       return { status: 0, message: "No User choosen yet to chat with..." };
     }
 
-    if (createRoom) {
-      if (chatgroupUsers?.length < 2) {
-        setError({
-          show: true,
-          status: 0,
-          message: "Room should have 2 or more inmates"
+    if (chatBoxState?.createRoom) {
+      if (chatBoxState?.roomUsers?.length < 2) {
+        dispatch({
+          type: "SET_ERROR",
+          error: {
+            show: true,
+            status: 0,
+            message: "Room should have 2 or more inmates"
+          }
         });
 
         return { status: 0, message: "Room should have 2 or more inmates" };
       }
 
-      if (roomName?.length < 1) {
-        setError({ show: true, status: 0, message: "Room name is required!" });
+      if (chatBoxState?.name?.length < 1) {
+        dispatch({
+          type: "SET_ERROR",
+          error: {
+            show: true,
+            status: 0,
+            message: "Room name is required!"
+          }
+        });
         return { status: 0, message: "Room name is required!" };
       }
     }
@@ -119,45 +105,78 @@ const Chatbox = (chatboxprops: chatboxprops) => {
     let newRoom: createchatroomrestype;
 
     try {
-      if (createRoom) {
-        const roomCode = generateRoomCode([userId!, ...chatgroupUsers.map(user => user.id)], true);
-        newRoom = await createNewChatroom(roomCode, Number(userId), chatgroupUsers, roomName);
-        await upsertChatPrefrences(Number(userId), roomCode);
+      if (chatBoxState?.createRoom) {
+        newRoom = await createNewChatroom({
+          ownerId: userId!,
+          roomName: chatBoxState?.name,
+          chatgroupUsers: chatBoxState?.roomUsers,
+        });
       } else {
-        const roomCode = generateRoomCode([userId!, chatgroupUsers[0].id], false);
-        newRoom = await createNewChatroom(roomCode, Number(userId), chatgroupUsers);
+        newRoom = await createNewChatroom({
+          ownerId: userId!,
+          chatgroupUsers: chatBoxState?.roomUsers,
+          roomName: `${userName}-${chatBoxState?.roomUsers[0].username}`,
+        });
       }
 
-      if (newRoom.status !== 200) {
-        setError({ show: true, status: newRoom.status, message: "Something went wrong while creating chat." });
+      if (newRoom.status === 200) {
+        if (chatBoxState?.createRoom) {
+          await upsertChatPrefrences(userId!, newRoom?.roomId!);
+        }
+
+        dispatch({ type: "SET_ACTIVE_ROOMID", roomId: newRoom?.roomId! });
+        dispatch({
+          type: "SET_ERROR",
+          error: {
+            show: true,
+            status: 200,
+            message: "Happy patching!!!"
+          }
+        });
+
+        return { status: 200, message: "Chat created successfully" };
       }
 
-      setRoomName("");
-      setUsernameSearch("");
-      setChatgroupUsers([]);
-      handleActiveRoom(newRoom.room!);
+      dispatch({
+        type: "SET_ERROR",
+        error: {
+          show: true,
+          status: 500,
+          message: "Try again: Unable to create chat"
+        }
+      });
 
-      setError({ show: true, status: 200, message: "Happy patching!!!" });
-      return { status: 200, message: "Chat created successfully" };
+      return { status: 500, message: "Try again: Unable to create chat" };
     } catch (err) {
-      setError({ show: true, status: 500, message: "Something went wrong while creating chat." });
-      return { status: 500, message: "Something went wrong while creating chat." };
+      dispatch({
+        type: "SET_ERROR",
+        error: {
+          show: true,
+          status: 500,
+          message: "Try again: Unable to create chat"
+        }
+      });
+
+      return { status: 500, message: "Try again: Unable to create chat" };
     }
   }
 
   useEffect(() => {
     let unsubscribe = subscribeToMore({
       document: SUBSCRIBETOUSERCHATROOMS,
-      variables: { userId: Number(userId) },
-      onError: (err) => console.log(err),
+      variables: { userId: userId },
+      onError: (err) => console.log("Error: fetch chat failed"),
       updateQuery: (prev: userchatroomprevtype, { subscriptionData }: userchatroomsubdatatype) => {
         const subdata = subscriptionData.data;
         if (!subdata) return prev;
         const newChatroom: userchatroomtype[] = subdata.newUserChatroom;
         if (newChatroom) {
           if (!showChatbox) {
-            isNewChat((prev) => ({ ...prev, chat: true }));
+            isNewChat(11);
+          } else {
+            isNewChat(0);
           }
+
           return {
             listUserChatrooms: [newChatroom, ...prev?.listUserChatrooms]
           };
@@ -173,12 +192,15 @@ const Chatbox = (chatboxprops: chatboxprops) => {
   }, [subscribeToMore]);
 
   useEffect(() => {
-    if (error.show) {
+    if (chatBoxState?.error.show) {
       setTimeout(() => {
-        setError({ show: false, status: 0, message: "" });
+        dispatch({
+          type: "SET_ERROR",
+          error: { show: false, status: 0, message: "" }
+        });
       }, 3000)
     }
-  }, [error]);
+  }, [chatBoxState?.error]);
 
   useEffect(() => {
     getUserChatrooms({
@@ -188,29 +210,35 @@ const Chatbox = (chatboxprops: chatboxprops) => {
         }
       }
     });
-  }, []);
+  }, [userId, getUserChatrooms]);
 
   useEffect(() => {
-    if (activeRoom.roomId) {
+    if (showChatbox) {
+      isNewChat(0);
+    }
+  }, [showChatbox])
+
+  useEffect(() => {
+    if (chatBoxState?.activeRoomId) {
       getChatroom({
         variables: {
-          chatroomId: activeRoom.roomId
+          chatroomId: chatBoxState?.activeRoomId
         },
         onCompleted: ({ chatroom }: { chatroom: chatroomtype }) => {
           if (chatroom) {
+            ///change
             const activeRoomName = chatroom?.roomUsers?.length > 2
               ? chatroom.roomName
               : chatroom?.roomUsers.filter(user => user.id !== userId)[0]?.username;
 
-            const chatSettings: chatroominfotype = {
+            const roomInfo: chatroominfotype = {
               users: chatroom?.roomUsers,
               ownerId: chatroom?.owner.id,
-              roomName: activeRoomName,
-              room_code: chatroom?.room_code,
+              name: activeRoomName,
               isRoom: chatroom?.roomUsers.length > 2,
               about: chatroom?.chatpreference?.about || "",
               theme: chatroom?.chatpreference?.chatgrouptheme || "",
-              blocked: chatroom?.chatpreference?.blocked ? JSON.parse(chatroom?.chatpreference?.blocked) : [],
+              blockedUsers: chatroom?.chatpreference?.blocked ? JSON.parse(chatroom?.chatpreference?.blocked) : [],
               allowedMedia: chatroom?.chatpreference?.allowedmedia || "ALL",
               profile_pic: chatroom?.chatpreference?.group_profile || "",
               admin: chatroom?.chatpreference?.admin || "",
@@ -219,44 +247,30 @@ const Chatbox = (chatboxprops: chatboxprops) => {
               acceptor: chatroom?.chatpreference?.acceptor || "",
             };
 
-            dispatch({ type: "UPDATE", payload: chatSettings });
+            dispatch({ type: "SET_ACTIVE_ROOMINFO", info: roomInfo });
           }
         }
       });
     };
-  }, [activeRoom]);
+  }, [chatBoxState?.activeRoomId]);
 
   return (
     <div className={show}>
-      <div className={`chatbox ${chatLevel === 100 && "pandabackground"}`}>
+      <div className={`chatbox ${chatBoxState?.level === 100 && "pandabackground"}`}>
         <div className="chatlist">
           <Chatlist
-            newChat={newChat}
+            chatBoxState={chatBoxState}
+            handleChatBoxState={dispatch}
             handleActiveRoom={handleActiveRoom}
             chatrooms={data?.listUserChatrooms}
-            setChatgroupUsers={setChatgroupUsers}
-            setUsernameSearch={setUsernameSearch}
             handleCreateChatroom={handleCreateChatroom}
           />
         </div>
         <div className="chatmsgs">
           <Chatmsgs
-            error={error}
-            userId={userId}
-            setError={setError}
-            roomName={roomName}
-            chatLevel={chatLevel}
-            createRoom={createRoom}
-            activeRoom={activeRoom}
-            setRoomName={setRoomName}
-            setChatLevel={setChatLevel}
-            chatroomInfo={chatroomInfo}
-            updateChatroomInfo={dispatch}
-            chatgroupUsers={chatgroupUsers}
-            usernameSearch={usernameSearch}
-            handleActiveRoom={handleActiveRoom}
-            setChatGroupUsers={setChatgroupUsers}
-            setUsernameSearch={setUsernameSearch}
+            userId={userId!}
+            chatBoxState={chatBoxState}
+            handleChatBoxState={dispatch}
             handleDefaultState={handleDefaultState}
             handleCreateChatroom={handleCreateChatroom}
           />

@@ -133,22 +133,17 @@
   width: 100%;
 }
 
-.postpagefootertabs,
-.postpagefooterpintab {
+.postpagefootertabs {
   color: white;
   display: flex;
   justify-content: center;
   align-items: center;
   font-size: 0.9vw;
-  background: #28272740;
+  background: black;
   padding: 0.3vw 0.7vw;
   border-radius: 1vw;
   margin: 0 0.3rem;
   cursor: pointer;
-}
-
-.postpagefooterpintab {
-  margin-left: auto;
 }
 
 .icnspaceup,
@@ -164,7 +159,7 @@
 }
 
 .icnspaceup:hover {
-  color: #2196F3;
+  color: #2196f3;
 }
 
 .icnspacedown:hover {
@@ -178,7 +173,7 @@
 }
 
 .icnspacesave:hover {
-  color: #2196F3;
+  color: #2196f3;
 }
 
 .postpagesortby {

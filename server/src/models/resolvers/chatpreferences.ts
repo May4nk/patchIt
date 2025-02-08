@@ -1,8 +1,8 @@
-import { listAll, findOne } from "../../utils/queriesutils.js";
+import { listAll, findOne } from "../../utils/common/queriesutils.js";
 
 //types
 import { usertype } from "./types/usertypes.js";
-import { filtersorttype } from "../../utils/types.js";
+import { filtersorttype, IDSTYPE } from "../../utils/common/types.js";
 import { chatroomtype } from "./types/chatroomtypes.js";
 import {
   chatpreferencetype,
@@ -48,9 +48,9 @@ export const chatpreferenceResolvers = {
     },
   },
   ChatPreferences: {
-    owner: async ({ owner }: { owner: number }): Promise<usertype> => {
+    owner: async ({ owner }: { owner: string }): Promise<usertype> => {
       try {
-        const userById: usertype = await findOne<usertype, { id: number }>(
+        const userById: usertype = await findOne<usertype, { id: string }>(
           "users",
           { id: owner }
         );
@@ -64,8 +64,8 @@ export const chatpreferenceResolvers = {
       try {
         const chatroomByRoomcode: chatroomtype = await findOne<
           chatroomtype,
-          { room_code: string }
-        >("chatrooms", { room_code: room });
+          IDSTYPE
+        >("chatrooms", { id: room });
 
         return chatroomByRoomcode;
       } catch (err) {

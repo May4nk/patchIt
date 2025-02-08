@@ -1,19 +1,25 @@
 export const roleTypeDefs = `
   type Role {
-    id: Int
+    id: String!
     role: String!
     access: String
+    role_id: Int!
     created_at: String
   }
+
   input UpsertRoleInput {
-    id: Int
+    id: String
     role: String!
+    role_id: Int!
     access: String
   }
+
   input RolesfilterInput {
-    id: Int
+    id: String
+    role_id: Int
     role: String
   }
+    
   input RemoveRoleInput {
     role: String!
   }

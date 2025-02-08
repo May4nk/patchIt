@@ -18,14 +18,14 @@ import {
 } from "@apollo/server/plugin/landingPage/default";
 
 //utils
-import { findOne } from "./utils/queriesutils.js";
-import { verifyToken } from "./utils/tokenutils.js";
+import { fromCache } from "./services/redis.js";
+import { verifyToken } from "./utils/common/tokenutils.js";
 
 //queries
 import { allTypeDefs, allResolversAndMutations } from "./models/query.js";
 
 //types
-import { usertype } from "./models/resolvers/types/usertypes.js";
+import { tokenusertype } from "./utils/common/types.js";
 
 //const & configs
 dotenv.config({ path: `.env.${process.env.NODE_ENV}` });
@@ -35,11 +35,11 @@ const app: express.Application = express();
 const PORT: number = parseInt(<string>process.env.CONN_PORT, 10);
 
 // limit 1000 requests from an IP in 15 mins
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 1000,
-  message: "Too many requests from this IP, please try again later.",
-});
+// const limiter = rateLimit({
+//   windowMs: 15 * 60 * 1000,
+//   max: 1000,
+//   message: "Too many requests from this IP, please try again later.",
+// });
 
 const corsOptions = {
   origin: "http://localhost:3000",
@@ -51,7 +51,7 @@ app.use(cors<cors.CorsRequest>(corsOptions));
 app.use(cookieParser());
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: true }));
-app.use(limiter);
+// app.use(limiter);
 
 const httpServer = createServer(app);
 
@@ -108,16 +108,35 @@ app.use(
         const token: string = req.headers.authorization || "";
 
         if (token) {
-          const tokenUser: JwtPayload = verifyToken(
-            token,
-            `${process.env.ACCESS_TOKEN_SECRET}`
-          ) as JwtPayload;
+          const isTokenVerified = await fromCache(
+            "HGET",
+            "users:loggedIn",
+            token
+          );
 
-          if (typeof tokenUser === "string" || !tokenUser.id) {
+          let tokenInfo: JwtPayload | string | tokenusertype;
+          if (!isTokenVerified) {
+            tokenInfo = verifyToken(
+              token,
+              `${process.env.ACCESS_TOKEN_SECRET}`
+            );
+
+            await fromCache(
+              "HSET",
+              "users:loggedIn",
+              token,
+              JSON.stringify(tokenInfo)
+            );
+          } else {
+            const info: any = await fromCache("HGET", "users:loggedIn", token);
+            tokenInfo = JSON.parse(info);
+          }
+
+          if (typeof tokenInfo === "string" || !tokenInfo?.id) {
             throw new Error("User Not Authorized");
           }
 
-          const user: usertype = await findOne("users", { id: tokenUser.id });
+          const { iat, exp, ...user } = tokenInfo as tokenusertype;
 
           return { req, res, user, pubsub };
         }

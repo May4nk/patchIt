@@ -1,38 +1,38 @@
 import db from "../../db.js";
-import { findOne } from "../../utils/queriesutils.js";
+import { findOne } from "../../utils/common/queriesutils.js";
 
 //types
 import {
-  userpreferencedatatype,
-  remuserpreferencedatatype,
-  ruserpreferencetype,
+  rawuserpreferencetype,
   userpreferencetype,
-} from "./types/userpreferencemutetypes.js";
+  ruserpreferencetype,
+} from "../resolvers/types/userpreferencetypes.js";
+import { IDSTYPE } from "../../utils/common/types.js";
 
 export const userpreferenceMutations = {
   Mutation: {
     upsertUserPreference: async (
       _: undefined,
-      { data }: userpreferencedatatype
-    ): Promise<userpreferencetype> => {
+      { data }: { data: rawuserpreferencetype }
+    ): Promise<rawuserpreferencetype> => {
       try {
         const userPreferenceFound: userpreferencetype = await findOne<
           userpreferencetype,
-          { user_id: number }
-        >("user_preferences", { user_id: data.user_id });
+          { user: string }
+        >("user_preferences", { user: data.user });
 
         if (userPreferenceFound) {
-          const [updateUserPreference]: userpreferencetype[] = await db(
+          const [updateUserPreference]: rawuserpreferencetype[] = await db(
             "user_preferences"
           )
-            .where("user_id", userPreferenceFound.user_id)
+            .where("user_id", userPreferenceFound.user)
             .update(data)
             .returning("*");
 
           return updateUserPreference;
         }
 
-        const [createUserPreference]: userpreferencetype[] = await db(
+        const [createUserPreference]: rawuserpreferencetype[] = await db(
           "user_preferences"
         )
           .insert(data)
@@ -45,13 +45,13 @@ export const userpreferenceMutations = {
     },
     removeUserPreference: async (
       _: undefined,
-      { data }: remuserpreferencedatatype
-    ): Promise<ruserpreferencetype> => {
+      { data }: { data: ruserpreferencetype }
+    ): Promise<IDSTYPE> => {
       try {
         const userPreferenceFound: userpreferencetype = await findOne<
           userpreferencetype,
-          { user_id: number }
-        >("user_preferences", { user_id: data.user_id });
+          { user: string }
+        >("user_preferences", { user: data.user });
 
         if (!userPreferenceFound)
           throw Error("User not found with settings...");
@@ -59,7 +59,7 @@ export const userpreferenceMutations = {
         const [deleteUserPreference]: ruserpreferencetype[] = await db(
           "user_preferences"
         )
-          .where("user_id", userPreferenceFound.user_id)
+          .where("user_id", userPreferenceFound.user)
           .del()
           .returning("id");
 

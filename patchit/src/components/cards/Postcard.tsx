@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-import { dateFormatter } from '../../utils/helpers';
+import { dateFormatter } from '../../utils/helpers/helpers';
 
 //css, constants & types
 import "./css/postcard.css";
@@ -23,8 +23,8 @@ function Postcard(postcardprops: postcardpropstype) {
             />
           </div>
           <div className="postcardheadercommunity">
-            {post?.community_id?.communityname
-              ? `c/${post?.community_id?.communityname}`
+            {post?.community_id?.name
+              ? `c/${post?.community_id?.name}`
               : `u/${post?.owner?.username}`
             }
           </div>

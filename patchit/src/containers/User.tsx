@@ -1,9 +1,11 @@
-import React, { useState, useEffect, useReducer } from "react";
+import React, { useEffect, useReducer, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useLazyQuery } from "@apollo/client";
 
+//utils
+import { getSignedUrls } from "../utils/services/s3";
 import { useAuth, useLogged } from "../utils/hooks/useAuth";
-import { intialUserSetting, userReducer } from "../utils/useropx";
+import { handleUserState, userInitState } from "../utils/opx/useropx";
 
 //components
 import Infosocial from "../components/infosection/Infosocial";
@@ -23,11 +25,12 @@ import Modal from "../components/Modal";
 //queries
 import { GETUSER, GETSIGNEDUPUSER } from "./queries/user";
 
-//constants, css & types
+//constants, css, image & types
 import "./css/main.css";
-import { ERRORTYPE, posttype } from "../utils/main/types";
-import { commentcardtype } from "../components/cards/types";
 import { authcontexttype, loggedusercontexttype } from "../context/types";
+import { commentcardtype } from "../components/cards/types";
+import { posttype, USER_S_N_TYPE } from "../utils/main/types";
+import { signedfiletype, signedurltype } from "../utils/types";
 import { infoaboutuserdatatype } from "../components/infosection/types";
 import {
   reactedposttype,
@@ -39,30 +42,31 @@ import {
 const nsfwlogo: string = require(`../img/nsfwlogo.png`);
 
 const Userpage = () => {
-  const { uname } = useParams<string>();
   const navigate = useNavigate();
-
+  const { uname } = useParams<string>();
   const { user }: authcontexttype = useAuth();
-  const userId: number | null = user && Number(user["id"]);
-  const { loggedUser }: loggedusercontexttype = useLogged();
-  const loggedInUsername = user && user["username"];
-  const isNew: boolean | undefined | null = (user && loggedUser) && loggedUser["new_user"];
-
+  const userId: USER_S_N_TYPE = user && user["id"];
+  const userRole: number | null = user && user["role"];
+  const loggedInUsername: USER_S_N_TYPE = user && user["username"];
   const allTabnames: userpagetabnames[] = [
     "posts",
     "comments",
-    ...(user && (uname === loggedInUsername) ? ["reactions", "saved"] as userpagetabnames[] : [])
+    ...(user &&
+      (uname === loggedInUsername)
+      ? userRole !== 1337
+        ? (["reactions", "saved"] as userpagetabnames[])
+        : []
+      : []
+    )
   ];
 
-  //state
-  const [sortby, setSortby] = useState<string>("likes");
-  const [userOption, setUserOption] = useState<userpagetabnames>("posts");
-  const [userSettings, dispatch] = useReducer(userReducer, intialUserSetting);
-  const [errorMessage, setErrorMessage] = useState<ERRORTYPE>({ status: 0, message: "", show: false });
+  //states
+  const [sortBy, setSortBy] = useState<string>("likes");
+  const [userState, dispatch] = useReducer(handleUserState, userInitState);
 
   //queries
   const [getUser, { data, loading, error }] = useLazyQuery(GETUSER);
-  const [getSignedUser, {
+  const [getSignedInUser, {
     data: signedupuserData,
     loading: signedupuserLoading,
     error: signedupuserError
@@ -70,18 +74,15 @@ const Userpage = () => {
 
   //handlers
   const uData: userpageusertype = !user ? !loading && data?.user : !signedupuserLoading && signedupuserData?.user;
-  const infoAboutData: infoaboutuserdatatype = {
-    ...uData,
-    userSettings: userSettings,
-    updateUserSettings: dispatch
-  };
 
   const handleUserOptions: (uoption: userpagetabnames) => void = (uoption: userpagetabnames) => {
-    const alreadyActiveTab = document.querySelector(`.tab${userOption}`);
+    const alreadyActiveTab = document.querySelector(`.tab${userState.activeTab}`);
     if (alreadyActiveTab) {
       alreadyActiveTab?.classList?.remove("selected");
     }
-    setUserOption(uoption);
+
+    dispatch({ type: "SET_ACTIVE_TAB", selectedTab: uoption })
+
     const currentActiveTab = document.querySelector(`.tab${uoption}`);
     if (currentActiveTab) {
       currentActiveTab?.classList?.add("selected");
@@ -89,90 +90,124 @@ const Userpage = () => {
   }
 
   const handleProceed: () => void = () => {
-    dispatch({ type: "UPDATE", payload: { nsfw: false, showProfile: true } })
+    dispatch({ type: "UPDATE_SETTINGS", settings: { nsfw: false } });
   }
 
-  useEffect(() => {
+  const handleFetchedUser = async ({ user }: { user: userpageusertype }) => {
     if (user) {
-      getSignedUser({
-        variables: {
-          username: uname!
-        },
-        onCompleted: ({ user }: { user: userpageusertype }) => {
-          if (user) {
-            dispatch({
-              type: "UPDATE", payload: {
-                isNew: isNew! && user.id === userId,
-                privacy: user?.privacy,
-                nsfw: user?.settings?.nsfw,
-                allowPplToFollow: user?.settings?.allowppltofollow,
-                showProfile: user?.privacy === "PUBLIC",
-              }
-            })
+      const userSettings: userpageusertype["settings"] = user?.settings;
+      const profile_pic: USER_S_N_TYPE = user?.profile_pic;
+      const background_pic: USER_S_N_TYPE = user?.background_pic;
 
-            const userFollowers: userfollowingtype[] = user?.followers.filter((user: userfollowingtype) => (
-              user.follower.id === userId
-            ));
-
-            if (userFollowers?.length > 0) {
-              dispatch({ type: "UPDATE", payload: { following: "FOLLOWING" } });
-            }
-
-            if ((user?.privacy === "PRIVATE" && loggedInUsername === uname)
-              || userFollowers?.length > 0
-            ) {
-              dispatch({ type: "UPDATE", payload: { showProfile: true } });
-            }
-          }
+      if (profile_pic || background_pic) {
+        const images: signedfiletype[] = []
+        if (background_pic !== null) {
+          images.push({ name: background_pic })
         }
-      });
-    } else {
-      getUser({
-        variables: {
-          username: uname!
-        },
-        onCompleted: ({ user }: { user: userpageusertype }) => {
-          if (user) {
-            console.log(user.privacy);
-            dispatch({
-              type: "UPDATE", payload: {
-                privacy: user?.privacy,
-                nsfw: user?.settings?.nsfw,
-                allowPplToFollow: user?.settings?.allowppltofollow,
-                showProfile: user?.privacy === "PUBLIC",
-              }
-            });
-          }
+
+        if (profile_pic !== null) {
+          images.push({ name: profile_pic })
         }
+
+        if (images.length > 0) {
+          const signedUrls: signedurltype[] = await getSignedUrls({
+            userId: user.id,
+            postId: "0",
+            req: "GET",
+            files: images
+          });
+
+          signedUrls.map((url: signedurltype) => (
+            url.fileUrl.includes(`profile_pic`)
+              ? dispatch({ type: "UPDATE_PIC", profile_pic: url.signedUrl })
+              : dispatch({ type: "UPDATE_BG_PIC", background_pic: url.signedUrl })
+          ))
+        }
+      }
+
+      dispatch({
+        type: "UPDATE_SETTINGS",
+        settings: {
+          isNew: (user?.new_user && userRole !== 1337) && user.id === userId,
+          nsfw: userSettings?.nsfw,
+          allowPplToFollow: userSettings?.allowppltofollow,
+          isProfilePrivate: user?.privacy === "PRIVATE",
+        },
       });
+
+      if (userId) {
+        const userFollowers: userfollowingtype[] = user?.followers.filter((user: userfollowingtype) => (
+          user.follower.id === userId
+        ));
+
+        if (userFollowers?.length > 0) {
+          dispatch({ type: "UPDATE_SETTINGS", settings: { following: "FOLLOWING" } });
+        }
+
+        if ((user?.privacy === "PRIVATE" && loggedInUsername === uname)
+          || userFollowers?.length > 0
+        ) {
+          dispatch({ type: "UPDATE_SETTINGS", settings: { isProfilePrivate: false } });
+        }
+      }
     }
-  }, [uname, user]);
+  };
+
+  const infoAboutData: infoaboutuserdatatype = {
+    ...uData,
+    profile_pic: userState.display_profile_pic,
+    background_pic: userState.display_background_pic,
+    userSettings: userState.settings,
+    updateUserSettings: dispatch
+  };
 
   useEffect(() => {
-    if ((!loading || !signedupuserLoading) && userSettings?.showProfile) {
+    if (!userState.settings?.isProfilePrivate) {
       handleUserOptions("posts");
     }
+  }, [userState.settings.isProfilePrivate])
+
+  useEffect(() => {
+
   }, [])
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      if (user) {
+        await getSignedInUser({
+          variables: { username: uname },
+          onCompleted: handleFetchedUser,
+        });
+      } else {
+        await getUser({
+          variables: { username: uname },
+          onCompleted: handleFetchedUser
+        });
+      }
+    };
+
+    fetchUser();
+  }, [getUser, getSignedInUser, uname, user]);
 
   if (loading || signedupuserLoading) {
     return <Loadingpage />
   } else if (error || signedupuserError) {
-    return <Loadingpage err={error?.message || signedupuserError?.message} />
+    return <Loadingpage err={"Unable to find user..."} />
   } else {
     return (
       <>
-        {(userSettings?.nsfw && userSettings.showProfile) && (
+        {(userState.settings?.nsfw && !userState.settings?.isProfilePrivate) && (
           <Modal
             head="NSFW profile"
             headlogo={nsfwlogo}
             btntxt={"proceed"}
-            showModal={userSettings?.nsfw}
+            showModal={userState.settings?.nsfw}
             handleUpdate={handleProceed}
             handleClose={() => navigate(-1)}
             txt={"Are you sure you want to proceed?"}
           />
         )}
-        {userSettings?.showProfile && (
+        {!userState.settings?.isProfilePrivate && (
           <div className="useroverview">
             {allTabnames.map((usroption: userpagetabnames, idx: number) => (
               <Htab
@@ -181,19 +216,21 @@ const Userpage = () => {
                 handleClick={() => handleUserOptions(usroption)}
               />
             ))}
-            <Newusersetup newUser={userSettings?.isNew} />
+            {userId && (
+              <Newusersetup newUser={userState.settings?.isNew} />
+            )}
           </div>
         )}
         <div className="flexy">
           <div className="patchcontent">
-            {userSettings?.showProfile ? (
+            {!userState.settings?.isProfilePrivate ? (
               <>
                 <div className="postsort">
-                  <Sortpanel sort={sortby} setSort={setSortby} />
+                  <Sortpanel sort={sortBy} setSort={setSortBy} />
                 </div>
                 {!loading ? (
                   <>
-                    {userOption === "posts" ? (
+                    {userState.activeTab === "posts" ? (
                       uData?.posts.length > 0 ? (
                         uData?.posts.map((post: posttype, idx: number) => (
                           <div key={idx}>
@@ -218,7 +255,7 @@ const Userpage = () => {
                           ]}
                         />
                       )
-                    ) : userOption === "comments" ? (
+                    ) : userState.activeTab === "comments" ? (
                       !loading ? (
                         uData?.comments.length > 0 ? (
                           uData?.comments.map((cmnt: commentcardtype, idx: number) => (
@@ -246,14 +283,14 @@ const Userpage = () => {
                       ) : (
                         <Loadingpage />
                       )
-                    ) : userOption === "saved" ? (
+                    ) : userState.activeTab === "saved" ? (
                       !signedupuserLoading ? (
                         uData?.savedposts!.length > 0 ? (
                           uData?.savedposts!.map((post: savedposttype, idx: number) => (
                             <div key={idx}>
                               <Post
                                 postData={post.post_id}
-                                showcommunity={post.post_id.community_id?.communityname ? false : true}
+                                showcommunity={post.post_id.community_id?.name ? false : true}
                               />
                             </div>
                           ))
@@ -272,14 +309,14 @@ const Userpage = () => {
                       ) : (
                         <Loadingpage />
                       )
-                    ) : userOption === "reactions" && (
+                    ) : userState.activeTab === "reactions" && (
                       !signedupuserLoading ? (
                         uData?.reactedposts!.length > 0 ? (
                           uData?.reactedposts!.map((post: reactedposttype, idx: number) => (
                             <div key={idx}>
                               <Post
                                 postData={post.post_id}
-                                showcommunity={post.post_id.community_id?.communityname ? false : true}
+                                showcommunity={post.post_id.community_id?.name ? false : true}
                               />
                             </div>
                           ))
@@ -312,20 +349,17 @@ const Userpage = () => {
             )}
           </div>
           <div className="contentinfo">
-            {!loading ? (
+            {!loading && uData ? (
               <>
                 <Infoabout
                   userdata={true}
                   data={infoAboutData}
-                  setError={setErrorMessage}
                 />
-
-                {uData?.ownedCommunities.length > 0 && (
+                {uData.ownedCommunities && uData?.ownedCommunities.length > 0 && (
                   <Infosection
                     communitypatcherdata={uData?.ownedCommunities}
                   />
                 )}
-
                 {uData?.social_links && (
                   <Infosocial
                     socialData={JSON.parse(uData?.social_links)}
@@ -337,7 +371,7 @@ const Userpage = () => {
             )}
           </div>
 
-          <Errorcard message={errorMessage} />
+          <Errorcard message={userState.error} />
         </div>
       </>
     );

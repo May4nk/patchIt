@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { useMutation } from '@apollo/client';
 
+//utils
 import { useAuth } from '../../utils/hooks/useAuth';
 
 //components
+import Patbtn from '../../components/html/Patbtn';
 import Askinput from '../../components/html/Askinput';
 
 //queries
@@ -12,13 +14,14 @@ import { CHANGEPASSWORD } from '../../utils/loginqueries';
 //css & types
 import "./profilesettings.css";
 import { authcontexttype } from '../../context/types';
+import { USER_S_N_TYPE } from '../../utils/main/types';
 import { accountprops, setpasswordtype, showemailpassinputtype } from './types';
 
 function Accounttab(accountprops: accountprops) {
-  const { userData, setMessage, setDeactivateAcc } = accountprops;
+  const { userData, handleState } = accountprops;
 
   const { user }: authcontexttype = useAuth();
-  const userId: number | null = user && Number(user["id"]);
+  const userId: USER_S_N_TYPE = user && user["id"];
 
   //queries
   const [updatePassword] = useMutation(CHANGEPASSWORD);
@@ -48,23 +51,27 @@ function Accounttab(accountprops: accountprops) {
         onCompleted: () => {
           setShowInput({ email: false, password: false });
           setPassword({ old: "", new: "" });
-          setMessage({
-            status: 200,
-            show: true,
-            message: "Password updated successfully"
+          handleState({
+            type: "SET_ERROR",
+            error: {
+              status: 200,
+              show: true,
+              message: "Password updated successfully"
+            }
           });
         }
       })
     } catch (err) {
-      setMessage({
-        status: 500,
-        show: true,
-        message: "Something went wrong: Password Updation failed"
+      handleState({
+        type: "SET_ERROR",
+        error: {
+          status: 500,
+          show: true,
+          message: "Try again: check your passwords again"
+        }
       });
     }
   }
-
-
 
   const handleCancel: () => void = () => {
     setShowInput({ email: false, password: false });
@@ -83,7 +90,7 @@ function Accounttab(accountprops: accountprops) {
             {showInput.email ? (
               <div className="updateinput">
                 <Askinput
-                  name="about"
+                  name="email"
                   value={tempEmail}
                   placeholder={userData.email}
                   onChange={(e: any) => setTempEmail(e.target.value)}
@@ -94,21 +101,14 @@ function Accounttab(accountprops: accountprops) {
             )}
           </div>
         </div>
-        <div
-          className={`waves-effect waves-light black-text usettingitembtn ${
-              showInput.email && (tempEmail.length < 1 ? "red lighten-3" : "blue lighten-3")
-            }`
-          }
-          onClick={!showInput.email
+        <Patbtn
+          state={showInput.email && tempEmail.length < 1 ? "clear" : "selected"}
+          text={showInput.email ? tempEmail.length < 1 ? "cancel" : "verify" : "update"}
+          handleClick={!showInput.email
             ? () => setShowInput({ ...showInput, email: true })
             : () => tempEmail.length < 1 ? handleCancel() : handleUpdateEmail()
           }
-        >
-          {showInput.email ?
-            tempEmail.length < 1 ? "cancel" : "send"
-            : "change"
-          }
-        </div>
+        />
       </div>
       <div className="usettingitems">
         <div className="usettingitemlabels">
@@ -141,37 +141,36 @@ function Accounttab(accountprops: accountprops) {
             )}
           </div>
         </div>
-        <div
-          className={`waves-effect waves-light usettingitembtn ${
-              showInput.password && (password.old.length < 1 ? "red lighten-3" : "blue lighten-3")
-            }`
+        <Patbtn
+          state={showInput.password
+            && (password.old.length < 1 || password.new.length < 1)
+            ? "clear"
+            : "selected"
           }
-          onClick={!showInput.password
-            ? () => setShowInput({ ...showInput, password: true })
-            : () => password.old.length < 1 ? handleCancel() : handleUpdatePassword()
-          }
-        >
-          {showInput.password ?
-            password.old.length < 1
+          text={showInput.password
+            ? (password.old.length < 1 || password.new.length < 1)
               ? "cancel"
               : "update"
             : "change"
           }
-        </div>
+          handleClick={!showInput.password
+            ? () => setShowInput({ ...showInput, password: true })
+            : () => (password.old.length < 1 || password.new.length < 1) ? handleCancel() : handleUpdatePassword()
+          }
+        />
       </div>
       <div className="usettingitems">
         <div className="usettingitemlabels">
           <div className="usettingitemtitle"> Deactivate account </div>
           <div className="usettingitemmetatitle">{userData?.username}</div>
         </div>
-        <div
-          onClick={() => setDeactivateAcc(true)}
-          className="waves-effect waves-light black-text red usettingitembtn"
-        >
-          deactivate
-        </div>
+        <Patbtn
+          state={"clear"}
+          text={"deactivate"}
+          handleClick={() => handleState({ type: "DELETE_ACCOUNT", deleteAcc: true })}
+        />
       </div>
-    </div>
+    </div >
   )
 }
 

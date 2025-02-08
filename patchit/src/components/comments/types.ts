@@ -1,58 +1,71 @@
-import { idstype, usernametype } from "../../utils/main/types";
+import { IDSTYPE, USER_S_N_TYPE, usernametype } from "../../utils/main/types";
+import { seterrortype } from "../chatbox/types";
 
-export interface parentcommenttype {
-  id: number;
-  comment: string;
+export interface parentcommenttype extends IDSTYPE {
+  text: string;
 }
 
-export interface commenttype {
-  id: number;
-  parent_id: parentcommenttype | null;
-  comment: string;
+export interface commenttype extends parentcommenttype {
   likes: number;
-  user_id: usernametype;
   created_at: string;
+  user_id: usernametype;
+  parent_id: parentcommenttype | null;
 }
 
 export interface newcommenttype {
-  user_id: number;
-  post_id: number;
-  parent_id: number | null;
-  comment: string;
+  text: string;
+  user_id: string;
+  post_id: string;
+  parent_id: USER_S_N_TYPE;
 }
 
-export interface commentlistprops {
+export type commentstatetype = {
+  addComment: boolean;
   newComment: newcommenttype;
+  parentComment: parentcommenttype | null;
+};
+
+export type commentstateactiontype =
+  | { type: "ADD_COMMENT"; addComment: boolean }
+  | { type: "NEW_COMMENT"; comment: Partial<newcommenttype> }
+  | { type: "ADD_PARENT_COMMENT"; comment: parentcommenttype }
+  | { type: "RESET" };
+
+export type handlecommentstatetype = (
+  state: commentstatetype,
+  action: commentstateactiontype
+) => commentstatetype;
+
+//comment list----------------------------------------
+export interface commentlistprops {
+  setError: seterrortype;
   rootcomments: commenttype[];
+  commentState: commentstatetype;
   allcomments: Record<number, commenttype[]>;
-  setNewComment: React.Dispatch<React.SetStateAction<newcommenttype>>;
-  setParentComment: React.Dispatch<
-    React.SetStateAction<parentcommenttype | undefined>
-  >;
+  setCommentState: React.Dispatch<commentstateactiontype>;
 }
 
+//comment --------------------------------------
 export interface commentprops {
   data: commenttype;
-  newComment: newcommenttype;
+  setError: seterrortype;
+  commentState: commentstatetype;
   childcomments: Record<number, commenttype[]>;
-  setNewComment: React.Dispatch<React.SetStateAction<newcommenttype>>;
-  setParentComment: React.Dispatch<
-    React.SetStateAction<parentcommenttype | undefined>
-  >;
+  setCommentState: React.Dispatch<commentstateactiontype>;
 }
 
 export interface commentspaceprops {
-  postId: number;
+  postId: string;
+  setError: seterrortype;
   comments: commenttype[];
 }
 
 export type handleparentidtype = (
-  parentId: number,
+  parentId: string,
   parentComment: string
 ) => void;
 
-export interface listusercommentliketype {
-  id: number;
-  user_id: idstype;
-  comment_id: idstype;
+export interface listusercommentliketype extends IDSTYPE {
+  user_id: IDSTYPE;
+  comment_id: IDSTYPE;
 }

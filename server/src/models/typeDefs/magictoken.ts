@@ -1,6 +1,6 @@
 export const magictokenTypeDefs = `
   type MagicToken {
-    id: Int
+    id: String
     email: User
     token: String
     expires_at: String
@@ -14,7 +14,7 @@ export const magictokenTypeDefs = `
   }
 
   input MagicTokenfilterInput {
-    id: Int
+    id: String
     email: String
     token: String
     expires_at: String
@@ -22,6 +22,6 @@ export const magictokenTypeDefs = `
   } 
 
   input RemoveMagicTokenInput {
-    id: Int!
+    id: String!
   }
 `;

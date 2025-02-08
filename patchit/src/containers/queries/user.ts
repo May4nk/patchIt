@@ -1,40 +1,62 @@
 import { gql } from "@apollo/client";
 import { CORE_POST_FIELDS } from "../../utils/main/fragments";
 
+export const USER_ID_USERNAME = gql`
+  fragment userIdNameFields on User {
+    id
+    username
+  }
+`;
+
+export const CORE_USER_FIELDS = gql`
+  fragment CoreUserFields on User {
+    ...userIdNameFields
+    status
+    profile_pic
+  }
+  ${USER_ID_USERNAME}
+`;
+
+export const USER_BASIC_FIELDS = gql`
+  fragment userBasicFields on User {
+    ...CoreUserFields
+    email
+    about
+    privacy
+  }
+  ${CORE_USER_FIELDS}
+`;
+
 const CORE_FIELDS = gql`
   fragment CoreUserInfoFields on User {
-    id
-    email
-    username
-    privacy
+    ...userBasicFields
     dob
     created_at
     country
     background_pic
-    about
-    status
-    profile_pic
     social_links
+    new_user
     role {
       id
       role
     }
     ownedCommunities {
       id
-      communityname
+      name
       owner {
         id
       }
     }
     comments {
       id
-      comment
+      text
       created_at
       post_id {
         id
         title
         community_id {
-          communityname
+          id
+          name
           profile_pic
         }
         created_at
@@ -45,7 +67,7 @@ const CORE_FIELDS = gql`
         status
       }
       parent_id {
-        comment
+        text
         user_id {
           username
           status
@@ -59,12 +81,10 @@ const CORE_FIELDS = gql`
     followers {
       id
       following {
-        id
-        username
+        ...userIdNameFields
       }
       follower {
-        id
-        username
+        ...userIdNameFields
       }
     }
     settings {
@@ -72,7 +92,9 @@ const CORE_FIELDS = gql`
       allowppltofollow
     }
   }
+  ${USER_BASIC_FIELDS}
   ${CORE_POST_FIELDS}
+  ${USER_ID_USERNAME}
 `;
 
 export const GETUSER = gql`

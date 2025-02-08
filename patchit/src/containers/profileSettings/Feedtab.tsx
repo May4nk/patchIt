@@ -3,11 +3,7 @@ import React from 'react';
 import Settingtab from '../../components/settings/Settingtab';
 //css & types
 import "./profilesettings.css";
-import { feedsstatetype } from './types';
-interface feedprops {
-  handleChange: (e: any, statename: string) => void;
-  feedsState: feedsstatetype;
-}
+import { feedprops } from './types';
 
 function Feedtab(feedprops: feedprops) {
   const { handleChange, feedsState } = feedprops;
@@ -23,7 +19,7 @@ function Feedtab(feedprops: feedprops) {
         name={"show_nsfw"}
         value={feedsState.show_nsfw}
         handleChange={(e: any) => handleChange(e, "feeds")}
-      />     
+      />
     </div>
   )
 }

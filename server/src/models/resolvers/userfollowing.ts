@@ -1,9 +1,12 @@
-import { listAll, findOne } from "../../utils/queriesutils.js";
+import { listAll, findOne } from "../../utils/common/queriesutils.js";
 
 //types
 import { usertype } from "./types/usertypes.js";
-import { filtersorttype } from "../../utils/types.js";
-import { userfollowingfiltertype, userfollowingtype } from "./types/userfollowingtypes.js";
+import { filtersorttype } from "../../utils/common/types.js";
+import {
+  userfollowingfiltertype,
+  userfollowingtype,
+} from "./types/userfollowingtypes.js";
 
 export const userfollowingResolvers = {
   Query: {
@@ -22,15 +25,17 @@ export const userfollowingResolvers = {
         throw err;
       }
     },
-    userFollowing: async (_: undefined, { id }: { id: number }): Promise<userfollowingtype> => {
+    userFollowing: async (
+      _: undefined,
+      { id }: { id: string }
+    ): Promise<userfollowingtype> => {
       try {
         const userFollowingById: userfollowingtype = await findOne<
           userfollowingtype,
-          { id: number }
+          { id: string }
         >("user_user_relation", { id: id });
 
-        if (!userFollowingById)
-          throw new Error(`User not following`);
+        if (!userFollowingById) throw new Error(`User not following`);
 
         return userFollowingById;
       } catch (err) {
@@ -39,25 +44,29 @@ export const userfollowingResolvers = {
     },
   },
   UserFollowing: {
-    follower: async ({ follower }: { follower: number }): Promise<usertype> => {
+    follower: async ({ follower }: { follower: string }): Promise<usertype> => {
       try {
-        const userById: usertype = await findOne<
-          usertype,
-          { id: number }
-        >("users", { "id": follower });
+        const userById: usertype = await findOne<usertype, { id: string }>(
+          "users",
+          { id: follower }
+        );
 
         return userById;
       } catch (err) {
         throw err;
       }
     },
-    following: async ({ following }: { following: number }): Promise<usertype> => {
+    following: async ({
+      following,
+    }: {
+      following: string;
+    }): Promise<usertype> => {
       try {
-        const userById: usertype = await findOne<
-          usertype,
-          { id: number }
-        >("users", { "id": following });
-        
+        const userById: usertype = await findOne<usertype, { id: string }>(
+          "users",
+          { id: following }
+        );
+
         return userById;
       } catch (err) {
         throw err;

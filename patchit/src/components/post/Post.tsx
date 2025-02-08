@@ -1,79 +1,80 @@
-import React, { useState, useEffect } from "react";
-import { useLazyQuery, useMutation } from "@apollo/client";
+import React, { useEffect, useReducer } from "react";
+import { useMutation } from "@apollo/client";
 import { Link, useNavigate } from "react-router-dom";
 
 //utils
 import { useAuth } from "../../utils/hooks/useAuth";
-import { dateFormatter, defaultUPic } from "../../utils/helpers";
+import { getSignedUrls } from "../../utils/services/s3";
+import { dateFormatter, defaultUPic } from "../../utils/helpers/helpers";
 import {
-  getUserActionState,
+  handlePostImages,
   handlePostLikes,
+  handlePostState,
   handleSavingPost,
+  handleUserReactions,
+  postInitState,
   updateDBPostLikeDislikes,
   updateDBSavingPost
-} from "../../utils/postopx";
+} from "../../utils/opx/postopx";
 
 //component
 import Postimg from "./Postimg";
 import Postpoll from "./Postpoll";
+import Patbtn from "../html/Patbtn";
 
 //query & mutations
 import {
-  GETUSERALLREACTIONS,
   INSERTUSERCOMMUNITY,
   REMOVEUSERCOMMUNITY,
 } from "../queries/post";
 
 //css & types
 import "./css/post.css";
-import { parsedimgtype } from "./types";
 import { authcontexttype } from "../../context/types";
-import { defaultCommunityPic } from "../../constants/const";
+import { posttype, RESPONSETYPE, USER_S_N_TYPE } from "../../utils/main/types";
+import { defaultCommunityPic, defaultUserPic } from "../../constants/const";
 import {
+  likestatetype,
   newpostlikedislikestate,
   newpostsavingpinningstate,
+  signedurltype,
   updatedbposttype,
-  useractionstatetype
+  userreactiontype
 } from "../../utils/types";
 import {
-  postprops,
-  useractiontype,
+  postpropstype,
   postsaveopxtype,
-  postlikestatetype,
   postlikeactiontype,
 } from "../types/posttypes";
 
-const Post = ({ postData, showcommunity }: postprops) => {
+const Post = (postprops: postpropstype) => {
+  const { postData, showcommunity = true } = postprops;
   const { id, title, type, content, owner, community_id, likes, created_at, comments } = postData;
 
   const navigate = useNavigate();
   const { user }: authcontexttype = useAuth();
-  const userId: number | null = user && Number(user["id"]);
+  const userId: USER_S_N_TYPE = user && user["id"];
+  const userRole: number | null = user && user["role"];
 
-  //states
-  const [postLikes, setPostLikes] = useState<number>(0);
-  const [joinState, setJoinState] = useState<boolean>(false);
-  const [savedState, setSavedState] = useState<boolean>(false);
-  const [pinnedState, setPinnedState] = useState<boolean>(false);
-  const [likeState, setLikeState] = useState<postlikestatetype>(0);
-
-  //queries & mutations 
+  //queries & mutations     
   const [joincommunity] = useMutation(INSERTUSERCOMMUNITY);
   const [leavecommunity] = useMutation(REMOVEUSERCOMMUNITY);
-  const [getUserReactions] = useLazyQuery(GETUSERALLREACTIONS);
 
-  const parsedImgData: parsedimgtype[] = type === "IMAGE" ? JSON.parse(content || "") : [];
+  //reducer
+  const [postState, dispatch] = useReducer(handlePostState, postInitState);
 
-  //handlers
-  const handleDefault: () => void = () => {
-    setJoinState(false);
-    setLikeState(0);
-    setPinnedState(false);
-    setSavedState(false);
-  }
+  //handlers  
+  const handleLikeDislike: (action: postlikeactiontype) => Promise<void> = async (action: postlikeactiontype) => {
+    const postLikeState: likestatetype = {
+      liked: postState.liked,
+      postLikes: postState.likes
+    }
 
-  const handleLikeDislike: (action: postlikeactiontype) => Promise<void> = async (action) => {
-    const updatedPostLikes: newpostlikedislikestate = await handlePostLikes(userId, action, { likeState, postLikes });
+    const updatedPostLikes: newpostlikedislikestate = await handlePostLikes(
+      userId!,
+      action,
+      postLikeState
+    );
 
     if (updatedPostLikes?.navigateTo) {
       navigate(updatedPostLikes.navigateTo);
@@ -82,38 +83,23 @@ const Post = ({ postData, showcommunity }: postprops) => {
 
     try {
       const { newPostLikes, newLikeState } = updatedPostLikes;
-
-      let userReact: postlikestatetype = 1;
-
-      if (action === "LIKE") {
-        if (likeState === null) {
-          userReact = 1;
-        } else if (likeState === 1) {
-          userReact = 0;
-        } else if (likeState === 0) {
-          userReact = 1;
-        }
-      } else if (action === "DISLIKE") {
-        if (likeState === null) {
-          userReact = -1;
-        } else if (likeState === 0) {
-          userReact = 0;
-        } else if (likeState === 1) {
-          userReact = -1;
-        }
-      }
-
-      const updatingDb: updatedbposttype = await updateDBPostLikeDislikes(newPostLikes, userReact, id, userId!);
+      const updatingDb: updatedbposttype = await updateDBPostLikeDislikes(newPostLikes, newLikeState, id, userId!);
 
       if (updatingDb.status !== 200) {
-        throw new Error(updatingDb.message);
+        dispatch({
+          type: "SET_ERROR",
+          error: { status: 500, show: true, message: "Post like failed: Something went wrong" }
+        });
+        return;
       }
 
-      setPostLikes(newPostLikes);
-      setLikeState(newLikeState);
-
+      dispatch({ type: "SET_LIKES", likes: newPostLikes });
+      dispatch({ type: "SET_LIKED", liked: newLikeState });
     } catch (err) {
-      console.log(`Error updating likes: ${err}`);
+      dispatch({
+        type: "SET_ERROR",
+        error: { status: 500, show: true, message: "Post like failed: Something went wrong" }
+      });
     }
   }
 
@@ -123,21 +109,15 @@ const Post = ({ postData, showcommunity }: postprops) => {
       return;
     }
 
-    let joincommunitybtns = document.querySelectorAll(`.c${community_id?.communityname}`);
-
-    joincommunitybtns.forEach((btn) => {
-      btn.classList.toggle("none");
-    });
-
-    setJoinState(!joinState);
+    dispatch({ type: "JOIN_COMMUNITY", inCommunity: !postState?.inCommunity })
 
     try {
-      if (joinState) {
+      if (postState?.inCommunity) {
         await leavecommunity({
           variables: {
             data: {
               user_id: userId,
-              community_id: Number(community_id?.id)
+              community_id: community_id?.id
             }
           }
         })
@@ -146,22 +126,28 @@ const Post = ({ postData, showcommunity }: postprops) => {
           variables: {
             data: {
               user_id: userId,
-              community_id: Number(community_id?.id)
+              community_id: community_id?.id
             }
           }
         })
       }
     } catch (err) {
-      console.log(err);
+      dispatch({
+        type: "SET_ERROR",
+        error: { status: 500, show: true, message: "Joining community failed: Try again after a while" }
+      });
     }
   }
 
   const handlePostSavingPinning: (useraction: postsaveopxtype) => Promise<void> = async (useraction: postsaveopxtype) => {
-    const updatedPostSaveState: newpostsavingpinningstate = await handleSavingPost(
-      useraction,
-      userId,
-      { savedState, pinnedState }
-    );
+    const updatedPostSaveState: newpostsavingpinningstate = await handleSavingPost({
+      useraction: useraction,
+      userId: userId!,
+      currentsavestate: {
+        savedState: postState["saved"],
+        pinnedState: postState["pinned"]
+      }
+    });
 
     if (updatedPostSaveState.navigateTo) {
       navigate(updatedPostSaveState.navigateTo);
@@ -169,68 +155,125 @@ const Post = ({ postData, showcommunity }: postprops) => {
 
     try {
       const { newSavedState, newPinnedState } = updatedPostSaveState;
-
-      const updatingDb: updatedbposttype = await updateDBSavingPost(
-        useraction,
-        userId,
-        Number(id),
-        newSavedState,
-        newPinnedState,
-      )
+      const updatingDb: updatedbposttype = await updateDBSavingPost({
+        useraction: useraction,
+        userId: userId!,
+        postId: id,
+        savedState: newSavedState,
+        pinnedState: newPinnedState,
+      });
 
       if (updatingDb.status !== 200) {
-        throw new Error(updatingDb.message);
+        dispatch({
+          type: "SET_ERROR",
+          error: { status: 500, show: true, message: "Post saving failed: Something went wrong" }
+        });
+        return;
       }
 
-      setSavedState(newSavedState);
-      setPinnedState(newPinnedState);
-
+      dispatch({ type: "SAVE_POST", saved: newSavedState });
+      dispatch({ type: "PIN_POST", pinned: newPinnedState });
     } catch (err) {
-      console.log(err);
+      dispatch({
+        type: "SET_ERROR",
+        error: { status: 500, show: true, message: "Post saving failed: Something went wrong" }
+      });
+    }
+  }
+
+  const fetchUserReactions = async (post: posttype) => {
+    const data = await handleUserReactions(post, userId!);
+
+    if (data.status === 200) {
+      const updateUserActions: userreactiontype = JSON.parse(data?.message);
+      const { savedState, pinnedState, likedState, joinedState } = updateUserActions;
+
+      dispatch({ type: "SAVE_POST", saved: savedState });
+      dispatch({ type: "PIN_POST", pinned: pinnedState });
+      dispatch({ type: "SET_LIKED", liked: likedState });
+      dispatch({ type: "JOIN_COMMUNITY", inCommunity: joinedState });
+    } else {
+      dispatch({
+        type: "SET_ERROR",
+        error: { show: true, status: 500, message: "Unable to fetch user reactions..." }
+      });
     }
   }
 
   useEffect(() => {
-    if (userId !== null) {
-      getUserReactions({
-        variables: {
-          filter: {
-            id: userId!
-          }
-        },
-        onCompleted: ({ listUsers }) => {
-          if (listUsers) {
-            const userActions = listUsers[0];
-
-            const userSaved: useractiontype["savedposts"] = userActions?.savedposts;
-            const userReacted: useractiontype["reactedposts"] = userActions?.reactedposts;
-            const userCommunities: useractiontype["communities"] = userActions?.communities;
-
-            const getUserActions: useractionstatetype = getUserActionState(
-              community_id?.id,
-              Number(id),
-              userSaved,
-              userReacted,
-              userCommunities
-            );
-
-            const { savedState, pinnedState, likedState, joinedState } = getUserActions;
-
-            setSavedState(savedState);
-            setPinnedState(pinnedState);
-            setLikeState(likedState);
-            setJoinState(joinedState);
-          }
-        }
-      });
-    } else {
-      handleDefault();
+    if (userId === null) {
+      dispatch({ type: "RESET" });
+      return;
     }
-  }, [id, getUserReactions, userId, community_id?.id]);
+
+    (async function () {
+      await fetchUserReactions(postData);
+    }());
+
+  }, [id, userId, community_id?.id]);
 
   useEffect(() => {
-    setPostLikes(likes);
+    dispatch({ type: "SET_LIKES", likes });
   }, [likes]);
+
+  useEffect(() => {
+    const user_pic: USER_S_N_TYPE = owner.profile_pic;
+    const community_pic: USER_S_N_TYPE = community_id.profile_pic;
+
+    if (showcommunity && community_id?.name) {
+      if (community_pic !== null && community_pic.length > 0) {
+        (async function () {
+          const signedUrls: signedurltype[] = await getSignedUrls({
+            userId: community_id?.owner?.id,
+            postId: "0",
+            req: "GET",
+            files: [{ name: community_pic }]
+          });
+
+          dispatch({ type: "UPDATE_COMMUNITY_PIC", community_pic: signedUrls[0].signedUrl })
+        }());
+      }
+    } else {
+      if (user_pic !== null && user_pic.length > 0) {
+        (async function () {
+          const signedUrls: signedurltype[] = await getSignedUrls({
+            userId: owner?.id,
+            postId: "0",
+            req: "GET",
+            files: [{ name: user_pic }]
+          });
+
+          dispatch({ type: "UPDATE_USER_PIC", user_pic: signedUrls[0].signedUrl })
+        }());
+      }
+    }
+  }, [owner, community_id])
+
+  useEffect(() => {
+    if (type === "IMAGE") {
+      const fetchPostImages = async () => {
+        const data: RESPONSETYPE = await handlePostImages(postData);
+
+        if (data?.status === 200) {
+          dispatch({
+            type: "SET_IMAGES",
+            images: JSON.parse(data.message)
+          })
+        } else {
+          dispatch({
+            type: "SET_ERROR",
+            error: {
+              show: true,
+              status: data?.status,
+              message: data?.message
+            }
+          })
+        }
+      }
+
+      fetchPostImages();
+    }
+  }, [id, type, content])
 
   return (
     <div className="post hoverable">
@@ -239,22 +282,22 @@ const Post = ({ postData, showcommunity }: postprops) => {
           <div className="posttitle">
             <div className="headingpicwrapper">
               <img
-                src={showcommunity
-                  ? community_id?.communityname
-                    ? community_id?.profile_pic || defaultCommunityPic
-                    : owner?.profile_pic
-                  : owner?.profile_pic
-                }
                 className="headingpic"
                 alt="profile pic"
                 onError={defaultUPic}
+                src={showcommunity
+                  ? community_id?.name
+                    ? postState.display_community_pic || defaultCommunityPic
+                    : postState.display_user_pic || defaultUserPic
+                  : postState.display_user_pic || defaultUserPic
+                }
               />
             </div>
             <div className="posttitletext">
               {showcommunity ? (
-                community_id?.communityname ? (
-                  <Link id="communityname" to={`/c/${community_id?.communityname}`}>
-                    c/{community_id?.communityname}
+                community_id?.name ? (
+                  <Link id="communityname" to={`/c/${community_id?.name}`}>
+                    c/{community_id?.name}
                   </Link>
                 ) : (
                   owner.status === "ACTIVE" ? (
@@ -289,18 +332,17 @@ const Post = ({ postData, showcommunity }: postprops) => {
                 </span>
               )}
             </div>
-            {(showcommunity || (owner.id !== userId)) && (
-              (!joinState && owner.id !== userId && owner.status === "ACTIVE") && (
+            {/* {(showcommunity || (owner.id !== userId)) && (
+              (!postState?.inCommunity && owner.id !== userId && owner.status === "ACTIVE") && (
                 <div className="joincommunity">
-                  <div
-                    onClick={handleJoinCommunity}
-                    className={`waves-effect waves-light joincommunitybtn ${"c" + community_id?.communityname}`}
-                  >
-                    {community_id ? "join" : "follow"}
-                  </div>
+                  <Patbtn
+                    size="small"
+                    handleClick={handleJoinCommunity}
+                    text={community_id ? "join" : "follow"}
+                  />
                 </div>
               )
-            )}
+            )} */}
           </div>
           <a href={`/post/${id}`} className="linktoclick">
             <div className="headingtitle">
@@ -311,7 +353,7 @@ const Post = ({ postData, showcommunity }: postprops) => {
         {type === "IMAGE" ? (
           <div className="postimagewrapper">
             {content && (
-              <Postimg postImgData={parsedImgData} />
+              <Postimg postImgData={postState.images} />
             )}
           </div>
         ) : type === "LINK" ? (
@@ -337,44 +379,45 @@ const Post = ({ postData, showcommunity }: postprops) => {
           </div>
         )}
         <div className="postfooter">
-          <div className="footer">
-            <i
-              onClick={() => handleLikeDislike("LIKE")}
-              className={`material-icons-outlined upvote ${likeState === 1 && "blue-text"}`}
-            >
-              mood
-            </i>
-            {postLikes}
-            <i
-              onClick={() => handleLikeDislike("DISLIKE")}
-              className={`material-icons-outlined downvote ${likeState === -1 && "red-text"}`}
-            >
-              sentiment_very_dissatisfied
-            </i>
-          </div>
-          <Link to={`/post/${id}`} className="footersave waves-light waves-effect">
-            <i className="material-icons footericn">chat_bubble_outline</i>
-            <div className="footertxt">{comments?.length || 0}</div>
+          {userRole !== 1337 && (
+            <div className="postreact">
+              <i
+                onClick={() => handleLikeDislike("LIKE")}
+                className={`material-icons-outlined upvote ${postState?.liked === "TRUE" && "blue-text"}`}
+              >
+                mood
+              </i>
+              {postState?.likes}
+              <i
+                onClick={() => handleLikeDislike("DISLIKE")}
+                className={`material-icons-outlined downvote ${postState?.liked === "FALSE" && "red-text"}`}
+              >
+                sentiment_very_dissatisfied
+              </i>
+            </div>
+          )}
+          <Link to={`/post/${id}`}>
+            <Patbtn
+              icn={"chat_bubble_outline"}
+              text={`${comments?.length || 0}`}
+            />
           </Link>
-          {user && (
+          {user && userRole !== 1337 && (
             <>
-              <div
-                onClick={() => handlePostSavingPinning("SAVE")}
-                className="footersave waves-light waves-effect"
-              >
-                <i className={`material-icons footericn ${savedState && "blue-text"}`}>
-                  bookmark_border
-                </i>
-                <div className="footertxt"> save </div>
-              </div>
-              <div
-                onClick={() => handlePostSavingPinning("PIN")}
-                className="footerpin waves-light waves-effect"
-              >
-                <i className={`material-icons footericn ${pinnedState && "red-text text-lighten-2"}`}>
-                  location_on
-                </i>
-                <div className="footertxt"> pin </div>
+              <Patbtn
+                text={postState?.saved ? "saved" : "save"}
+                icn={"bookmark_border"}
+                state={postState?.saved ? "selected" : "inactive"}
+                handleClick={() => handlePostSavingPinning("SAVE")}
+              />
+              <div className="lastbtn">
+                <Patbtn
+                  size={"small"}
+                  text={"pin"}
+                  icn={"location_on"}
+                  state={postState?.pinned ? "clear" : "inactive"}
+                  handleClick={() => handlePostSavingPinning("PIN")}
+                />
               </div>
             </>
           )}
@@ -382,10 +425,6 @@ const Post = ({ postData, showcommunity }: postprops) => {
       </div>
     </div>
   );
-}
-
-Post.defaultProps = {
-  showcommunity: true
 }
 
 export default Post;

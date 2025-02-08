@@ -1,9 +1,8 @@
-# dependencies
-/node_modules
-/lib
 
+.env.dev
 .gitignore
+node_modules/
+lib
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-

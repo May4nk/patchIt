@@ -1,28 +1,29 @@
 import db from "../../db.js";
-import { findOne } from "../../utils/queriesutils.js";
+import { findOne } from "../../utils/common/queriesutils.js";
 
 //types
 import {
-  NOTIFICATIONTYPE,
   notificationtype,
   rnotificationtype,
-} from "./types/notificationmutetypes.js";
+  rawnotificationtype,
+} from "../resolvers/types/notificationtypes.js";
+import { IDSTYPE, NOTIFYTYPE } from "../../utils/common/types.js";
 
 export const notificationMutations = {
   Mutation: {
     upsertNotification: async (
       _: undefined,
-      { data }: { data: notificationtype },
+      { data }: { data: rawnotificationtype },
       { pubsub }: any
-    ): Promise<notificationtype> => {
+    ): Promise<rawnotificationtype> => {
       try {
         if (data?.id) {
           const foundNotification: notificationtype = await findOne<
             notificationtype,
-            { id: number }
+            IDSTYPE
           >("notifications", { id: data.id });
 
-          const [updateNotification]: notificationtype[] = await db(
+          const [updateNotification]: rawnotificationtype[] = await db(
             "notifications"
           )
             .where("id", foundNotification.id)
@@ -34,7 +35,7 @@ export const notificationMutations = {
           return updateNotification;
         }
 
-        const [createNotification]: notificationtype[] = await db(
+        const [createNotification]: rawnotificationtype[] = await db(
           "notifications"
         )
           .insert(data)
@@ -50,18 +51,16 @@ export const notificationMutations = {
     removeNotification: async (
       _: undefined,
       { data }: { data: rnotificationtype }
-    ): Promise<rnotificationtype> => {
+    ): Promise<IDSTYPE> => {
       try {
         const foundNotification: notificationtype = await findOne<
           notificationtype,
-          { touser: number; fromuser: number }
+          { touser: string; fromuser: string }
         >("notifications", { touser: data?.touser, fromuser: data?.fromuser });
 
         if (!foundNotification) throw new Error("Notification not found...");
 
-        const [deleteNotification]: rnotificationtype[] = await db(
-          "notifications"
-        )
+        const [deleteNotification]: IDSTYPE[] = await db("notifications")
           .where("id", foundNotification.id)
           .del()
           .returning("id");
@@ -78,8 +77,8 @@ export const notificationMutations = {
         return pubsub.asyncIterator(["NEW_NOTIFICATION"]);
       },
       resolve: (
-        payload: notificationtype,
-        { type, userId }: { type: NOTIFICATIONTYPE; userId: number }
+        payload: rawnotificationtype,
+        { type, userId }: { type: NOTIFYTYPE; userId: string }
       ) => {
         if (payload.touser === userId && payload.type === type) {
           return [payload];

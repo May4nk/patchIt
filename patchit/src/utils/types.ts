@@ -1,40 +1,35 @@
 import {
-  FOLLOWINGTYPE,
-  idstype,
-  PRIVACY,
+  IDSTYPE,
+  LIKEREACTION,
   RESPONSETYPE,
-  usernametype,
+  USER_S_N_TYPE,
 } from "./main/types";
-import {
-  activeroomtype,
-  allowedmediatype,
-  chatgroupusertype,
-} from "../components/chatbox/types";
+import { chatgroupusertype } from "../components/chatbox/types";
 import {
   communitytype,
   postlikeactiontype,
-  postlikestatetype,
   postsaveopxtype,
   reactedposttype,
   savedposttype,
 } from "../components/types/posttypes";
 
-export type logintype = (userdata: userdatatype) => Promise<loggedindatatype>;
+export type userdatatype = {
+  email?: string;
+  username?: string;
+  password: string;
+};
 
-export type userdatatype = { username: string; password: string };
+export type usertype = IDSTYPE & { email: string; username: string };
 
-export interface logindatatype extends userdatatype {
-  email: string;
-}
-
-export interface loggedindatatype {
-  id: number;
-  email: string;
-  username: string;
+export interface loggedinuserdatatype extends usertype {
   token: string;
-  role: idstype;
+  role: { role_id: number };
   new_user: boolean;
 }
+
+export type logintype = (
+  userdata: userdatatype
+) => Promise<loggedinuserdatatype>;
 
 export type magiclogintype = (mailTo: string) => Promise<RESPONSETYPE>;
 
@@ -45,8 +40,6 @@ export type loginthroughtype =
   | "login"
   | "isUsernameAvailable"
   | "signupAndLoginUser";
-
-export type usertype = { id: number; email: string; username: string };
 
 export type checkusernametype = (
   uname?: string,
@@ -59,20 +52,48 @@ export type signupdatatype = {
   password: string;
 };
 
+//useSignedUrl
+export type reqtype = "GET" | "PUT";
+export type signedfiletype = {
+  name: string;
+  type?: string;
+};
+
+export type signedurltype = {
+  signedUrl: string;
+  fileUrl: string;
+  req: reqtype;
+};
+
+export type getsignedurlfiletype = {
+  postId: string;
+  userId: string;
+  req: reqtype;
+  files: signedfiletype[];
+};
+
+export type getsignedurltype = (
+  file: getsignedurlfiletype
+) => Promise<signedurltype[]>;
+
+export type signedurlrestype = {
+  getSignedUrl: signedurltype[];
+};
+
 //postopx ------------------------------------------------
 export type likestatetype = {
   postLikes: number;
-  likeState: postlikestatetype;
+  liked: LIKEREACTION;
 };
 
 export type newpostlikedislikestate = {
   navigateTo?: string;
   newPostLikes: number;
-  newLikeState: postlikestatetype;
+  newLikeState: LIKEREACTION;
 };
 
 export type handlepostlikestatetype = (
-  userId: number | null,
+  userId: string,
   action: postlikeactiontype,
   likestate: likestatetype
 ) => Promise<newpostlikedislikestate>;
@@ -85,9 +106,9 @@ export type updatedbposttype = {
 
 export type updatepostdblikedisliketype = (
   postlikes: number,
-  userReact: postlikestatetype,
-  postId: number,
-  userId: number
+  userReact: LIKEREACTION,
+  postId: string,
+  userId: string
 ) => Promise<updatedbposttype>;
 
 export type currentpostsavedstate = {
@@ -101,87 +122,70 @@ export type newpostsavingpinningstate = {
   newPinnedState: boolean;
 };
 
+export type handlesavingpostdatatype = {
+  useraction: postsaveopxtype;
+  userId: string;
+  currentsavestate: currentpostsavedstate;
+};
+
 export type handlesavingposttype = (
-  useraction: postsaveopxtype,
-  userId: number | null,
-  currentsavestate: currentpostsavedstate
+  data: handlesavingpostdatatype
 ) => Promise<newpostsavingpinningstate>;
 
-export type updatepostdbsavepintype = (
-  useraction: postsaveopxtype,
-  userId: number | null,
-  postId: number,
-  savedState: boolean,
-  pinnedState: boolean
-) => Promise<updatedbposttype>;
-
-export type useractionstatetype = {
+export type updatepostdbsavepindatatype = {
+  useraction: postsaveopxtype;
+  userId: string;
+  postId: string;
   savedState: boolean;
   pinnedState: boolean;
-  likedState: postlikestatetype;
+};
+
+export type updatepostdbsavepintype = (
+  data: updatepostdbsavepindatatype
+) => Promise<updatedbposttype>;
+
+export type userreactiontype = {
+  savedState: boolean;
+  pinnedState: boolean;
+  likedState: LIKEREACTION;
   joinedState: boolean;
 };
 
+export type getuseractionstatedatatype = {
+  communityId: string;
+  postId: string;
+  userSaved: savedposttype[];
+  userReacted: reactedposttype[];
+  userCommunities: communitytype[];
+};
+
 export type getuseractionstatetype = (
-  communityId: number,
-  postId: number,
-  userSaved: savedposttype[],
-  userReacted: reactedposttype[],
-  userCommunities: communitytype[]
-) => useractionstatetype;
+  data: getuseractionstatedatatype
+) => userreactiontype;
 
 //chatopx -----------------------------------------------------------
-export interface chatroominfotype {
-  ownerId: number;
-  about: string;
-  theme: string;
-  room_code: string;
-  roomName: string;
-  isRoom: boolean;
-  blocked: string[];
-  profile_pic: string;
-  users: usernametype[];
-  allowedMedia: allowedmediatype;
-  admin: string;
-  co_admin: string;
-  operator: string;
-  acceptor: string;
-}
-
-export type ACTION = { type: "UPDATE"; payload: Partial<chatroominfotype> };
-
 export interface createchatroomrestype extends RESPONSETYPE {
-  room: activeroomtype | null;
+  roomId: USER_S_N_TYPE;
 }
 
 export type upsertchatpreferencestype = (
-  ownerId: number,
-  room_code: string
+  ownerId: string,
+  roomId: string
 ) => Promise<void>;
 
-export type createchatroomtype = (
-  roomCode: string,
-  ownerId: number,
-  chatgroupUsers: chatgroupusertype[],
-  roomName?: string
-) => Promise<createchatroomrestype>;
-
-//useropx ---------------------------------------------------------------
-export type usersettinginfotype = {
-  nsfw: boolean;
-  isNew: boolean;
-  privacy: PRIVACY;
-  showProfile: boolean;
-  following: FOLLOWINGTYPE;
-  allowPplToFollow: boolean;
+export type createchatroomroomtype = {
+  ownerId: string;
+  roomName: string;
+  chatgroupUsers: chatgroupusertype[];
 };
 
-export type usersettinginfotypetype =
-  | "UPDATE"
-  | "UPDATE_SHOW_PROFILE"
-  | "UPDATE_FOLLOWING";
+export type createchatroomtype = (
+  room: createchatroomroomtype
+) => Promise<createchatroomrestype>;
 
-export interface usersettinginfoactiontype {
-  type: usersettinginfotypetype;
-  payload: Partial<usersettinginfotype>;
-}
+// s3 upload ----------------------------------
+export type filetype = {
+  url: string;
+  file: File;
+  progress: (prog) => void;
+};

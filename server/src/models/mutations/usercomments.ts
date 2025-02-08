@@ -1,38 +1,33 @@
 import db from "../../db.js";
-import { findOne } from "../../utils/queriesutils.js";
+import { findOne } from "../../utils/common/queriesutils.js";
 
 //types
-import { usertype } from "../resolvers/types/usertypes.js";
-interface usercommenttype {
-  id: number;
-  comment_id: number;
-  user_id: number;
-}
-
-type rusercommenttype = {
-  id: number;
-};
+import { IDSTYPE, loggedusertype } from "../../utils/common/types.js";
+import {
+  rawusercommenttype,
+  usercommenttype,
+} from "../resolvers/types/usercommenttypes.js";
 
 export const usercommentMutations = {
   Mutation: {
     insertUserCommentLike: async (
       _: undefined,
-      { data }: { data: usercommenttype },
-      { user }: { user: usertype }
-    ): Promise<usercommenttype> => {
+      { data }: { data: rawusercommenttype },
+      { user }: { user: loggedusertype }
+    ): Promise<rawusercommenttype> => {
       try {
         if (!user) throw new Error("user not authenticated");
 
         const foundUserCommentLike: usercommenttype = await findOne<
           usercommenttype,
-          { user_id: number; comment_id: number }
+          { user_id: string; comment_id: string }
         >("user_comment_relation", {
           user_id: data.user_id,
           comment_id: data.comment_id,
         });
 
         if (foundUserCommentLike) {
-          const [deleteUserCommentLike]: usercommenttype[] = await db(
+          const [deleteUserCommentLike]: rawusercommenttype[] = await db(
             "user_comment_relation"
           )
             .where("id", foundUserCommentLike.id)
@@ -42,7 +37,7 @@ export const usercommentMutations = {
           return deleteUserCommentLike;
         }
 
-        const [createUserCommentLike]: usercommenttype[] = await db(
+        const [createUserCommentLike]: rawusercommenttype[] = await db(
           "user_comment_relation"
         )
           .insert(data)
@@ -55,12 +50,12 @@ export const usercommentMutations = {
     },
     removeUserCommentLike: async (
       _: undefined,
-      { data }: { data: usercommenttype }
-    ): Promise<rusercommenttype> => {
+      { data }: { data: rawusercommenttype }
+    ): Promise<IDSTYPE> => {
       try {
         const foundUserCommentLike: usercommenttype = await findOne<
           usercommenttype,
-          { user_id: number; comment_id: number }
+          { user_id: string; comment_id: string }
         >("user_comment_relation", {
           user_id: data.user_id,
           comment_id: data.comment_id,
@@ -69,7 +64,7 @@ export const usercommentMutations = {
         if (!foundUserCommentLike)
           throw new Error("User didn't liked this comment yet.");
 
-        const [deleteUserCommentLike]: rusercommenttype[] = await db(
+        const [deleteUserCommentLike]: IDSTYPE[] = await db(
           "user_comment_relation"
         )
           .where("id", foundUserCommentLike.id)

@@ -5,12 +5,12 @@ import Login from './Login';
 import Signup from './Signup';
 import Magiclogin from './Magiclogin';
 import Otherlogins from './Otherlogins';
-import Forgotusername from './Forgotusername';
 import Forgotpassword from './Forgotpassword';
 
 //css, types & images
 import "./loginbox.css";
-import { activelogintype, loginboxpropstype, loginforgetdatatype, loginuserdatatype } from './types';
+import { activeloginleveltype, loginboxpropstype } from './types';
+import { ERRORTYPE, VOIDFUNC } from '../../utils/main/types';
 const logo: string = require("../../img/logo.png");
 
 function Loginbox(loginboxprops: loginboxpropstype) {
@@ -18,55 +18,25 @@ function Loginbox(loginboxprops: loginboxpropstype) {
   const active: string = showLogin ? "block" : "none";
 
   //states
-  const [error, setError] = useState<string>("");
-  const [activeLogin, setActiveLogin] = useState<activelogintype>("login");
-  const [forgetLevel, setForgetLevel] = useState<number>(0); // level 0: default, 1: username, 2: password
-  const [magicLoginLevel, setMagicLoginLevel] = useState<number>(0); //magic levels 0: default, 1: mail sent
-  const [forgotData, setForgotData] = useState<loginforgetdatatype>({
-    forgotemail: "",
-    forgotusername: "",
-    forgotpassword: ""
-  });
-  const [userData, setUserData] = useState<loginuserdatatype>({
-    email: "",
-    username: "",
-    password: "",
-    consent: false,
-    confirm_password: "",
-  });
+  //0: login, 1: signup, 3: forget password, 4: forget mail sent, 6: magic link, 7: magic link mail sent
+  const [activeLoginLevel, setActiveLoginLevel] = useState<activeloginleveltype>(0);
+  const [error, setError] = useState<ERRORTYPE>({ status: 0, message: "", show: false });
 
   //handlers
-  const handleLoginDefault: () => void = () => {
-    setError("");
-    setForgetLevel(0);
-    setActiveLogin("login");
-    setMagicLoginLevel(0);
-    setUserData({ username: "", password: "", email: "", consent: false, confirm_password: "" });
+  const handleLoginDefault: VOIDFUNC = () => {
+    setActiveLoginLevel(0);
+    setError({ status: 0, message: "", show: false });
   }
 
-  const closeLogin: () => void = () => {
+  const closeLogin: VOIDFUNC = () => {
     handleLoginDefault();
     setShowLogin(false);
   }
 
-  const handleChange: (e: any) => void = (e: any) => {
-    setUserData({
-      ...userData,
-      [e.target.name]: e.target.value
-    });
-  }
-
-  const handleForgetChange: (e: any) => void = (e) => {
-    setForgotData({
-      ...forgotData,
-      [e.target.name]: e.target.value
-    })
-  }
-
   useEffect(() => {
-    if(error.length > 1) {
+    if (error.show) {
       setTimeout(() => {
-        setError("");
+        setError({ status: 0, message: "", show: false });
       }, 3000)
     }
   }, [error])
@@ -78,80 +48,67 @@ function Loginbox(loginboxprops: loginboxpropstype) {
           <i className="material-icons closeicn" onClick={closeLogin}> close </i>
           <div className="logincardlogowrapper">
             <img src={logo} className="logincardlogo" alt={"patch_logo"} onClick={handleLoginDefault} />
-          </div>          
-            <div className={`checkerror ${error.length > 0 ? "showerror": ""} red lighten-2`}>
-              <i className="material-icons checkerroricn">error_outline</i>
-              {error}
-            </div>          
+          </div>
+          <div className={`checkerror ${error?.show ? "showerror" : ""} red lighten-2`}>
+            <i className="material-icons checkerroricn">error_outline</i>
+            {error.message}
+          </div>
           <div className="logincontent">
-            {activeLogin === "magiclogin" ? (
-              <Magiclogin
-                userData={userData}
+            {activeLoginLevel === 0 ? (
+              <Login
                 setError={setError}
-                setUserData={setUserData}
-                handleChange={handleChange}
-                magicLoginLevel={magicLoginLevel}
-                setMagicLoginLevel={setMagicLoginLevel}
+                closeLogin={closeLogin}
+                setActiveLoginLevel={setActiveLoginLevel}
               />
-            ) : activeLogin === "login" ? (
-              forgetLevel === 0 ? (
-                <Login
-                  userData={userData}
-                  setError={setError}
-                  closeLogin={closeLogin}
-                  handleChange={handleChange}
-                  setForgetLevel={setForgetLevel}
-                />
-              ) : forgetLevel === 1 ? (
-                <Forgotusername
-                  forgotData={forgotData}
-                  handleForgetChange={handleForgetChange}
-                />
-              ) : forgetLevel === 2 && (
-                <Forgotpassword
-                  forgotData={forgotData}
-                  handleForgetChange={handleForgetChange}
-                />
-              )
-            ) : activeLogin === "signup" && (
+            ) : activeLoginLevel === 1 ? (
               <Signup
                 error={error}
-                userData={userData}
                 setError={setError}
-                setUserData={setUserData}
-                handleChange={handleChange}
                 closeLogin={closeLogin}
+              />
+            ) : (activeLoginLevel === 3 || activeLoginLevel === 4) ? (
+              <Forgotpassword
+                setError={setError}
+                activeLoginLevel={activeLoginLevel}
+                setActiveLoginLevel={setActiveLoginLevel}
+              />
+            ) : (
+              <Magiclogin
+                setError={setError}
+                activeLoginLevel={activeLoginLevel}
+                setActiveLoginLevel={setActiveLoginLevel}
               />
             )}
           </div>
-          {magicLoginLevel !== 1 && (
+          {activeLoginLevel !== 4 && activeLoginLevel !== 7 && (
             <>
               <div className="fliploginbox">
-                {activeLogin !== "login" ? "Already on Patch!!" : "New to Patch?"}
+                {activeLoginLevel !== 0 ? "Already on Patch!!" : "New to Patch?"}
                 <span
                   className="fliploginboxbtn"
-                  onClick={() => activeLogin !== "login" ? handleLoginDefault() : setActiveLogin("signup")}
+                  onClick={() => activeLoginLevel !== 0 ? handleLoginDefault() : setActiveLoginLevel(1)}
                 >
-                  {activeLogin !== "login" ? "Continue" : "Start here"}
+                  {activeLoginLevel !== 0 ? "Continue" : "Start here"}
                 </span>
               </div>
               <div className="ortxt">
                 Or
               </div>
               <Otherlogins
-                activeLogin={activeLogin}
+                closeLogin={closeLogin}
                 setError={setError}
-                setActiveLogin={setActiveLogin}
+                activeLoginLevel={activeLoginLevel}
+                setActiveLoginLevel={setActiveLoginLevel}
               />
             </>
           )}
-          {activeLogin === "login" && (
+          {activeLoginLevel === 0 && (
             <div className="tc">
               You have already agreed to Patch!! terms & conditions.
             </div>
           )}
         </div>
-      </div>      
+      </div>
     </div>
   )
 }

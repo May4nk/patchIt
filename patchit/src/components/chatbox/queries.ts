@@ -1,22 +1,13 @@
 import { gql } from "@apollo/client";
+import { CORE_USER_FIELDS } from "../../containers/queries/user";
 
 const CORE_ROOM_FIELDS = gql`
   fragment CoreRoomFields on Chatroom {
     id
-    room_code
     roomName
     owner {
       id
     }
-  }
-`;
-
-const CORE_USER_FIELDS = gql`
-  fragment CoreUserFields on User {
-    id
-    status
-    username
-    profile_pic
   }
 `;
 
@@ -25,7 +16,7 @@ export const GETALLMSGS = gql`
   query ListMessages($filter: MessagesfilterInput) {
     listMessages(filter: $filter) {
       id
-      message
+      text
       media
       created_at
       room_id {
@@ -40,20 +31,18 @@ export const GETALLMSGS = gql`
   ${CORE_USER_FIELDS}
 `;
 
+export const CHECKROOMEXISTS = gql`
+  mutation CheckRoomExists($data: CheckRoomExists) {
+    checkRoomExists(data: $data)
+  }
+`;
+
 export const GETCHATROOM = gql`
   query Chatroom($chatroomId: String!) {
     chatroom(chatroomId: $chatroomId) {
-      id
-      roomName
-      room_code
+      ...CoreRoomFields
       roomUsers {
-        id
-        username
-        profile_pic
-        status
-      }
-      owner {
-        id
+        ...CoreUserFields
       }
       chatPreferences {
         about
@@ -76,6 +65,8 @@ export const GETCHATROOM = gql`
       }
     }
   }
+  ${CORE_ROOM_FIELDS}
+  ${CORE_USER_FIELDS}
 `;
 
 export const GETUSERCHATROOMS = gql`
@@ -96,7 +87,7 @@ export const GETUSERCHATROOMS = gql`
         ...CoreUserFields
       }
       lastMessage {
-        message
+        text
       }
     }
   }
@@ -107,17 +98,16 @@ export const GETUSERCHATROOMS = gql`
 export const GETALLUSERS = gql`
   query ListUsers($filter: UsersfilterInput) {
     listUsers(filter: $filter) {
-      id
-      username
-      profile_pic
+      ...CoreUserFields
     }
   }
+  ${CORE_USER_FIELDS}
 `;
 
 //mutations
 export const CREATECHATROOM = gql`
-  mutation InsertChatroom($data: InsertChatroomInput) {
-    insertChatroom(data: $data) {
+  mutation UpsertChatroom($data: InsertChatroomInput) {
+    upsertChatroom(data: $data) {
       ...CoreRoomFields
     }
   }
@@ -138,7 +128,7 @@ export const INSERTUSERCHATROOM = gql`
         ...CoreUserFields
       }
       lastMessage {
-        message
+        text
       }
     }
   }
@@ -182,7 +172,7 @@ export const GETALLCHATER = gql`
 `;
 
 export const SUBSCRIBETOUSERCHATROOMS = gql`
-  subscription UserChatroom($userId: Int!) {
+  subscription UserChatroom($userId: String!) {
     newUserChatroom(userId: $userId) {
       id
       room_id {
@@ -195,7 +185,7 @@ export const SUBSCRIBETOUSERCHATROOMS = gql`
         ...CoreUserFields
       }
       lastMessage {
-        message
+        text
       }
     }
   }
@@ -207,7 +197,7 @@ export const SUBSCRIBETONEWMSG = gql`
   subscription NewMessage {
     newMessage {
       id
-      message
+      text
       media
       created_at
       room_id {

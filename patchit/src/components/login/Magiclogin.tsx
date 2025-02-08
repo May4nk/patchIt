@@ -1,48 +1,58 @@
 import React, { useState } from 'react';
-import useLoginvia from '../../utils/loginvia';
+
+//utils
+import useLoginvia from '../../utils/helpers/loginvia';
 
 //components
+import Patbtn from '../html/Patbtn';
 import Askinput from '../html/Askinput';
 
 //css, types & images
 import "./loginbox.css";
 import { magicloginpropstype } from './types';
+import { ASYNCVOIDFUNC } from '../../utils/main/types';
 const postman_panda = require("../../img/postman_panda.png");
 const magiclogo: string = require("../../img/meteor_rain_white.png");
 
 function Magiclogin(magicloginprops: magicloginpropstype) {
-  const { userData, handleChange, magicLoginLevel, setMagicLoginLevel, setError, setUserData } = magicloginprops;
+  const { activeLoginLevel, setActiveLoginLevel, setError } = magicloginprops;
   const magiclogin = useLoginvia("magiclinkLogin");
 
   //states
   const [clicked, setClicked] = useState(false);
+  const [magicLinkUserEmail, setMagicLinkUserEmail] = useState<string>("");
 
   //handlers
-  const handleMagiclogin = async (e: React.FormEvent) => {
+  const handleMagiclogin: ASYNCVOIDFUNC = async (e: React.FormEvent) => {
     e.preventDefault();
+    setClicked(true);
+
+    if (magicLinkUserEmail.length < 1) {
+      setError({ status: 500, show: true, message: "Email is required!!!" });
+      return;
+    } else {
+      setError({ status: 0, show: false, message: "" });
+    }
+
     try {
-      setClicked(true);
-      await magiclogin(userData.email)
+      await magiclogin(magicLinkUserEmail)
         .then(() => {
-          setError("");
+          setError({ status: 0, show: false, message: "" });
           setClicked(false);
-          setMagicLoginLevel(1);
+          setActiveLoginLevel(7);
         }).catch((err) => {
           setClicked(false);
-          setError(err.message);
-          setUserData({ username: "", password: "", email: "", consent: false, confirm_password: "" });
+          setError({ status: 500, show: true, message: "Magic login failed: Check your mail again" });
         });
-
     } catch (err) {
-      if(err instanceof Error) {
-        setError(err.message);
-      }
+      setError({ status: 500, show: true, message: "Magic login failed: Check your mail again" });
+      setClicked(false);
     }
   }
 
   return (
     <>
-      {magicLoginLevel === 0 ? (
+      {activeLoginLevel === 6 ? (
         <form className="magicloginform">
           <div className="magiclinkformhead">
             Tired of passwords?
@@ -58,28 +68,25 @@ function Magiclogin(magicloginprops: magicloginpropstype) {
           <div className="loginforminp">
             <Askinput
               name={"email"}
-              onChange={handleChange}
+              required={true}
               placeholder={"Email"}
-              value={userData.email}
+              value={magicLinkUserEmail}
+              onChange={(e) => setMagicLinkUserEmail(e.target.value)}
             />
           </div>
-          <button
-            type="submit"
-            id="modalloginbtn"
-            onClick={(e) => handleMagiclogin(e)}
-            className="btn waves-effect waves-light"
-            disabled={(userData?.email!.length === 0 || clicked) ? true : false}
-          >
-            {(!clicked && userData?.email!.length !== 0) && (
-              <img src={magiclogo} className="magiclinkbtnimg" alt={"magiclink_logo"} />
-            )}
-            {!clicked ? "Login" : "sending"}
-            {clicked && (
-              <i className="material-icons magiclinkbtnicn"> email </i>
-            )}
-          </button>
+          <div className="loginbtnwrapper">
+            <Patbtn
+              type={"submit"}
+              state={"active"}
+              lasticn={clicked ? "email" : ""}
+              text={!clicked ? "Login" : "sending"}
+              disabled={(magicLinkUserEmail!.length === 0 || clicked)}
+              handleClick={(e) => handleMagiclogin(e)}
+              img={(!clicked && magicLinkUserEmail!.length !== 0) ? magiclogo : ""}
+            />
+          </div>
         </form>
-      ) : magicLoginLevel === 1 && (
+      ) : activeLoginLevel === 7 && (
         <div className="magiclinksent">
           <img src={postman_panda} className="magiclinksentimg" alt="magiclinkimg" />
           <div className="magiclinksenthead">
@@ -90,7 +97,7 @@ function Magiclogin(magicloginprops: magicloginpropstype) {
               We mailed a magic link to
             </div>
             <div className="magiclinksentmail">
-              {userData.email}
+              {magicLinkUserEmail}
             </div>
             <div className="magiclinksentinfo">
               Click on sent link to log in or sign up instantly.

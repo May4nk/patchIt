@@ -1,6 +1,6 @@
 export const communitypreferencesTypeDefs = `
   type CommunityPreferences {
-    id: Int
+    id: String
     community_name: Community!
     nsfw: Boolean
     allowppltofollow: Boolean
@@ -39,6 +39,6 @@ export const communitypreferencesTypeDefs = `
   }
 
   input RemoveCommunityPreferencesInput {
-    community_name: Int!
+    community_name: String!
   }
 `;

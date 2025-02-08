@@ -10,7 +10,7 @@ const Searchdrop = (searchdropprops: searchdropprops) => {
 
   return (
     <Link
-      to={`c/${community?.communityname}`}
+      to={`c/${community?.name}`}
       className="communitysearchresult waves-effect waves-light"
     >
       <i className="material-icons grey-text text-darken-3 communitysearchicn">
@@ -18,7 +18,7 @@ const Searchdrop = (searchdropprops: searchdropprops) => {
       </i>
       <div className="searchedcommunityabout">
         <div className="searchedcomunityname">
-          {community?.communityname}
+          {community?.name}
         </div>
         {community.about && (
           <div className="searchedcommunitymembers">

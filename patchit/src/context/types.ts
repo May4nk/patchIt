@@ -1,3 +1,5 @@
+import { ALLOWTOMSG, IDSTYPE, USER_S_N_TYPE } from "../utils/main/types";
+
 // loggedusercontext type -------------------------------
 type userpreferencetype = {
   nsfw?: boolean;
@@ -14,21 +16,19 @@ type userpreferencetype = {
   communityfollowed?: boolean;
   birthday?: boolean;
   announcements?: boolean;
-  sendmsg?: string;
+  sendmsg?: ALLOWTOMSG;
   searchshowprofile?: boolean;
   auth_twofactor?: boolean;
-  blocked?: string | null;
+  blocked?: USER_S_N_TYPE;
 };
 
 export type usertype = {
-  new_user?: boolean;
-  profile_pic?: string;
+  profile_pic: USER_S_N_TYPE;
   settings: userpreferencetype;
 };
 
 export interface userstate extends userpreferencetype {
-  new_user?: boolean;
-  profile_pic?: string;
+  profile_pic?: USER_S_N_TYPE;
 }
 
 export interface loggedusercontexttype {
@@ -36,17 +36,12 @@ export interface loggedusercontexttype {
   updateLoggedUser: (userstate: userstate) => void;
 }
 
-export interface usercontextdatatype {
-  data: { listUsers: usertype[] };
-}
-
 // authcontext type -----------------------------------
 export interface initialstatetype {
   user: null | user | loginusertype;
 }
 
-export interface user {
-  id: number;
+export interface user extends IDSTYPE {
   username: string;
   email: string;
   role: number;
@@ -54,8 +49,7 @@ export interface user {
   exp: number;
 }
 
-export interface loginusertype {
-  id: number;
+export interface loginusertype extends IDSTYPE {
   email: string;
   username: string;
   role: number;

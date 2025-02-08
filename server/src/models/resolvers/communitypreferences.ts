@@ -1,9 +1,9 @@
-import { listAll, findOne } from "../../utils/queriesutils.js";
+import { listAll, findOne } from "../../utils/common/queriesutils.js";
 
 //types
 import { usertype } from "./types/usertypes.js";
-import { filtersorttype } from "../../utils/types.js";
 import { communitytype } from "./types/communitiestypes.js";
+import { filtersorttype, loggedusertype } from "../../utils/common/types.js";
 import {
   communitypreferencetype,
   communitypreferencefiltertype,
@@ -15,7 +15,7 @@ export const communitypreferenceResolvers = {
     listCommunityPreferences: async (
       _: undefined,
       filter: filtersorttype<communitypreferencefiltertype>,
-      { user }: { user: usertype }
+      { user }: { user: loggedusertype }
     ): Promise<communitypreferenceresolvertype[]> => {
       if (!user) throw new Error("user not authenticated");
 
@@ -34,7 +34,7 @@ export const communitypreferenceResolvers = {
     communitypreference: async (
       _: undefined,
       { communityName }: { communityName: string },
-      { user }: { user: usertype }
+      { user }: { user: loggedusertype }
     ): Promise<communitypreferencetype> => {
       if (!user) throw new Error("user not authenticated");
 
@@ -51,7 +51,7 @@ export const communitypreferenceResolvers = {
           );
         }
 
-        const owners: number[] = JSON.parse(communitypreferenceByName.handlers);
+        const owners: string[] = JSON.parse(communitypreferenceByName.handlers);
 
         const isUserOwner = owners.includes(user.id);
 
@@ -66,25 +66,33 @@ export const communitypreferenceResolvers = {
     },
   },
   CommunityPreferences: {
-    community_name: async ({ community_name }: { community_name: string }): Promise<communitytype> => {
+    community_name: async ({
+      community_name,
+    }: {
+      community_name: string;
+    }): Promise<communitytype> => {
       try {
         const communityByName: communitytype = await findOne<
           communitytype,
-          { communityname: string }
-        >("communities", { communityname: community_name });
+          { name: string }
+        >("communities", { name: community_name });
 
         return communityByName;
       } catch (err) {
         throw err;
       }
     },
-    handlers: async ({ handlers }: { handlers: string }): Promise<usertype[]> => {
+    handlers: async ({
+      handlers,
+    }: {
+      handlers: string;
+    }): Promise<usertype[]> => {
       try {
-        const owners: number[] = JSON.parse(handlers);
+        const owners: string[] = JSON.parse(handlers);
 
         const communityHandlers: usertype[] = await listAll<
           usertype,
-          { id: number[] }
+          { id: string[] }
         >("users", { filter: { id: owners } });
 
         return communityHandlers;

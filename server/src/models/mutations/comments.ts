@@ -1,30 +1,26 @@
 import db from "../../db.js";
-import { findOne } from "../../utils/queriesutils.js";
+import { findOne } from "../../utils/common/queriesutils.js";
+import { IDSTYPE } from "../../utils/common/types.js";
 
 //types
 import { commenttype } from "../resolvers/types/commenttypes.js";
 import { usertype } from "../resolvers/types/usertypes.js";
-import {
-  commentdatatype,
-  remcommentdatatype,
-  rcommenttype,
-} from "./types/commentmutetypes.js";
 
 export const commentMutations = {
   Mutation: {
     upsertComment: async (
       _: undefined,
-      { data }: commentdatatype,
+      { data }: { data: commenttype },
       { user, pubsub }: { user: usertype; pubsub: any }
     ): Promise<commenttype> => {
       try {
         if (!user) throw new Error("user not authenticated");
-        const commentID: number = data.id;
+        const commentID: string = data.id;
 
         if (commentID) {
           const foundComment: commenttype = await findOne<
             commenttype,
-            { id: number }
+            { id: string }
           >("comments", { id: commentID });
 
           if (!foundComment) throw new Error(`Comment not found...`);
@@ -53,17 +49,17 @@ export const commentMutations = {
     },
     removeComment: async (
       _: undefined,
-      { data }: remcommentdatatype
-    ): Promise<rcommenttype> => {
+      { data }: { data: IDSTYPE }
+    ): Promise<IDSTYPE> => {
       try {
         const foundComment: commenttype = await findOne<
           commenttype,
-          { id: number }
+          { id: string }
         >("comments", { id: data.id });
 
         if (!foundComment) throw new Error("Comment not found...");
 
-        const [deleteComment]: rcommenttype[] = await db("comments")
+        const [deleteComment]: IDSTYPE[] = await db("comments")
           .where("id", foundComment.id)
           .del()
           .returning("id");

@@ -3,11 +3,7 @@ import React from 'react';
 import Settingtab from '../../components/settings/Settingtab';
 //css & types
 import "./profilesettings.css";
-import { notificationsstatetype } from './types';
-interface notificationprops {
-  notificationsState: notificationsstatetype;
-  handleChange: (e: any, statename: string) => void;
-}
+import { notificationprops } from './types';
 
 function Notificationtab(notificationprops: notificationprops) {
   const { handleChange, notificationsState } = notificationprops;

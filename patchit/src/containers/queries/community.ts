@@ -1,44 +1,33 @@
 import { gql } from "@apollo/client";
+import { USER_ID_USERNAME } from "./user";
+import { CORE_POST_FIELDS } from "../../utils/main/fragments";
 
-const COMMUNITY_POST_FIELDS = gql`
-  fragment communityPostFields on Post {
+export const COMMUNITY_BASIC_FIELDS = gql`
+  fragment communityBasicFields on Community {
     id
-    title
-    type
-    owner {
-      id
-      username
-      status
-      profile_pic
-    }
-    content
-    created_at
-    likes
-    status
-    comments {
-      id
-    }
+    name
+    profile_pic
   }
 `;
 
 const COMMUNITY_FIELDS = gql`
   fragment communityFields on Community {
-    id
+    ...communityBasicFields
+    display_name
     description
     about
-    communityname
     background_pic
     created_at
     privacy
-    profile_pic
     theme
     status
     social_links
     owner {
-      id
-      username
+      ...userIdNameFields
     }
   }
+  ${COMMUNITY_BASIC_FIELDS}
+  ${USER_ID_USERNAME}
 `;
 
 export const GETCOMMUNITY = gql`
@@ -46,7 +35,7 @@ export const GETCOMMUNITY = gql`
     community(communityname: $communityname) {
       ...communityFields
       posts {
-        ...communityPostFields
+        ...CorePostFields
       }
       users {
         id
@@ -60,6 +49,6 @@ export const GETCOMMUNITY = gql`
       }
     }
   }
-  ${COMMUNITY_POST_FIELDS},
+  ${CORE_POST_FIELDS}
   ${COMMUNITY_FIELDS}
 `;

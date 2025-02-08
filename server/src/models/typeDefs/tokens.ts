@@ -1,24 +1,32 @@
 export const tokenTypeDefs = `
+  enum STATUS {
+    ACTIVE
+    DELETED
+  }
+    
   type Token {
-    id: Int
+    id: String
     user_id: User
     token: String
+    status: STATUS
     created_at: String
   }
 
   input InsertTokenInput {
-    user_id: Int!
+    user_id: String!
     token: String!
+    status: STATUS
   }
 
   input TokenfilterInput {
-    id: Int
-    user_id: Int
+    id: String
+    user_id: String
     token: String
-    created_at: Int
+    status: STATUS
+    created_at: String
   } 
 
   input RemoveTokenInput {
-    id: Int!
+    id: String!
   }
 `;

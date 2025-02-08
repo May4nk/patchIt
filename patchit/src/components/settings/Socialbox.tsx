@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
 //components
+import Patbtn from '../html/Patbtn';
 import Socialchips from './Socialchips';
 import Askinput from '../html/Askinput';
 
@@ -96,19 +97,17 @@ function Socialbox(socialBoxProps: socialboxpropstype) {
           </div>
         )}
       </div>
-      <div className="socialboxfooter">
-        <div
-          onClick={handleDefault}
-          className="waves-effect waves-light black-text red lighten-2 socialactionbtn"
-        >
-          cancel
-        </div>
-        <div
-          onClick={() => { handleUpdate(); handleDefault(); }}
-          className="waves-effect waves-light black-text blue lighten-3 socialactionbtn"
-        >
-          update
-        </div>
+      <div className="textboxfooter">
+        <Patbtn
+          text={"cancel"}
+          state="clear"
+          handleClick={handleDefault}
+        />
+        <Patbtn
+          text={"update"}
+          state="selected"
+          handleClick={() => { handleUpdate(); handleDefault(); }}
+        />
       </div>
     </div>
   )

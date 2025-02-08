@@ -112,7 +112,7 @@
 .notifiesmessage {
   color: #5c6569;
   font-weight: 410;
-  font-size: 0.9vw;
+  font-size: 0.8vw;
 }
 
 .notifiesactions {
@@ -120,22 +120,16 @@
   justify-content: center;
   align-items: center;
   margin-top: 0.5rem;
+  margin-left: auto;
 }
 
-.notificationactionbtn {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 0.1rem 0.7rem;
-  font-size: 0.9vw;
-  font-weight: 500;
-  margin-left: 0.7rem;
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  border-radius: 1.5rem;
+.notifiesactions .patselectedbtn,
+.notifiesactions .patclearbtn {
+  margin: 0 0.2vw;
 }
 
 .notificationdropmessage {
   font-weight: 430;
-  font-size: 0.9rem;
+  font-size: 0.8vw;
   color: rgba(255, 255, 255, 0.4);
 }

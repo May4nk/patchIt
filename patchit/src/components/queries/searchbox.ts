@@ -4,7 +4,7 @@ export const COMMUNITIESNAME = gql`
   query ListCommunities($filter: CommunitiesfilterInput) {
     listCommunities(filter: $filter) {
       id
-      communityname
+      name
       about
     }
   }

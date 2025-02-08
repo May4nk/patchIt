@@ -1,7 +1,7 @@
-import { listAll, findOne } from "../../utils/queriesutils.js";
+import { listAll, findOne } from "../../utils/common/queriesutils.js";
 
 //types
-import { filtersorttype } from "../../utils/types.js";
+import { filtersorttype } from "../../utils/common/types.js";
 import { tagtype, tagfiltertype } from "./types/tagtypes.js";
 
 export const tagResolvers = {
@@ -21,9 +21,9 @@ export const tagResolvers = {
         throw err;
       }
     },
-    tag: async (_: undefined, { id }: { id: number }): Promise<tagtype> => {
+    tag: async (_: undefined, { id }: { id: string }): Promise<tagtype> => {
       try {
-        const tagById: tagtype = await findOne<tagtype, { id: number }>(
+        const tagById: tagtype = await findOne<tagtype, { id: string }>(
           "tags",
           { id: id }
         );

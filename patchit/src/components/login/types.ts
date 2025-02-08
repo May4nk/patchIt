@@ -1,57 +1,48 @@
+import { ERRORTYPE, VOIDFUNC } from "../../utils/main/types";
+
 export interface loginboxpropstype {
   showLogin: boolean;
   setShowLogin: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export interface userlogintype {
-  username: string;
-  password: string;
-}
-
-export type activelogintype = "login" | "magiclogin" | "signup";
-
-export interface loginuserdatatype {
-  email: string;
-  password: string;
-  username: string;
-  consent: boolean;
-  confirm_password: string;
-}
-
-export interface loginforgetdatatype {
-  forgotemail: string;
-  forgotpassword: string;
-  forgotusername: string;
-}
+//0: login, 1: signup, 3: forget password, 4: forget mail sent, 6: magic link, 7: magic link mail sent
+export type activeloginleveltype = 0 | 1 | 3 | 4 | 6 | 7;
 
 export interface signuppropstype {
-  error: string;
-  userData: loginuserdatatype;
-  closeLogin: () => void;
-  handleChange: (e: any) => void;
-  setError: React.Dispatch<React.SetStateAction<string>>;
-  setUserData: React.Dispatch<React.SetStateAction<loginuserdatatype>>;
+  error: ERRORTYPE;
+  closeLogin: VOIDFUNC;
+  setError: React.Dispatch<React.SetStateAction<ERRORTYPE>>;
 }
 
 export interface loginpropstype {
-  closeLogin: () => void;
-  userData: loginuserdatatype;
-  handleChange: (e: any) => void;
-  setError: React.Dispatch<React.SetStateAction<string>>;
-  setForgetLevel: React.Dispatch<React.SetStateAction<number>>;
+  closeLogin: VOIDFUNC;
+  setError: React.Dispatch<React.SetStateAction<ERRORTYPE>>;
+  setActiveLoginLevel: React.Dispatch<
+    React.SetStateAction<activeloginleveltype>
+  >;
 }
 
 export interface otherloginpropstype {
-  activeLogin: string;
-  setError: React.Dispatch<React.SetStateAction<string>>;
-  setActiveLogin: React.Dispatch<React.SetStateAction<activelogintype>>;
+  closeLogin: VOIDFUNC;
+  activeLoginLevel: activeloginleveltype;
+  setError: React.Dispatch<React.SetStateAction<ERRORTYPE>>;
+  setActiveLoginLevel: React.Dispatch<
+    React.SetStateAction<activeloginleveltype>
+  >;
+}
+
+export interface forgotpasswordpropstype {
+  activeLoginLevel: activeloginleveltype;
+  setError: React.Dispatch<React.SetStateAction<ERRORTYPE>>;
+  setActiveLoginLevel: React.Dispatch<
+    React.SetStateAction<activeloginleveltype>
+  >;
 }
 
 export interface magicloginpropstype {
-  userData: loginuserdatatype;
-  handleChange: (e: any) => void;
-  magicLoginLevel: number;
-  setMagicLoginLevel: React.Dispatch<React.SetStateAction<number>>;
-  setError: React.Dispatch<React.SetStateAction<string>>;
-  setUserData: React.Dispatch<React.SetStateAction<loginuserdatatype>>;
+  activeLoginLevel: activeloginleveltype;
+  setActiveLoginLevel: React.Dispatch<
+    React.SetStateAction<activeloginleveltype>
+  >;
+  setError: React.Dispatch<React.SetStateAction<ERRORTYPE>>;
 }

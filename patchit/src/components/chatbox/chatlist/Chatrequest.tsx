@@ -1,51 +1,100 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useMutation } from '@apollo/client';
 
 //utils
-import { defaultUPic } from '../../../utils/helpers';
+import { defaultUPic } from '../../../utils/helpers/helpers';
+
+//components
+import Patbtn from '../../html/Patbtn';
 
 //queries
 import { UPDATENOTIFICATION } from '../../navbar/queries';
 
 //types
+import "../css/chatlist.css";
 import { chatgroupusertype, chatrequestpropstype } from '../types';
 
 function Chatrequest(chatrequestprops: chatrequestpropstype) {
-  const { notification, handleCreateChatroom, setChatgroupUsers, setUsernameSearch } = chatrequestprops;
+  const { notification, handleCreateChatroom, handleChatBoxState } = chatrequestprops;
 
   //queries
   const [upsertNotification] = useMutation(UPDATENOTIFICATION);
 
-  //handlers
-  const handleChatReq: (res: boolean) => void = async (res: boolean) => {
-    try {
-      if (res) {
-        await handleCreateChatroom();
-      }
+  //states
+  const [userInRoom, setUserInRoom] = useState<boolean>(false);
 
+  //handlers
+  const updateNotificationRes: (accept: boolean) => Promise<void> = async (accept: boolean) => {
+    try {
       await upsertNotification({
         variables: {
           data: {
             id: notification.id,
-            status: res ? "ACCEPT" : "REJECT"
+            status: accept ? "ACCEPT" : "REJECT"
           }
         }
       })
     } catch (err) {
-      console.log(err);
+      handleChatBoxState({
+        type: "SET_ERROR",
+        error: {
+          show: true,
+          status: 500,
+          message: "Try again: Something went wrong"
+        }
+      });
     }
+  }
 
-    setChatgroupUsers([]);
-    setUsernameSearch("");
+  const handleChatReq: (accept: boolean) => Promise<void> = async (accept: boolean) => {
+    try {
+      if (accept) {
+        const requestedUser: chatgroupusertype = notification.fromuser;
+        handleChatBoxState({ type: "ADD_ROOM_USER", user: requestedUser });
+
+        setUserInRoom(true);
+      } else {
+        await updateNotificationRes(false);
+        handleChatBoxState({ type: "RESET_ROOM_USERS" });
+      }
+    } catch (err) {
+      handleChatBoxState({
+        type: "SET_ERROR",
+        error: {
+          show: true,
+          status: 500,
+          message: "Try again: Something went wrong"
+        }
+      });
+
+      handleChatBoxState({ type: "SOFT_RESET" });
+      return;
+    }
   }
 
   useEffect(() => {
-    if (notification) {
-      const requestedUser: chatgroupusertype = notification.fromuser;
-      setChatgroupUsers([requestedUser]);
-      setUsernameSearch(requestedUser.username);
+    if (userInRoom) {
+      const createChatroom = async () => {
+        const chatroomCreated = await handleCreateChatroom();
+        if (chatroomCreated.status !== 200) {
+          handleChatBoxState({
+            type: "SET_ERROR",
+            error: {
+              show: true,
+              status: 500,
+              message: "Try again: Something went wrong"
+            }
+          });
+          return;
+        }
+
+        await updateNotificationRes(true);
+        setUserInRoom(false);
+      };
+
+      createChatroom();
     }
-  }, [notification]);
+  }, [userInRoom])
 
   return (
     <div className="newchatrequest">
@@ -53,9 +102,9 @@ function Chatrequest(chatrequestprops: chatrequestpropstype) {
         <div className="newchatrequestuserpicwrapper">
           <img
             alt="user_dp"
+            onError={defaultUPic}
             className="newchatrequestuserpic"
             src={notification.fromuser.profile_pic}
-            onError={defaultUPic}
           />
         </div>
         <div className="newchatrequestuser">
@@ -68,18 +117,18 @@ function Chatrequest(chatrequestprops: chatrequestpropstype) {
         </div>
       </div>
       <div className="newchatrequestactions">
-        <div
-          onClick={() => handleChatReq(true)}
-          className="newroombtn waves-effect waves-light blue-text"
-        >
-          accept
-        </div>
-        <div
-          onClick={() => handleChatReq(false)}
-          className="newroombtn waves-effect waves-light red-text"
-        >
-          reject
-        </div>
+        <Patbtn
+          text={"accept"}
+          size={"small"}
+          state={"selected"}
+          handleClick={() => handleChatReq(true)}
+        />
+        <Patbtn
+          text={"reject"}
+          size={"small"}
+          state={"clear"}
+          handleClick={() => handleChatReq(false)}
+        />
       </div>
     </div>
   )

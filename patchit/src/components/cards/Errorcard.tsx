@@ -38,14 +38,14 @@ const Errorcard = (errorcardprops: errorcardpropstype) => {
         <div className={`errorcardheader`}>
           <i className="material-icons erroricn">
             {message.status === 0
-              ? icn || "announcement"
+              ? icn || "info_outline"
               : message.status === 200
                 ? icn || "insert_emoticon"
                 : icn || "error_outline"
             }
           </i>
           {message.status === 0
-            ? "Patching...?"
+            ? "Patching..."
             : message.status === 200
               ? title || "Patched!!"
               : title || "Try again"

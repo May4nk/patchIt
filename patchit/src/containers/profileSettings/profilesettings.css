@@ -1,4 +1,4 @@
-.switch label input[type="checkbox"]:checked+.lever::after {
+.switch label input[type="checkbox"]:checked + .lever::after {
   background-color: #1b3c58;
 }
 
@@ -40,7 +40,15 @@
   border-bottom: 0.1rem solid rgba(255, 255, 255, 0.1);
 }
 
-.usettingitembtn,
+.picchangebtn {
+  border-radius: 0.9vw;
+  background: black;
+  color: var(--main-color);
+  font-size: 0.85vw;
+  font-weight: 500;
+  padding: 0.3vw 1vw;
+}
+
 .usettingupdatechangesbtn {
   border-radius: 1.5rem;
   font-size: 0.8vw;

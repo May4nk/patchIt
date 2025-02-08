@@ -56,11 +56,7 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }: { childre
   //handler
   const login: (userData: loginusertype) => void = (userData: loginusertype) => {
     localStorage.setItem("token", userData.token);
-
-    dispatch({
-      type: "LOGIN",
-      payload: userData
-    })
+    dispatch({ type: "LOGIN", payload: userData });
   };
 
   const logout: () => Promise<void> = async () => {
@@ -74,9 +70,7 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }: { childre
         }
       });
 
-      dispatch({
-        type: "LOGOUT"
-      });
+      dispatch({ type: "LOGOUT" });
     } catch (err) {
       console.log(err);
     }
@@ -89,10 +83,7 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }: { childre
           if (refreshToken) {
             localStorage.setItem("token", refreshToken.token);
 
-            dispatch({
-              type: "LOGIN",
-              payload: refreshToken,
-            });
+            dispatch({ type: "LOGIN", payload: refreshToken, });
           }
         }
       })

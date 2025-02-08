@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../utils/hooks/useAuth";
 
 //component
+import Patbtn from "../html/Patbtn";
 import Askinput from "../html/Askinput";
 import Patradio from "../html/Patradio";
 import Patdrop from "../html/patdrop/Patdrop";
@@ -17,30 +18,31 @@ import { UPSERTCOMMUNITYPREFERENCE } from "../../containers/communitySettings/qu
 import "./css/createcommunity.css";
 import { authcontexttype } from "../../context/types";
 import { droppertype, profiletype } from "../html/patdrop/types";
+import { ERRORTYPE, USER_S_N_TYPE, VOIDFUNC } from "../../utils/main/types";
 import {
   categorytype,
   communities,
   createCommunityprops,
   createcommunitydatatype,
-  upsertcommunitytype
 } from "./types";
 
 const CreateCommunity = (createCommunityprops: createCommunityprops) => {
   const { showCreateCommunity, setShowCreateCommunity } = createCommunityprops;
+  const show: string = showCreateCommunity ? "display" : "none";
 
   const navigate = useNavigate();
   const { user }: authcontexttype = useAuth();
-  const show: string = showCreateCommunity ? "display" : "none";
-  const userId: number | null = user && Number(user["id"]);
+  const userId: USER_S_N_TYPE = user && user["id"];
 
-  //states
-  const [checkError, setCheckError] = useState<string>("");
+  //states  
+  const [checkError, setCheckError] = useState<ERRORTYPE>({ status: 0, message: "", show: false });
   const [createCommunityData, setCreateCommunityData] = useState<createcommunitydatatype>({
     about: "",
+    name: "",
     owner: userId!,
     category: null,
+    display_name: "",
     privacy: "PUBLIC",
-    communityname: "",
   });
 
   //mutation
@@ -50,11 +52,11 @@ const CreateCommunity = (createCommunityprops: createCommunityprops) => {
   const [getCategories, { data: categoryData, loading: categoryLoading }] = useLazyQuery(GETCATEGORIES);
 
   //handler
-  const handleChange: (e: any) => void = (e: any) => {
-    setCreateCommunityData({
-      ...createCommunityData,
+  const handleChange: VOIDFUNC = (e: any) => {
+    setCreateCommunityData(prev => ({
+      ...prev,
       [e.target.name]: e.target.value,
-    });
+    }));
   }
 
   const createCommunityProfile: profiletype = {
@@ -75,29 +77,34 @@ const CreateCommunity = (createCommunityprops: createCommunityprops) => {
   ];
 
   const handleFocus: () => void = () => {
-    if (createCommunityData.communityname.length > 3) {
+    if (createCommunityData.name.length > 3) {
       let checkcommunityname = data?.listCommunities?.filter(
         (community: communities) => (
-          community?.communityname === createCommunityData.communityname.toLowerCase().split(" ").join("")
+          community?.name === createCommunityData.name.toLowerCase().split(" ").join("")
         )
       )
 
       if (checkcommunityname?.length >= 1) {
-        setCheckError(`Community with name "${checkcommunityname[0].communityname}" already exist, please choose another name.`)
+        setCheckError({
+          status: 500,
+          show: true,
+          message: `Community already exist with this name, please choose another name.`,
+        })
       } else {
-        setCheckError("");
+        setCheckError({ status: 0, message: "", show: false });
       }
     } else {
-      setCheckError("Community name should be 4-17 letters")
+      setCheckError({ status: 500, message: "Community name should be 4-17 letters", show: true });
     }
   }
 
   const handleDefault: () => void = () => {
     setCreateCommunityData({
+      name: "",
       about: "",
       owner: userId!,
       category: null,
-      communityname: "",
+      display_name: "",
       privacy: "PUBLIC",
     });
   }
@@ -110,7 +117,23 @@ const CreateCommunity = (createCommunityprops: createCommunityprops) => {
   const handleSubmit = async (e: any) => {
     e.preventDefault();
 
-    if (checkError.length > 0) {
+    if (createCommunityData.name.length < 0) {
+      setCheckError({
+        status: 500,
+        show: true,
+        message: "name is required!!!"
+      });
+
+      return;
+    }
+
+    if (createCommunityData.about.length < 0) {
+      setCheckError({
+        status: 500,
+        show: true,
+        message: "about is required!!!"
+      });
+
       return;
     }
 
@@ -119,15 +142,15 @@ const CreateCommunity = (createCommunityprops: createCommunityprops) => {
         variables: {
           data: {
             ...createCommunityData,
-            communityname: createCommunityData?.communityname.toLowerCase().split(" ").join("")
+            name: createCommunityData?.name.toLowerCase().split(" ").join("")
           }
         },
-        onCompleted: async ({ upsertCommunity }: { upsertCommunity: upsertcommunitytype }) => {
+        onCompleted: async ({ upsertCommunity }: { upsertCommunity: communities }) => {
           if (upsertCommunity) {
             await upsertCommunityPreference({
               variables: {
                 data: {
-                  community_name: upsertCommunity.communityname,
+                  community_name: upsertCommunity.name,
                   handlers: JSON.stringify([userId])
                 }
               }
@@ -135,12 +158,12 @@ const CreateCommunity = (createCommunityprops: createCommunityprops) => {
 
             handleDefault();
             setShowCreateCommunity(false);
-            navigate(`c/${upsertCommunity.communityname}`);
+            navigate(`c/${upsertCommunity.name}`);
           }
         },
       })
     } catch (err) {
-      setCheckError("Something went wrong: Community failed to create.");
+      setCheckError({ status: 500, message: "Something went wrong: Community failed to create.", show: true });
     }
   }
 
@@ -157,47 +180,73 @@ const CreateCommunity = (createCommunityprops: createCommunityprops) => {
     }
   }, [showCreateCommunity]);
 
+  useEffect(() => {
+    if (checkError.show) {
+      setTimeout(() => {
+        setCheckError({
+          status: 0,
+          message: "",
+          show: false
+        })
+      }, 3000);
+    }
+  }, [checkError.show])
+
   return (
     <div className={show}>
       <div className="overlay">
         <form className="communityform" onSubmit={handleSubmit}>
           <div className="communityformtitle">
             <div className="formtitle blue-text"> Create Community </div>
-            <i className="material-icons white-text closeicn" onClick={handleClose}> close </i>
+            <i className="material-icons closeicn" onClick={handleClose}> close </i>
           </div>
-          <div className={`checkerror ${checkError.length > 0 ? "showerror" : ""} red lighten-2`}>
+          <div className={`checkerror ${checkError.show ? "showerror" : ""} red lighten-2`}>
             <i className="material-icons checkerroricn">error_outline</i>
-            {checkError}
+            {checkError.message}
           </div>
-          <div className="communityformname">
-            <div className="formname"> Name </div>
+          <div className="communityformname"> name </div>
+          <div className="createcommunityusername">
+            <Askinput
+              name={"display_name"}
+              maxlength={21}
+              required={true}
+              onChange={handleChange}
+              placeholder={"display name"}
+              value={createCommunityData.display_name}
+            />
           </div>
           <div className="createcommunityusername">
             <Askinput
+              name={"name"}
               maxlength={17}
               required={true}
               prefixes={["c/"]}
               onBlur={handleFocus}
-              name={"communityname"}
               onChange={handleChange}
-              placeholder={"communityname"}
-              value={createCommunityData.communityname}
+              placeholder={"communityname *"}
+              value={createCommunityData.name}
             />
           </div>
+          <div className="nameinfo">
+            <i className="material-icons nameinfoicn">info_outline</i>
+            No spaces allowed in community name
+          </div>
+          <div className="communityformname"> describe * </div>
           <div className="createcommunitydesc">
             <Askinput
               maxlength={89}
               name={"about"}
               required={true}
-              placeholder={"Describe your community in one line."}
-              value={createCommunityData.about}
               onChange={handleChange}
+              value={createCommunityData.about}
+              placeholder={"Describe your community in one line."}
             />
           </div>
           <div className="createcommunitycategory">
             <Patdrop profile={createCommunityProfile} droppers={createCommunityDroppers} />
           </div>
-          <div className="formnameinfo">
+          <div className="nameinfo">
+            <i className="material-icons nameinfoicn">info_outline</i>
             Choose category to make your community more visible.
           </div>
           <div className="communityformtype">
@@ -208,6 +257,7 @@ const CreateCommunity = (createCommunityprops: createCommunityprops) => {
                 name={"privacy"}
                 value={"PUBLIC"}
                 title={"Public"}
+                checked={true}
                 handleChange={handleChange}
                 metatitle={"(Anyone can view, post, and comment in this community)"}
               />
@@ -223,10 +273,13 @@ const CreateCommunity = (createCommunityprops: createCommunityprops) => {
               />
             </div>
           </div>
-          <div className="communityformbtnwrapper">
-            <button className="waves-effect waves-light communityformbtn" type="submit">
-              Create
-            </button>
+          <div className="createcommunitybtnwrapper">
+            <Patbtn
+              type={"submit"}
+              text={"create"}
+              state={"active"}
+              disabled={(createCommunityData?.name.length < 4 || createCommunityData?.about.length < 1)}
+            />
           </div>
         </form>
       </div>

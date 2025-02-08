@@ -1,10 +1,11 @@
 import { gql } from "@apollo/client";
+import { COMMUNITY_BASIC_FIELDS } from "../../containers/queries/community";
 
 export const CREATECOMMUNITY = gql`
   mutation CreateCommunity($data: UpsertCommunityInput) {
     upsertCommunity(data: $data) {
       id
-      communityname
+      name
     }
   }
 `;
@@ -13,7 +14,7 @@ export const COMMUNITIESNAME = gql`
   query ListCommunities($filter: CommunitiesfilterInput) {
     listCommunities(filter: $filter) {
       id
-      communityname
+      name
     }
   }
 `;
@@ -33,12 +34,11 @@ export const GETUSERCOMMUNITIES = gql`
     listUsersCommunity(filter: $filter) {
       id
       community_id {
-        id
-        communityname
-        profile_pic
+        ...communityBasicFields
       }
     }
   }
+  ${COMMUNITY_BASIC_FIELDS}
 `;
 
 export const GETNOTIFICATIONS = gql`
@@ -69,7 +69,7 @@ export const UPDATENOTIFICATION = gql`
 `;
 
 export const SUBSCRIBETONOTIFICATION = gql`
-  subscription Subscription($type: NOTIFICATIONTYPE!, $userId: Int!) {
+  subscription NewNotification($type: NOTIFICATIONTYPE!, $userId: String!) {
     newNotification(type: $type, userId: $userId) {
       id
       type

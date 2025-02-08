@@ -1,27 +1,23 @@
 import { gql } from "@apollo/client";
+import { USER_BASIC_FIELDS } from "../queries/user";
+import { COMMUNITY_BASIC_FIELDS } from "../queries/community";
 
 export const GETUSERS = gql`
   query ListUsers($filter: UsersfilterInput) {
     listUsers(filter: $filter) {
-      id
-      email
-      username
-      about
-      profile_pic
-      status
+      ...userBasicFields
       posts {
         id
       }
     }
   }
+  ${USER_BASIC_FIELDS}
 `;
 
 export const GETCOMMUNITIES = gql`
   query ListCommunities($filter: CommunitiesfilterInput) {
     listCommunities(filter: $filter) {
-      id
-      communityname
-      profile_pic
+      ...communityBasicFields
       privacy
       about
       status
@@ -34,20 +30,21 @@ export const GETCOMMUNITIES = gql`
       }
     }
   }
+  ${COMMUNITY_BASIC_FIELDS}
 `;
 
 export const GETALLCOMMENTS = gql`
   query ListComments($filter: CommentfilterInput) {
     listComments(filter: $filter) {
       id
-      comment
+      text
       created_at
       user_id {
         username
         profile_pic
       }
       parent_id {
-        comment
+        text
         user_id {
           username
         }
@@ -56,13 +53,13 @@ export const GETALLCOMMENTS = gql`
         id
         title
         community_id {
-          communityname
-          profile_pic
+          ...communityBasicFields
         }
         created_at
       }
     }
   }
+  ${COMMUNITY_BASIC_FIELDS}
 `;
 
 export const GETCOMMUNITYALLACTIONS = gql`
@@ -70,12 +67,7 @@ export const GETCOMMUNITYALLACTIONS = gql`
     community(communityname: $communityname) {
       users {
         user_id {
-          id
-          email
-          username
-          about
-          profile_pic
-          status
+          ...userBasicFields
           posts {
             id
           }
@@ -95,20 +87,18 @@ export const GETCOMMUNITYALLACTIONS = gql`
           profile_pic
         }
         community_id {
-          id
-          communityname
-          profile_pic
+          ...communityBasicFields
         }
         comments {
           id
-          comment
+          text
           created_at
           user_id {
             username
             profile_pic
           }
           parent_id {
-            comment
+            text
             user_id {
               username
             }
@@ -117,8 +107,7 @@ export const GETCOMMUNITYALLACTIONS = gql`
             id
             title
             community_id {
-              communityname
-              profile_pic
+              ...communityBasicFields
             }
             created_at
           }
@@ -126,4 +115,6 @@ export const GETCOMMUNITYALLACTIONS = gql`
       }
     }
   }
+  ${USER_BASIC_FIELDS}
+  ${COMMUNITY_BASIC_FIELDS}
 `;

@@ -1,8 +1,8 @@
-import { listAll, findOne } from "../../utils/queriesutils.js";
+import { listAll, findOne } from "../../utils/common/queriesutils.js";
 
 //types
 import { usertype } from "./types/usertypes.js";
-import { filtersorttype } from "../../utils/types.js";
+import { filtersorttype } from "../../utils/common/types.js";
 import {
   notificationtype,
   notificationfiltertype,
@@ -27,12 +27,12 @@ export const notificationResolvers = {
     },
     notification: async (
       _: undefined,
-      { id }: { id: number }
+      { id }: { id: string }
     ): Promise<notificationtype> => {
       try {
         const notificaitonById: notificationtype = await findOne<
           notificationtype,
-          { id: number }
+          { id: string }
         >("notifications", { id: id });
 
         if (!notificaitonById) throw new Error(`${id} notification not found`);
@@ -44,16 +44,16 @@ export const notificationResolvers = {
     },
   },
   Notification: {
-    touser: async ({ touser }: { touser: number }): Promise<usertype> => {
-      const userById: usertype = await findOne<usertype, { id: number }>(
+    touser: async ({ touser }: { touser: string }): Promise<usertype> => {
+      const userById: usertype = await findOne<usertype, { id: string }>(
         "users",
         { id: touser }
       );
 
       return userById;
     },
-    fromuser: async ({ fromuser }: { fromuser: number }): Promise<usertype> => {
-      const userById: usertype = await findOne<usertype, { id: number }>(
+    fromuser: async ({ fromuser }: { fromuser: string }): Promise<usertype> => {
+      const userById: usertype = await findOne<usertype, { id: string }>(
         "users",
         { id: fromuser }
       );

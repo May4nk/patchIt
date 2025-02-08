@@ -2,6 +2,7 @@ import React from 'react';
 
 //css, images & types
 import "./css/modalcomponent.css";
+import Patbtn from './html/Patbtn';
 let logo: string = require("../img/logo.png");
 interface modalprops {
   txt?: string;
@@ -36,18 +37,28 @@ function Modal(modalprops: modalprops) {
             {txt}
           </div>
           <div className="btnwrapper">
-            <div
+            <Patbtn
+              state={"selected"}
+              text={btntxt || "update"}
+              handleClick={handleUpdate}
+            />
+            {/* <div
               onClick={handleUpdate}
               className="actionbtn blue lighten-3 black-text waves-effect waves-light"
             >
               {btntxt || "update"}
-            </div>
-            <div
+            </div> */}
+            <Patbtn
+              text={"close"}
+              state={"clear"}
+              handleClick={handleClose}
+            />
+            {/* <div
               onClick={handleClose}
               className="closebtn red lighten-3 black-text waves-effect waves-light"
             >
               close
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

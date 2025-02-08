@@ -1,7 +1,7 @@
-import { listAll, findOne } from "../../utils/queriesutils.js";
+import { listAll, findOne } from "../../utils/common/queriesutils.js";
 
 //types
-import { filtersorttype } from "../../utils/types.js";
+import { filtersorttype } from "../../utils/common/types.js";
 import { categorytype, categoryfiltertype } from "./types/categorytypes.js";
 
 export const categoryResolvers = {
@@ -15,13 +15,16 @@ export const categoryResolvers = {
           categorytype,
           categoryfiltertype
         >("categories", filter);
-        
+
         return allCategories;
       } catch (err) {
         throw err;
       }
     },
-    category: async (_: undefined, { categoryname }: { categoryname: string }): Promise<categorytype> => {
+    category: async (
+      _: undefined,
+      { categoryname }: { categoryname: string }
+    ): Promise<categorytype> => {
       try {
         const categoryByName: categorytype = await findOne<
           categorytype,

@@ -1,27 +1,28 @@
 import { gql } from "@apollo/client";
+import { USER_ID_USERNAME } from "./user";
 
 const CORE_COMMENT_FIELDS = gql`
   fragment CoreCommentFields on Comment {
     id
-    comment
+    text
     likes
     created_at
     parent_id {
       id
-      comment
+      text
       status
     }
     user_id {
-      id
-      username
+      ...userIdNameFields
       profile_pic
       status
     }
   }
+  ${USER_ID_USERNAME}
 `;
 
 export const GETPOST = gql`
-  query Post($postId: Int!) {
+  query Post($postId: String!) {
     post(id: $postId) {
       id
       title
@@ -33,7 +34,7 @@ export const GETPOST = gql`
       community_id {
         id
         about
-        communityname
+        name
         background_pic
         profile_pic
         created_at
@@ -43,11 +44,13 @@ export const GETPOST = gql`
         users {
           id
         }
+        owner {
+          id
+        }
       }
       owner {
-        id
+        ...userIdNameFields
         profile_pic
-        username
         status
       }
       tags {
@@ -57,6 +60,7 @@ export const GETPOST = gql`
       }
     }
   }
+  ${USER_ID_USERNAME}
 `;
 
 export const GETPOSTCOMMENTS = gql`

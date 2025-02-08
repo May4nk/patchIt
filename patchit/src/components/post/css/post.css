@@ -87,25 +87,6 @@
   margin-right: 0.5rem;
 }
 
-.joincommunitybtn {
-  line-height: 16px !important;
-  font-weight: 500;
-  font-size: 0.8vw;
-  text-transform: capitalize;
-  padding: 0.3vw 0.6vw;
-  border-radius: 0.5rem;
-  color: #93d6f8;
-  background-color: #1b2124;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.joincommunitybtn:hover {
-  color: #93d6f8;
-  background-color: black;
-}
-
 .linktoclick {
   width: 100%;
 }
@@ -156,20 +137,27 @@
 }
 
 .postfooter {
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
   width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
   margin: 0.5rem 0 0.3rem 0;
 }
 
-.footer,
-.footersave,
-.footerpin {
+.postfooter .patbtn,
+.postfooter .patunreactbtn {
+  margin: 0 0.3vw;
+}
+
+/* .postfooter .postpin {
+  margin-left: auto;
+} */
+
+.postreact {
   color: rgba(255, 255, 255, 0.7);
   padding: 0.3vw 0.7vw;
   cursor: pointer;
-  background: #111313;
+  background: rgba(0, 0, 0, 0.6);
   border-radius: 1rem;
   font-size: 0.9vw;
   display: flex;
@@ -177,51 +165,20 @@
   align-items: center;
 }
 
-.footericn {
-  font-size: 1.1vw !important;
-}
-
 .downvote {
   margin-left: 0.5rem;
-  font-size: 1.2vw;
+  font-size: 1.1vw;
 }
 
 .upvote {
   margin-right: 0.5rem;
-  font-size: 1.2vw;
+  font-size: 1.1vw;
 }
 
 .upvote:hover {
-  color: #2196F3;
+  color: #2196f3;
 }
 
 .downvote:hover {
   color: #f44336;
-}
-
-.footersave {
-  margin-left: 0.5rem;
-}
-
-.footerpin {
-  margin-left: auto;
-  margin-right: 1rem;
-}
-
-.footertxt {
-  padding-left: 0.3rem;
-  margin-top: -0.2rem;
-}
-
-.footersave:hover {
-  color: white;
-  background: #f0f6f90d;
-}
-
-.footerpin:hover {
-  color: white;
-}
-
-.none {
-  display: none;
 }

@@ -12,7 +12,7 @@ import { UPDATEPOLL, GETPOLL } from "./queries";
 import "./css/postpoll.css";
 import { polltype, postpollprops } from './types';
 import { authcontexttype } from '../../context/types';
-import { newpolltype } from '../../containers/newpost/types';
+import { postpolltype } from '../../containers/newpost/types';
 
 function Postpoll(postpollprops: postpollprops) {
   const { pollData, pollPostId } = postpollprops;
@@ -20,10 +20,10 @@ function Postpoll(postpollprops: postpollprops) {
   const navigate = useNavigate();
   const { user }: authcontexttype = useAuth();
   const userId: number | null = user && Number(user["id"] || user["user_id"]);
-  const parsedPollData: newpolltype[] = JSON.parse(pollData);
+  const parsedPollData: postpolltype[] = JSON.parse(pollData);
 
   //state
-  const [pollCount, setPollCount] = useState<newpolltype[]>();
+  const [pollCount, setPollCount] = useState<postpolltype[]>();
   const [userSelectedPoll, setUserSelectedPoll] = useState<string>("");
 
   //queries
@@ -32,7 +32,7 @@ function Postpoll(postpollprops: postpollprops) {
   const [getpolls, { data }] = useLazyQuery(GETPOLL);
 
   //handlers
-  const handleCount: (countValue: string, pid: number) => void = async (countValue: string, pid: number) => {
+  const handleCount: (countValue: string, pid: string) => void = async (countValue: string, pid: string) => {
     if (!user) {
       navigate("/account/login");
       return;
@@ -42,7 +42,7 @@ function Postpoll(postpollprops: postpollprops) {
 
     if (!pollCount) return;
 
-    const tempPoll: newpolltype[] = [...pollCount];
+    const tempPoll: postpolltype[] = [...pollCount];
     const pollIndex: number = tempPoll.findIndex((counter) => {
       return counter.value === countValue
     });
@@ -76,7 +76,7 @@ function Postpoll(postpollprops: postpollprops) {
     }
   }
 
-  const handlePoll: (val: string, postId: number) => void = (val: string, postId: number) => {
+  const handlePoll: (val: string, postId: string) => void = (val: string, postId: string) => {
     if (!user) return;
     const polls = document.querySelectorAll<HTMLElement>(`.poll${postId}`);
 
@@ -142,7 +142,7 @@ function Postpoll(postpollprops: postpollprops) {
 
   return (
     <div className="pollwrapper" >
-      {pollCount?.map((poll: newpolltype, idx: number) => (
+      {pollCount?.map((poll: postpolltype, idx: number) => (
         <div
           key={idx}
           className={`polloption poll${pollPostId} ${poll.value}`}

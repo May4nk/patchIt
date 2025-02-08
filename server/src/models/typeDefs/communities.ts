@@ -1,14 +1,25 @@
 export const communityTypeDefs = `
+  enum STATUS {
+    ACTIVE
+    INACTIVE
+  }
+
+  enum PRIVACY {
+    PUBLIC
+    PRIVATE
+  }
+  
   type Community {
-    id: Int
-    communityname: String!
+    id: String!
+    name: String!
+    display_name: String
     owner: User!
     description: String
     about: String
-    status: String
+    status: STATUS
     theme: String
     category: Category
-    privacy: String
+    privacy: PRIVACY
     background_pic: String   
     profile_pic: String
     social_links: String
@@ -16,31 +27,36 @@ export const communityTypeDefs = `
     users: [UserCommunity]
     posts: [Post]
     settings: CommunityPreferences
-  }                                         
+  }                                   
+
   input UpsertCommunityInput {
-    id: Int
-    communityname: String!
-    owner: Int
+    id: String
+    name: String!
+    display_name: String
+    owner: String
     description: String
-    status: String
+    status: STATUS
     about: String
     category: String
     social_links: String
     theme: String
-    privacy: String
+    privacy: PRIVACY
     background_pic: String   
     profile_pic: String
   }
+
   input CommunitiesfilterInput {
-    id: Int
-    communityname: String
-    owner: Int
-    status: String
-    privacy: String
+    id: String
+    name: String
+    display_name: String
+    owner: String
+    status: STATUS
+    privacy: PRIVACY
     theme: String
     category: String
   }
+    
   input RemoveCommunityInput {
-    id: Int!
+    id: String!
   }
 `;

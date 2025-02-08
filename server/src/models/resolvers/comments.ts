@@ -1,8 +1,9 @@
-import { listAll, findOne } from "../../utils/queriesutils.js";
+import { listAll, findOne } from "../../utils/common/queriesutils.js";
+
 //types
 import { usertype } from "./types/usertypes.js";
 import { posttype } from "./types/posttypes.js";
-import { filtersorttype } from "../../utils/types.js";
+import { filtersorttype } from "../../utils/common/types.js";
 import { commenttype, commentfiltertype } from "./types/commenttypes.js";
 
 export const commentResolvers = {
@@ -22,11 +23,14 @@ export const commentResolvers = {
         throw err;
       }
     },
-    comment: async (_: undefined, { id }: { id: number } ): Promise<commenttype> => {
+    comment: async (
+      _: undefined,
+      { id }: { id: string }
+    ): Promise<commenttype> => {
       try {
         const commentById: commenttype = await findOne<
           commenttype,
-          { id: number }
+          { id: string }
         >("comments", { id: id });
 
         if (!commentById) throw new Error(`Comment not found with Id: ${id}`);
@@ -38,12 +42,12 @@ export const commentResolvers = {
     },
   },
   Comment: {
-    user_id: async ({ user_id }: { user_id: number }): Promise<usertype> => {
+    user_id: async ({ user_id }: { user_id: string }): Promise<usertype> => {
       try {
-        const userById: usertype = await findOne<
-          usertype,
-          { id: number }
-        >("users", { id: user_id });
+        const userById: usertype = await findOne<usertype, { id: string }>(
+          "users",
+          { id: user_id }
+        );
 
         return userById;
       } catch (err) {
@@ -53,12 +57,12 @@ export const commentResolvers = {
     parent_id: async ({
       parent_id,
     }: {
-      parent_id: number;
+      parent_id: string;
     }): Promise<commenttype> => {
       try {
         const parentComment: commenttype = await findOne<
           commenttype,
-          { id: number }
+          { id: string }
         >("comments", { id: parent_id });
 
         return parentComment;
@@ -66,12 +70,12 @@ export const commentResolvers = {
         throw err;
       }
     },
-    post_id: async ({ post_id }: { post_id: number }): Promise<posttype> => {
+    post_id: async ({ post_id }: { post_id: string }): Promise<posttype> => {
       try {
-        const commentPost: posttype = await findOne<
-          posttype,
-          { id: number }
-        >("posts", { id: post_id });
+        const commentPost: posttype = await findOne<posttype, { id: string }>(
+          "posts",
+          { id: post_id }
+        );
 
         return commentPost;
       } catch (err) {

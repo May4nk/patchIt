@@ -1,0 +1,116 @@
+button:focus {
+  background-color: rgba(0, 0, 0, 0.6) !important;
+}
+
+.patbtn,
+.patinactivebtn,
+.patclearbtn,
+.patactivebtn,
+.patselectedbtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+  text-transform: capitalize;
+  line-height: 16px !important;
+  border-radius: 0.9vw;
+  color: rgba(255, 255, 255, 0.8);
+  background-color: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.patinactivebtn {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.patactivebtn {
+  color: var(--main-color);
+  border-color: rgb(109, 132, 142);
+}
+
+.patselectedbtn {
+  color: var(--main-color);
+}
+
+.patclearbtn {
+  color: #ef5350;
+}
+
+.patactivebtn:hover,
+.patbtn:hover,
+.patselectedbtn:hover,
+.patinactivebtn:hover,
+.patclearbtn:hover {
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.patbtn:disabled,
+.patclearbtn:disabled,
+.patselectedbtn:disabled,
+.patactivebtn:disabled,
+.patinactivebtn:disabled {
+  color: grey !important;
+  border: none !important;
+  border: none !important;
+  background: black !important;
+  pointer-events: none !important;
+  border: 1px solid rgba(255, 255, 255, 0.04) !important;
+}
+
+/* size */
+.smallbtn {
+  --size: 0.8vw;
+  border-radius: 0.9vw;
+  font-size: var(--size);
+  font-weight: 500;
+  padding: 0.25vw 0.9vw;
+}
+
+.bigbtn {
+  --size: 1vw;
+  border-radius: 2vw;
+  font-size: var(--size);
+  font-weight: 500;
+  padding: 0.6vw 1.3vw;
+}
+
+.normalbtn {
+  --size: 0.9vw;
+  border-radius: 1vw;
+  font-size: var(--size);
+  font-weight: 500;
+  padding: 0.35vw 1.1vw;
+}
+
+/* icn & img */
+.patbtnicn,
+.patclearbtnicn,
+.patinactivebtnicn {
+  color: var(--main-color);
+  line-height: 16px !important;
+  height: 100% !important;
+  font-size: calc(var(--size) + 0.1rem) !important;
+}
+
+.patclearbtnicn {
+  color: #f44336;
+}
+
+.patinactivebtnicn {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.fronticn {
+  margin-right: 0.4vw !important;
+  margin-left: -0.1vw !important;
+}
+
+.backicn {
+  margin-left: 0.2vw !important;
+  margin-right: -0.3vw !important;
+}
+
+.patbtnpic {
+  height: 1vw !important;
+  width: 1vw !important;
+}

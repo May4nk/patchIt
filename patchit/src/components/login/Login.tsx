@@ -1,53 +1,106 @@
 import React, { useState } from 'react';
-import useLoginvia from '../../utils/loginvia';
+
+//utils
+import useLoginvia from '../../utils/helpers/loginvia';
 
 //components
+import Patbtn from '../html/Patbtn';
 import Askinput from '../html/Askinput';
 
 //css, types & images
 import "./loginbox.css";
-import { loginpropstype, userlogintype } from './types';
+import { loginpropstype } from './types';
+import { logindatatype } from '../../containers/Login/types';
+import { loggedinuserdatatype } from '../../utils/types';
+import { ASYNCVOIDFUNC, VOIDFUNC } from '../../utils/main/types';
 
 function Login(loginprops: loginpropstype) {
-  const { userData, handleChange, setForgetLevel, setError, closeLogin } = loginprops;
+  const { setActiveLoginLevel, setError, closeLogin } = loginprops;
   const login = useLoginvia("login");
 
+  //states
   const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [logThroughEmail, setLogThroughEmail] = useState<boolean>(false);
+  const [userLoginData, setUserLoginData] = useState<logindatatype>({
+    email: "",
+    username: "",
+    password: "",
+  });
 
   //handlers
-  const handleLogin: (e: any) => Promise<void> = async (e: any) => {
+  const handleDefault: VOIDFUNC = () => {
+    setShowPassword(false);
+    setLogThroughEmail(false)
+    setUserLoginData({
+      email: "",
+      username: "",
+      password: "",
+    });
+  }
+
+  const handleChange: VOIDFUNC = (e: any) => {
+    setUserLoginData(prev => ({
+      ...prev,
+      [e.target.name]: e.target.value
+    }));
+  }
+
+  const handleLogin: ASYNCVOIDFUNC = async (e: any) => {
     e.preventDefault();
 
-    const loginData: userlogintype = {
-      username: userData.username,
-      password: userData.password
+    let loginData: logindatatype | undefined;
+
+    if (!logThroughEmail && userLoginData?.username) {
+      loginData = {
+        username: userLoginData.username.trim(),
+        password: userLoginData.password.trim(),
+      }
+    } else if (logThroughEmail && userLoginData?.email) {
+      loginData = {
+        email: userLoginData.email.trim(),
+        password: userLoginData.password.trim(),
+      }
     }
+
+    if (!loginData) {
+      setError({ status: 500, message: "Username/Email & password is required", show: true })
+      return;
+    }
+
     try {
-      await login(loginData).then(() => {
-        closeLogin();
-      });
+      const data: loggedinuserdatatype = await login(loginData);
+      if (data) {
+        if (!data?.new_user) {
+          handleDefault();
+          closeLogin();
+        }
+      }
     } catch (err) {
-      setError(err as string);
+      setError({ status: 500, message: "Try again: Check username/email & password", show: true });
     }
   }
 
   return (
-    <form className="form">
+    <form className="form" onSubmit={handleLogin}>
       <div className="loginforminp">
         <Askinput
-          prefixes={["u/"]}
-          name={"username"}
+          required={true}
           onChange={handleChange}
-          placeholder={"Username"}
-          value={userData.username}
+          prefixes={logThroughEmail ? [""] : ["u/"]}
+          name={logThroughEmail ? "email" : "username"}
+          placeholder={logThroughEmail ? "Email" : "Username"}
+          value={logThroughEmail ? userLoginData.email : userLoginData.username}
+          postfix={logThroughEmail ? "ICchevron_left" : "ICchevron_right"}
+          onClickPostfix={() => setLogThroughEmail(!logThroughEmail)}
         />
       </div>
       <div className="loginforminp">
         <Askinput
+          required={true}
           name={"password"}
           onChange={handleChange}
           placeholder={"Password"}
-          value={userData.password}
+          value={userLoginData.password}
           type={showPassword ? "text" : "password"}
           postfix={showPassword ? "IChttps" : "ICno_encryption"}
           onClickPostfix={() => setShowPassword(!showPassword)}
@@ -55,20 +108,22 @@ function Login(loginprops: loginpropstype) {
       </div>
       <div className={"forgotpass"}>
         Forget your
-        <span className="fpassword" onClick={() => setForgetLevel(1)}> username </span>
-        or
-        <span className="fpassword" onClick={() => setForgetLevel(2)}> password </span>
+        <span className="fpassword" onClick={() => setActiveLoginLevel(3)}> password </span>
         ?
       </div>
-      <button
-        id="modalloginbtn"
-        type="submit"
-        className="btn waves-effect waves-light"
-        onClick={handleLogin}
-        disabled={(userData?.username && userData?.password) ? false : true}
-      >
-        Login
-      </button>
+      <div className="loginbtnwrapper">
+        <Patbtn
+          text={"login"}
+          state={"active"}
+          type="submit"
+          disabled={(
+            (logThroughEmail
+              ? userLoginData?.email
+              : userLoginData?.username
+            ) && userLoginData?.password) ? false : true
+          }
+        />
+      </div>
     </form>
   )
 }

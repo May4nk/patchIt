@@ -1,23 +1,77 @@
+import { navshowtype, notificationtype } from "../navbar/types";
 import {
+  CHATMEDIA,
   ERRORTYPE,
-  idstype,
+  IDSTYPE,
   RESPONSETYPE,
+  USER_S_N_TYPE,
   usernametype,
 } from "../../utils/main/types";
-import { ACTION, chatroominfotype } from "../../utils/types";
-import { newnotificationtiptype, notificationtype } from "../navbar/types";
 
-export type allowedmediatype = "ALL" | "IMAGES" | "VIDEOS";
+//chatLevels -> 100: default, 101: create chat/room, 0: chat, 1: about room, 2: room settings
+export type chatlevels = 100 | 101 | 0 | 1 | 2;
 
-export interface roomtype {
-  id: number;
-  room_code: string;
+export interface chatgroupusertype extends IDSTYPE {
+  username: string;
+  profile_pic: USER_S_N_TYPE;
+}
+
+export interface chatroominfotype {
+  ownerId: string;
+  about: string;
+  theme: string;
+  name: string;
+  isRoom: boolean;
+  blockedUsers: string[];
+  profile_pic: string;
+  users: usernametype[];
+  allowedMedia: CHATMEDIA;
+  admin: string;
+  co_admin: string;
+  operator: string;
+  acceptor: string;
+}
+
+export type chatboxstatetype = {
+  name: string;
+  error: ERRORTYPE;
+  activeRoomId: string;
+  level: chatlevels;
+  createRoom: boolean;
+  searchUsername: string;
+  roomInfo: chatroominfotype;
+  roomUsers: chatgroupusertype[];
+};
+
+export type chatboxstateactiontype =
+  | { type: "ADD_ROOM_USER"; user: chatgroupusertype }
+  | { type: "SET_ACTIVE_ROOMINFO"; info: Partial<chatroominfotype> }
+  | { type: "SEARCH_USERNAME"; username: string }
+  | { type: "SET_ACTIVE_ROOMID"; roomId: string }
+  | { type: "DEL_ROOM_USER"; userId: string }
+  | { type: "SET_LEVEL"; level: chatlevels }
+  | { type: "SET_ROOM_NAME"; name: string }
+  | { type: "SET_ERROR"; error: ERRORTYPE }
+  | { type: "NEW_CHAT"; isRoom: boolean }
+  | { type: "RESET_ROOM_USERS" }
+  | { type: "SOFT_RESET" }
+  | { type: "RESET" };
+
+export type handlechatboxstateactiontype = (
+  state: chatboxstatetype,
+  action: chatboxstateactiontype
+) => chatboxstatetype;
+
+export type handledefaultstatetype = (toNull: boolean) => void;
+export type handleactiveroomtype = (roomId: string) => void;
+export type handlecreatechatroomtype = () => Promise<RESPONSETYPE>;
+
+export interface roomtype extends IDSTYPE {
   roomName: string;
   owner: usernametype;
 }
 
-export interface userchatroomtype {
-  id: number;
+export interface userchatroomtype extends IDSTYPE {
   room_id: roomtype;
   users: usernametype[];
   lastMessage: { message: string };
@@ -25,16 +79,9 @@ export interface userchatroomtype {
 
 export interface chatboxprops {
   showChatbox: boolean;
-  setShowChatbox: React.Dispatch<React.SetStateAction<boolean>>;
-  isNewChat: React.Dispatch<React.SetStateAction<newnotificationtiptype>>;
+  setShowChatbox: navshowtype;
+  isNewChat: (val: number) => void;
 }
-
-export interface activeroomtype {
-  roomId: string;
-  users: number;
-}
-
-type handleactiveroomtype = (room: activeroomtype) => void;
 
 type userchatroomsubtype = {
   data: { newUserChatroom: userchatroomtype[] };
@@ -51,11 +98,10 @@ export interface userchatroomprevtype {
 // chatlist ----------------------------------------------
 export interface chatlistpropstype {
   chatrooms: userchatroomtype[];
-  newChat: (room: boolean) => void;
+  chatBoxState: chatboxstatetype;
   handleActiveRoom: handleactiveroomtype;
+  handleChatBoxState: React.Dispatch<chatboxstateactiontype>;
   handleCreateChatroom: () => Promise<RESPONSETYPE>;
-  setUsernameSearch: React.Dispatch<React.SetStateAction<string>>;
-  setChatgroupUsers: React.Dispatch<React.SetStateAction<chatgroupusertype[]>>;
 }
 
 export interface chattertype {
@@ -71,37 +117,24 @@ export interface chatprofileprops {
 
 // chatmsg --------------------------------------------
 export interface chatmsgsprops {
-  userId: number | null;
-  roomName: string;
-  chatLevel: number;
-  createRoom: boolean;
-  usernameSearch: string;
-  error: ERRORTYPE;
-  activeRoom: activeroomtype;
-  chatgroupUsers: chatgroupusertype[];
-  chatroomInfo: chatroominfotype;
-  updateChatroomInfo: (value: ACTION) => void;
-  handleActiveRoom: handleactiveroomtype;
-  handleDefaultState: (def: boolean) => void;
-  handleCreateChatroom: () => Promise<RESPONSETYPE>;
-  setRoomName: React.Dispatch<React.SetStateAction<string>>;
-  setChatLevel: React.Dispatch<React.SetStateAction<number>>;
-  setError: React.Dispatch<React.SetStateAction<ERRORTYPE>>;
-  setUsernameSearch: React.Dispatch<React.SetStateAction<string>>;
-  setChatGroupUsers: React.Dispatch<React.SetStateAction<chatgroupusertype[]>>;
+  userId: string;
+  chatBoxState: chatboxstatetype;
+  handleDefaultState: handledefaultstatetype;
+  handleCreateChatroom: handlecreatechatroomtype;
+  handleChatBoxState: React.Dispatch<chatboxstateactiontype>;
 }
 
+export type setchatleveltype = (level: chatlevels) => void;
+export type seterrortype = (error: ERRORTYPE) => void;
+
 export interface messagestatetype {
-  user_id: number;
-  message: string;
+  user_id: string;
   room_id: string;
   media: boolean;
 }
 
-export interface chatroomtype {
-  id: number;
-  owner: idstype;
-  room_code: string;
+export interface chatroomtype extends IDSTYPE {
+  owner: IDSTYPE;
   roomName: string;
   roomUsers: usernametype[];
   chatpreference: {
@@ -113,31 +146,24 @@ export interface chatroomtype {
     acceptor: string;
     group_profile: string;
     chatgrouptheme: string;
-    allowedmedia: allowedmediatype;
+    allowedmedia: CHATMEDIA;
   };
 }
 
-export interface messagetype {
-  id: number;
+export interface messagetype extends IDSTYPE {
   user_id: usernametype;
   room_id: roomtype;
-  message: string;
+  text: string;
   media: boolean;
   created_at: string;
 }
 
-export type chatgroupusertype = {
-  id: number;
-  username: string;
-  profile_pic: string;
-};
-
 // messages-----------------------
 export interface messageprops {
-  userId: number | null;
+  userId: string;
   userInfo: usernametype;
   messageInfo: messagetype;
-  activeRoom: activeroomtype;
+  isRoom: boolean;
 }
 
 export interface messagetexttype {
@@ -149,32 +175,33 @@ export interface messagetexttype {
 export interface chatgroupcardprops {
   roomName: string;
   chatgroupUsers: chatgroupusertype[];
-  setRoomName: React.Dispatch<React.SetStateAction<string>>;
-  setChatgroupUsers: React.Dispatch<React.SetStateAction<chatgroupusertype[]>>;
+  handleChatBoxState: React.Dispatch<chatboxstateactiontype>;
 }
 
 //chat ---------------------
 export interface chatpropstype {
-  userId: number | null;
-  activeRoom: activeroomtype;
-  setError: React.Dispatch<React.SetStateAction<ERRORTYPE>>;
+  userId: string;
+  setError: seterrortype;
+  activeRoomInfo: {
+    id: string;
+    isRoom: boolean;
+  };
 }
 
-export interface listmessagestype {
-  id: number;
+export interface listmessagestype extends IDSTYPE {
   message: string;
   media: string;
   created_at: string;
   user_id: usernametype;
-  room_id: { id: number; room_code: string; owner: idstype };
+  room_id: IDSTYPE & { owner: IDSTYPE };
 }
 
 //aboutchatroom ---------------------------
 export interface aboutchatroompropstype {
-  userId: number;
+  userId: string;
   handleDelete: () => void;
   chatroomInfo: chatroominfotype;
-  setChatLevel: React.Dispatch<React.SetStateAction<number>>;
+  setChatLevel: setchatleveltype;
 }
 
 //chatoptions -------------------------------
@@ -187,34 +214,30 @@ export interface chatoptionsprops {
 //chatroomsettings ---------------------------
 export type roomsettingtab = "admin" | "blocked" | "requests" | "handlers";
 
+export type updatechatroompreferencestype = (
+  settings: Partial<chatboxstatetype["roomInfo"]>
+) => void;
+
 export interface chatroomsettingprops {
-  userId: number;
+  userId: string;
   usersList: chatgroupusertype[];
   chatroomPreferences: chatroominfotype;
-  updateChatroomPreferences: (value: ACTION) => void;
-  setError: React.Dispatch<React.SetStateAction<ERRORTYPE>>;
+  handleChatBoxState: React.Dispatch<chatboxstateactiontype>;
 }
 
 //createchatroom ------------------------------
 export interface createchatroompropstype {
-  roomName: string;
-  createRoom: boolean;
-  userId: number | null;
-  usernameSearch: string;
+  userId: string;
   usersList: chatgroupusertype[];
-  handleCreateChatroom: () => Promise<RESPONSETYPE>;
-  chatgroupUsers: chatgroupusertype[];
-  handleDefaultState: (def: boolean) => void;
-  setRoomName: React.Dispatch<React.SetStateAction<string>>;
-  setChatLevel: React.Dispatch<React.SetStateAction<number>>;
-  setUsernameSearch: React.Dispatch<React.SetStateAction<string>>;
-  setChatgroupUsers: React.Dispatch<React.SetStateAction<chatgroupusertype[]>>;
+  chatBoxState: chatboxstatetype;
+  handleDefaultState: handledefaultstatetype;
+  handleCreateChatroom: handlecreatechatroomtype;
+  handleChatBoxState: React.Dispatch<chatboxstateactiontype>;
 }
 
 //chatrequest ---------------------------------------
 export interface chatrequestpropstype {
   notification: notificationtype;
+  handleChatBoxState: React.Dispatch<any>;
   handleCreateChatroom: () => Promise<RESPONSETYPE>;
-  setUsernameSearch: React.Dispatch<React.SetStateAction<string>>;
-  setChatgroupUsers: React.Dispatch<React.SetStateAction<chatgroupusertype[]>>;
 }

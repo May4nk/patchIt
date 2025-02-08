@@ -1,11 +1,12 @@
 .newpostpic {
-  border: 1px solid grey;
+  border: 1px solid rgba(255, 255, 255, 0.3);
   min-height: 17rem;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   width: 100%;
+  border-radius: 0.5vw;
 }
 
 .multiimageprofiles {
@@ -22,7 +23,7 @@
   justify-content: flex-start;
   flex-direction: row;
   padding: 0.5rem;
-  width: 99%;
+  width: 47.5vw;
   overflow-x: auto;
   cursor: pointer;
 }
@@ -77,15 +78,14 @@
 
 #uploadpic {
   cursor: pointer;
-  border: 0.1rem dotted rgb(0, 0, 0, 0.3);
-  border-radius: 3%;
+  border-radius: 0.3vw;
   display: flex;
   align-items: center;
   justify-content: center;
-  min-width: 7rem;
-  height: 7rem;
+  min-width: 7vw;
+  height: 7vw;
   color: grey;
-  background: rgba(0, 0, 0, 0.2)
+  background: rgba(0, 0, 0, 0.2);
 }
 
 .uploadpic:hover,
@@ -98,4 +98,38 @@
   position: absolute;
   z-index: -1;
   width: 9%;
+}
+
+.imageprofile {
+  width: 7vw;
+  height: 7vw;
+  margin-right: 0.7vw;
+  border-radius: 0.3vw;
+}
+
+#postimg {
+  width: inherit;
+  height: inherit;
+  border-radius: inherit;
+  opacity: 0.5;
+}
+
+#postimg:hover {
+  opacity: 1;
+}
+
+#postimg.previewimg {
+  opacity: 1;
+}
+
+.delete_icn {
+  margin-bottom: -17%;
+  z-index: 10;
+  position: relative;
+  color: white;
+  font-size: 1.2vw !important;
+}
+
+.delete_icn:hover {
+  color: rgb(235, 67, 67);
 }

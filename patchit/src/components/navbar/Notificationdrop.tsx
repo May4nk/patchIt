@@ -1,10 +1,11 @@
 import React, { useEffect, useRef } from "react";
 import { useLazyQuery, useMutation } from "@apollo/client";
 
-import { defaultUPic } from "../../utils/helpers";
+import { defaultUPic } from "../../utils/helpers/helpers";
 import { useAuth } from "../../utils/hooks/useAuth";
 
 //component
+import Patbtn from "../html/Patbtn";
 import Loadingpage from "../Loadingpage";
 
 //queries
@@ -13,6 +14,7 @@ import { GETNOTIFICATIONS, SUBSCRIBETONOTIFICATION, UPDATENOTIFICATION, FOLLOWUS
 //css & types
 import "./css/notificationdrop.css";
 import { authcontexttype } from "../../context/types";
+import { USER_S_N_TYPE } from "../../utils/main/types";
 import {
   handleNotificationtype,
   notificationdatatype,
@@ -27,7 +29,7 @@ const Notificationdrop = (notificationdropprops: notificationdroppropstype) => {
   const show: string = showNotificationdrop ? "block" : "none";
 
   const { user }: authcontexttype = useAuth();
-  const userId: number | null = user && Number(user["id"]);
+  const userId: USER_S_N_TYPE = user && user["id"];
   const notificationRef = useRef<HTMLDivElement>(null);
 
   //queries & mutations
@@ -77,7 +79,7 @@ const Notificationdrop = (notificationdropprops: notificationdroppropstype) => {
     let unsubscribe = subscribeToMore({
       document: SUBSCRIBETONOTIFICATION,
       variables: { type: "FRIEND", userId: userId },
-      onError: (err: any) => console.log(err),
+      onError: (err: any) => console.log("Something went wrong: Notifications fetch failed"),
       updateQuery: (prev: notificationprevtype, { subscriptionData }: notificitionsubdatatype) => {
         const subdata: notificationdatatype = subscriptionData.data;
         if (!subdata) return prev;
@@ -91,12 +93,12 @@ const Notificationdrop = (notificationdropprops: notificationdroppropstype) => {
             (newnotifier: notificationtype) => newnotifier.status === "PENDING"
           );
 
-          if (!showNotificationdrop && newPendingNotifications.length > 0) {
-            isNewNotification((prev) => ({ ...prev, notification: true }));
-          }
+          const allPendingNotifications = [...newPendingNotifications, ...filteredNotifications];
+
+          isNewNotification(allPendingNotifications.length);
 
           return {
-            listNotifications: [...newPendingNotifications, ...filteredNotifications]
+            listNotifications: allPendingNotifications
           };
         }
 
@@ -115,6 +117,7 @@ const Notificationdrop = (notificationdropprops: notificationdroppropstype) => {
         variables: {
           filter: {
             status: "PENDING",
+            type: "FRIEND",
             touser: userId
           }
         }
@@ -149,23 +152,27 @@ const Notificationdrop = (notificationdropprops: notificationdroppropstype) => {
                       />
                     </div>
                     <div className="notifiesbody">
-                      <div className="notifiestitle"> {notification.type} </div>
-                      <div className="notifiesmessage"> {notification.message} </div>
+                      <div className="notifiestitle">
+                        {notification.type}
+                      </div>
+                      <div className="notifiesmessage">
+                        {notification.message}
+                      </div>
                     </div>
                     {notification.status === "PENDING" && (
                       <div className="notifiesactions">
-                        <div
-                          className="notificationactionbtn blue-text waves-effect waves-light"
-                          onClick={() => handleNotification(notification, true)}
-                        >
-                          accept
-                        </div>
-                        <div
-                          className="notificationactionbtn red-text waves-effect waves-light"
-                          onClick={() => handleNotification(notification, false)}
-                        >
-                          reject
-                        </div>
+                        <Patbtn
+                          size={"small"}
+                          text={"accept"}
+                          state={"selected"}
+                          handleClick={() => handleNotification(notification, true)}
+                        />
+                        <Patbtn
+                          text={"reject"}
+                          size={"small"}
+                          state={"clear"}
+                          handleClick={() => handleNotification(notification, false)}
+                        />
                       </div>
                     )}
                   </div>

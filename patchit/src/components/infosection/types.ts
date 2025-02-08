@@ -1,76 +1,70 @@
-import { userfollowingtype } from "../../containers/types/user";
 import { sociallinktype } from "../settings/types";
 import {
+  userstateactiontype,
+  userfollowingtype,
+  usersettingtype,
+} from "../../containers/types/user";
+import {
   communitynametype,
-  ERRORTYPE,
-  idstype,
+  IDSTYPE,
+  NOTIFYTYPE,
   posttype,
   PRIVACY,
   STATUS,
+  USER_S_N_TYPE,
+  userbasictype,
   usernametype,
 } from "../../utils/main/types";
-import {
-  usersettinginfoactiontype,
-  usersettinginfotype,
-} from "../../utils/types";
 
-interface userposttype extends posttype {
-  community_id: communitynametype;
-}
+export type communityusertype = IDSTYPE & { user_id: IDSTYPE };
+export type sendnotificationreqtype = (type: NOTIFYTYPE) => Promise<void>;
 
-export interface communitypatcherdatatype {
-  id: number;
-  communityname: string;
-  owner: idstype;
-}
-
-export type communityusertype = { id: number; user_id: idstype };
-
-export interface infoaboutuserdatatype {
-  id: number;
+export interface infoaboutuserdatatype extends IDSTYPE {
   about: string;
   created_at: string;
   username: string;
   privacy: PRIVACY;
-  background_pic: string;
-  profile_pic: string;
+  background_pic: USER_S_N_TYPE;
+  profile_pic: USER_S_N_TYPE;
   status: STATUS;
-  posts: userposttype[];
+  posts: posttype[];
   followers: userfollowingtype[];
-  userSettings: usersettinginfotype;
-  updateUserSettings: React.Dispatch<usersettinginfoactiontype>;
+  userSettings: usersettingtype;
+  updateUserSettings: React.Dispatch<userstateactiontype>;
 }
 
-export interface infoaboutcommunitydatatype {
-  id: number;
-  communityname: string;
+export interface infoaboutcommunitydatatype extends IDSTYPE {
+  name: string;
   about: string;
   theme: string;
-  background_pic: string;
+  background_pic: USER_S_N_TYPE;
   description: string;
-  owner: { id: number; username: string };
+  owner: userbasictype;
   privacy: PRIVACY;
   profile_pic: string;
   created_at: string;
-  posts: idstype[];
-  users: idstype[];
+  posts: IDSTYPE[];
+  users: IDSTYPE[];
   inCommunity: boolean;
-  setInCommunity: React.Dispatch<React.SetStateAction<boolean>>;
+  updateCommunitySettings: React.Dispatch<any>;
 }
 
 interface infoaboutuserprops {
-  data: infoaboutuserdatatype;
   userdata: true;
-  setError: React.Dispatch<React.SetStateAction<ERRORTYPE>>;
+  data: infoaboutuserdatatype;
 }
 
 interface infoaboutcommunityprops {
   data: infoaboutcommunitydatatype;
   userdata: false;
-  setError: React.Dispatch<React.SetStateAction<ERRORTYPE>>;
 }
 
 export type infoaboutpropstype = infoaboutcommunityprops | infoaboutuserprops;
+
+export interface communitypatcherdatatype extends IDSTYPE {
+  name: string;
+  owner: IDSTYPE;
+}
 
 export interface infosectionprops {
   communitypatcherdata?: communitypatcherdatatype[];
@@ -81,12 +75,12 @@ export interface infouserscommunityprops {
 }
 
 // infotab type ----------------------------------------
-export interface communitytype {
-  id: number;
-  communityname: string;
-  posts: idstype[];
-  users: idstype[];
-  profile_pic: string;
+export interface communitytype extends IDSTYPE {
+  name: string;
+  posts: IDSTYPE[];
+  users: IDSTYPE[];
+  owner: IDSTYPE;
+  profile_pic: USER_S_N_TYPE;
 }
 
 export interface infotabprops {
@@ -94,26 +88,25 @@ export interface infotabprops {
 }
 
 // inforecommended type ------------------------------------------
-export interface recommendedposttype {
-  id: number;
+export interface recommendedposttype extends IDSTYPE {
   likes: number;
   title: string;
   type: string;
-  owner: usernametype & { status: STATUS };
-  comments: idstype[];
-  community_id: communitynametype;
+  owner: usernametype;
+  comments: IDSTYPE[];
+  community_id: communitynametype & { owner: IDSTYPE };
 }
 
 // infocreatecard type ----------------------------------
-export interface infocreatecardtype {
-  id: number;
+export interface infocreatecardtype extends IDSTYPE {
   about: string;
-  communityname: string;
-  background_pic: string;
-  profile_pic: string;
+  name: string;
+  background_pic: USER_S_N_TYPE;
+  profile_pic: USER_S_N_TYPE;
   created_at: string;
-  posts: idstype[];
-  users: idstype[];
+  owner: IDSTYPE;
+  posts: IDSTYPE[];
+  users: IDSTYPE[];
 }
 
 export interface infocreatecardprops {

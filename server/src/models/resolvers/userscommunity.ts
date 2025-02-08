@@ -1,9 +1,12 @@
-import { listAll, findOne } from "../../utils/queriesutils.js";
+import { listAll, findOne } from "../../utils/common/queriesutils.js";
 //types
 import { usertype } from "./types/usertypes.js";
-import { filtersorttype } from "../../utils/types.js";
+import { filtersorttype } from "../../utils/common/types.js";
 import { communitytype } from "./types/communitiestypes.js";
-import { userscommunitytype, userscommunityfiltertype } from "./types/userscommunitytypes.js";
+import {
+  userscommunitytype,
+  userscommunityfiltertype,
+} from "./types/userscommunitytypes.js";
 
 export const userscommunityResolvers = {
   Query: {
@@ -22,11 +25,14 @@ export const userscommunityResolvers = {
         throw err;
       }
     },
-    userCommunity: async (_: undefined, { id }: { id: number }): Promise<userscommunitytype> => {
+    userCommunity: async (
+      _: undefined,
+      { id }: { id: string }
+    ): Promise<userscommunitytype> => {
       try {
         const usercommunityById: userscommunitytype = await findOne<
           userscommunitytype,
-          { id: number }
+          { id: string }
         >("user_community_relation", { id: id });
 
         if (!usercommunityById)
@@ -39,9 +45,9 @@ export const userscommunityResolvers = {
     },
   },
   UserCommunity: {
-    user_id: async ({ user_id }: { user_id: number }): Promise<usertype> => {
+    user_id: async ({ user_id }: { user_id: string }): Promise<usertype> => {
       try {
-        const userById: usertype = await findOne<usertype, { id: number }>(
+        const userById: usertype = await findOne<usertype, { id: string }>(
           "users",
           { id: user_id }
         );
@@ -51,11 +57,15 @@ export const userscommunityResolvers = {
         throw err;
       }
     },
-    community_id: async ({ community_id } : { community_id: number }): Promise<communitytype> => {
+    community_id: async ({
+      community_id,
+    }: {
+      community_id: string;
+    }): Promise<communitytype> => {
       try {
         const communityById: communitytype = await findOne<
           communitytype,
-          { id: number }
+          { id: string }
         >("communities", { id: community_id });
 
         return communityById;

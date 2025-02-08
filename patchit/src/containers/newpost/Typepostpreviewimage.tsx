@@ -1,14 +1,12 @@
-import React from "react";
-
 //css & types
-import "./css/newpostimages.css";
+import "./css/typepostimage.css";
 import { postpreviewimgpropstype } from "./types";
 
 const Typepostpreviewimage = (postpreviewimgpropstype: postpreviewimgpropstype) => {
-  const { idx, src, img_id, setImg, handleRemoveImage } = postpreviewimgpropstype;
+  const { src, img_id, setImg, handleRemoveImage } = postpreviewimgpropstype;
 
   return (
-    <div className="imageprofile" >
+    <div className={`imageprofile`}>
       <i
         onClick={() => handleRemoveImage(img_id)}
         className="material-icons right delete_icn"
@@ -16,10 +14,11 @@ const Typepostpreviewimage = (postpreviewimgpropstype: postpreviewimgpropstype) 
         delete_forever
       </i>
       <img
-        src={src}
         id="postimg"
-        alt={src}
-        onClick={() => setImg(idx)}
+        alt={src.name}
+        className={`prev${img_id}`}
+        src={URL.createObjectURL(src)}
+        onClick={() => setImg(img_id)}
       />
     </div>
   );

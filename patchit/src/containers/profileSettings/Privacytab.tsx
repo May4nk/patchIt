@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 
 //components
+import Patbtn from '../../components/html/Patbtn';
 import Settingtab from '../../components/settings/Settingtab';
 import Blockedbox from '../../components/settings/Blockedbox';
 
@@ -27,11 +28,11 @@ function Privacytab(privacyprops: privacytabpropstype) {
               Blocked people can’t send you chat requests or private messages.
             </div>
           </div>
-          <div className="waves-effect waves-light black-text usettingitembtn"
-            onClick={() => setShowBlockedBox(!showBlockedBox)}
-          >
-            {showBlockedBox ? "hide" : "Update"}
-          </div>
+          <Patbtn
+            text={showBlockedBox ? "hide" : "Update"}
+            state={showBlockedBox ? "selected" : "inactive"}
+            handleClick={() => setShowBlockedBox(!showBlockedBox)}
+          />
         </div>
         <div className="usettingitems">
           <div className="usettingitemlabels">
@@ -40,11 +41,11 @@ function Privacytab(privacyprops: privacytabpropstype) {
               Posts from muted communities won't show up in your feeds or recommendations.
             </div>
           </div>
-          <div className="waves-effect waves-light black-text usettingitembtn"
-            onClick={() => setShowMutedBox(!showMutedBox)}
-          >
-            {showMutedBox ? "hide" : "Update"}
-          </div>
+          <Patbtn
+            text={showMutedBox ? "hide" : "Update"}
+            state={showMutedBox ? "selected" : "inactive"}
+            handleClick={() => setShowMutedBox(!showMutedBox)}
+          />
         </div>
         <div className="usettingtitlemeta"> privacy </div>
         <Settingtab

@@ -1,22 +1,25 @@
 export const usercommunityTypeDefs = `
   type UserCommunity {
-    id: Int!
+    id: String!
     community_id: Community
     user_id: User
     created_at: String
   }
+
   input InsertUserCommunityInput {
-    community_id: Int!
-    user_id: Int!
+    community_id: String!
+    user_id: String!
   }
+
   input UserCommunityfilterInput {
-    id: Int
-    community_id: Int
-    user_id: Int
+    id: String
+    community_id: String
+    user_id: String
     created_at: String
   }
+
   input RemoveUserCommunityInput {
-    community_id: Int
-    user_id: Int
+    community_id: String
+    user_id: String
   }
 `;

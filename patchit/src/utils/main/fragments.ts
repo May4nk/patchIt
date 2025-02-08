@@ -17,8 +17,11 @@ export const CORE_POST_FIELDS = gql`
     }
     community_id {
       id
-      communityname
+      name
       profile_pic
+      owner {
+        id
+      }
     }
     comments {
       id

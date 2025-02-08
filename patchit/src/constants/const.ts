@@ -1,7 +1,7 @@
 import { Categories } from "emoji-picker-react";
-import { statenametype } from "../containers/communitySettings/types";
-import { profilesettingtabs } from "../containers/profileSettings/types";
+import { genretype } from "../containers/newpost/types";
 import { roomsettingtab } from "../components/chatbox/types";
+import { communitysettingtabs } from "../containers/communitySettings/types";
 
 export const ACTION: Record<
   "CURRENT" | "CLICKED" | "INPUT" | "DEFAULT",
@@ -14,11 +14,10 @@ export const ACTION: Record<
 };
 
 export const newpostrules: string[] = [
-  "1. Dont forget basic moral values.",
-  "2. It's good untill no harm to specific one.",
-  "3. Give a thought before hitting POST!",
-  "4. Follow community guidlines.",
-  "5. Most Importantly! Behave.",
+  "Follow community guidlines.",
+  "Dont forget basic moral values.",
+  "It's good untill no harm to specific one.",
+  "Give one more thought before hitting POST!",
 ];
 
 export const pollrules: string[] = [
@@ -28,7 +27,7 @@ export const pollrules: string[] = [
   "Options can't be edited after post.",
 ];
 
-export const postgenres: Record<"tabname" | "tabicn", string>[] = [
+export const postgenres: genretype[] = [
   { tabname: "BLOG", tabicn: "assignment" },
   { tabname: "IMAGE", tabicn: "image" },
   { tabname: "LINK", tabicn: "insert_link" },
@@ -42,16 +41,7 @@ export const allNames: string[] = [
   "disquisitiveTom",
 ];
 
-export const settingTabs: profilesettingtabs[] = [
-  "account",
-  "profile",
-  "privacy",
-  "notifications",
-  "feeds",
-  "chat",
-];
-
-export const communitySettingTabs: statenametype[] = [
+export const communitySettingTabs: communitysettingtabs[] = [
   "profile",
   "privacy",
   "notifications",

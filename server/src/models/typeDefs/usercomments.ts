@@ -1,21 +1,24 @@
 export const usercommentsTypeDefs = `
   type UserComment {
-    id: Int!
+    id: String!
     comment_id: Comment!
     user_id: User!
     created_at: String
   }
+
   input InsertUserCommentInput {
-    id: Int
-    comment_id: Int!
-    user_id: Int!
+    id: String
+    comment_id: String!
+    user_id: String!
   }
+
   input UserCommentfilterInput {
-    id: Int
-    post_id: Int
-    user_id: Int
+    id: String
+    post_id: String
+    user_id: String
   }
+
   input RemoveUserCommentInput {
-    id: Int!
+    id: String!
   }
 `;

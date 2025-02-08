@@ -1,6 +1,6 @@
 import React from "react";
 
-import { defaultUPic } from "../../../utils/helpers";
+import { defaultUPic } from "../../../utils/helpers/helpers";
 
 //components
 import Askinput from "../Askinput";

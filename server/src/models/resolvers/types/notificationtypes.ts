@@ -1,19 +1,24 @@
-import { NOTIFICATIONTYPE } from "../../mutations/types/notificationmutetypes";
+import { IDSTYPE, NOTIFYSTATUS, NOTIFYTYPE } from "../../../utils/common/types";
 import { usertype } from "./usertypes";
 
-export interface notificationtype {
-  id: number;
-  type: NOTIFICATIONTYPE;
+export interface notificationtype extends IDSTYPE {
+  type: NOTIFYTYPE;
   message: string;
-  status: string;
+  status: NOTIFYSTATUS;
   touser: usertype;
   fromuser: usertype;
 }
 
-export interface notificationfiltertype {
-  id: number;
-  type: NOTIFICATIONTYPE;
-  status: string;
-  touser: number;
-  fromuser: number;
+export interface rnotificationtype {
+  touser: string;
+  fromuser: string;
+  type: NOTIFYTYPE;
+}
+
+export interface notificationfiltertype extends IDSTYPE, rnotificationtype {
+  status: NOTIFYSTATUS;
+}
+
+export interface rawnotificationtype extends notificationfiltertype {
+  text: string;
 }

@@ -1,4 +1,5 @@
 import { gql } from "@apollo/client";
+import { CORE_POST_FIELDS } from "../../utils/main/fragments";
 
 const COMMON_POST_FIELDS = gql`
   fragment CommonPostFields on Post {
@@ -7,32 +8,6 @@ const COMMON_POST_FIELDS = gql`
     type
     content
   }
-`;
-
-export const GETALLPOSTS = gql`
-  query ListPosts($filter: PostfilterInput, $sort: [SortInput], $limit: Int) {
-    listPosts(filter: $filter, sort: $sort, limit: $limit) {
-      ...CommonPostFields
-      likes
-      status
-      created_at
-      owner {
-        id
-        username
-        profile_pic
-        status
-      }
-      community_id {
-        id
-        communityname
-        profile_pic
-      }
-      comments {
-        id
-      }
-    }
-  }
-  ${COMMON_POST_FIELDS}
 `;
 
 export const GETPOPULARCARDPOSTS = gql`
@@ -46,4 +21,13 @@ export const GETPOPULARCARDPOSTS = gql`
     }
   }
   ${COMMON_POST_FIELDS}
+`;
+
+export const GETALLPOSTS = gql`
+  query ListPosts($filter: PostfilterInput, $sort: [SortInput], $limit: Int) {
+    listPosts(filter: $filter, sort: $sort, limit: $limit) {
+      ...CorePostFields
+    }
+  }
+  ${CORE_POST_FIELDS}
 `;

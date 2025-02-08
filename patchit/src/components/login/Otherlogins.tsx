@@ -1,68 +1,65 @@
 import React from 'react';
 
-import useLoginvia from '../../utils/loginvia';
+//utils
+import useLoginvia from '../../utils/helpers/loginvia';
+
+//components
+import Patbtn from '../html/Patbtn';
 
 //css, types & images
 import "./loginbox.css";
 import { otherloginpropstype } from './types';
-
+import { VOIDFUNC } from '../../utils/main/types';
 const logo: string = require("../../img/logo.png");
 const googlelogo: string = require("../../img/logo_google.png");
 const anonlogo: string = require("../../img/logo_anonymous.png");
 const magiclogo: string = require("../../img/meteor_rain_white.png");
 
 function Otherlogins(otherloginprops: otherloginpropstype) {
-  const { activeLogin, setError, setActiveLogin } = otherloginprops;
-
+  const { activeLoginLevel, setError, setActiveLoginLevel, closeLogin } = otherloginprops;
   const googlelogin = useLoginvia("googleLogin");
   const anonlogin = useLoginvia("anonymousLogin");
 
   //handlers
-  const handleGoogleLogin: () => void = () => {
+  const handleGoogleLogin: VOIDFUNC = () => {
     try {
       googlelogin();
-    } catch (err: any) {
-      setError(err.message);
+      closeLogin()
+    } catch (err) {
+      setError({ status: 500, show: true, message: "Google login failed: Something went wrong" });
     }
+  }
+
+  const handleAnonlogin: VOIDFUNC = () => {
+    anonlogin();
+    closeLogin();
   }
 
   return (
     <div className="otherformlogin">
-      {activeLogin === "magiclogin" ? (
-        <div
-          onClick={() => setActiveLogin("signup")}
-          title="One Click login"
-          className="loginotherform waves-effect waves-light"
-        >
-          <img src={logo} className="magiclinkicn" alt={"anonmyous_logo"} />
-          <div> sign up </div>
-        </div>
+      {activeLoginLevel === 6 ? (
+        <Patbtn
+          img={logo}
+          text={"Sign Up"}
+          handleClick={() => setActiveLoginLevel(1)}
+        />
       ) : (
-        <div
-          onClick={() => setActiveLogin("magiclogin")}
-          title="One Click login"
-          className="loginotherform waves-effect waves-light"
-        >
-          <img src={magiclogo} className="magiclinkicn" alt={"magic_logo"} />
-          <div> Magin login </div>
-        </div>
+        <Patbtn
+          img={magiclogo}
+          text={"login"}
+          handleClick={() => setActiveLoginLevel(6)}
+        />
       )}
-      <div
-        title="Anonymous login"
-        onClick={() => anonlogin()}
-        className="loginotherform waves-effect waves-light"
-      >
-        <img src={anonlogo} className="loginformslogo" alt={"anonmyous_logo"} />
-        <div> Anonymous </div>
-      </div>
-      <div
-        title="Google login"
-        onClick={handleGoogleLogin}
-        className="loginotherform waves-effect waves-light"
-      >
-        <img src={googlelogo} className="loginformslogo" alt={"google_logo"} />
-        <div> oogle </div>
-      </div>
+      <Patbtn
+        img={anonlogo}
+        text={"Anonymous"}
+        handleClick={handleAnonlogin}
+      />
+      <Patbtn
+        text={"login"}
+        img={googlelogo}
+        handleClick={handleGoogleLogin}
+      />
     </div>
   )
 }

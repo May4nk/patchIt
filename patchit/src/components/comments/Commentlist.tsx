@@ -9,7 +9,7 @@ import "./css/commentlist.css";
 import { commentlistprops, commenttype } from "./types";
 
 const Commentlist = (commentlistprops: commentlistprops) => {
-  const { rootcomments, allcomments, setNewComment, newComment, setParentComment } = commentlistprops;
+  const { rootcomments, allcomments, setCommentState, setError, commentState } = commentlistprops;
 
   return (
     <div className="allcomments">
@@ -18,10 +18,10 @@ const Commentlist = (commentlistprops: commentlistprops) => {
           <Comments
             key={idx}
             data={comment}
-            newComment={newComment}
+            setError={setError}
             childcomments={allcomments}
-            setNewComment={setNewComment}
-            setParentComment={setParentComment}
+            commentState={commentState}
+            setCommentState={setCommentState}
           />
         ))
       ) : (

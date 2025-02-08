@@ -1,11 +1,11 @@
 import db from "../../db.js";
-import { listAll, findOne } from "../../utils/queriesutils.js";
+import { listAll, findOne } from "../../utils/common/queriesutils.js";
 
 //types
 import { usertype } from "./types/usertypes.js";
-import { filtersorttype } from "../../utils/types.js";
-import { chatroomfiltertype, chatroomtype } from "./types/chatroomtypes.js";
+import { filtersorttype, IDSTYPE } from "../../utils/common/types.js";
 import { chatpreferencetype } from "./types/chatpreferencetypes.js";
+import { chatroomfiltertype, chatroomtype } from "./types/chatroomtypes.js";
 
 export const chatroomResolvers = {
   Query: {
@@ -31,8 +31,8 @@ export const chatroomResolvers = {
       try {
         const chatroomById: chatroomtype = await findOne<
           chatroomtype,
-          { room_code: string }
-        >("chatrooms", { room_code: chatroomId });
+          { id: string }
+        >("chatrooms", { id: chatroomId });
 
         if (!chatroomById)
           throw new Error(`Chatroom not found with id: ${chatroomId}`);
@@ -44,9 +44,9 @@ export const chatroomResolvers = {
     },
   },
   Chatroom: {
-    owner: async ({ owner }: { owner: number }): Promise<usertype> => {
+    owner: async ({ owner }: { owner: string }): Promise<usertype> => {
       try {
-        const userById: usertype = await findOne<usertype, { id: number }>(
+        const userById: usertype = await findOne<usertype, { id: string }>(
           "users",
           { id: owner }
         );
@@ -56,16 +56,12 @@ export const chatroomResolvers = {
         throw err;
       }
     },
-    roomUsers: async ({
-      room_code,
-    }: {
-      room_code: string;
-    }): Promise<usertype[]> => {
+    roomUsers: async ({ id }: IDSTYPE): Promise<usertype[]> => {
       try {
         const allChatRoomUsers: usertype[] = await db("user_chatrooms")
           .rightJoin("users", "user_chatrooms.user_id", "=", "users.id")
           .select("users.*")
-          .where("user_chatrooms.room_id", room_code);
+          .where("user_chatrooms.room_id", id);
 
         return allChatRoomUsers;
       } catch (err) {
@@ -73,15 +69,13 @@ export const chatroomResolvers = {
       }
     },
     chatPreferences: async ({
-      room_code,
-    }: {
-      room_code: string;
-    }): Promise<chatpreferencetype | null> => {
+      id,
+    }: IDSTYPE): Promise<chatpreferencetype | null> => {
       try {
         const chatroomPreferences: chatpreferencetype = await findOne<
           chatpreferencetype,
           { room: string }
-        >("chat_preferences", { room: room_code });
+        >("chat_preferences", { room: id });
 
         if (!chatroomPreferences) {
           return null;

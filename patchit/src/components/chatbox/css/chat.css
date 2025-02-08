@@ -73,7 +73,7 @@
 }
 
 .chatpicaction:hover {
-  color: #2196F3;
+  color: #2196f3;
 }
 
 .chatpicactiondelete:hover {
@@ -150,16 +150,12 @@
   --epr-preview-text-size: 0.7rem;
 }
 
-.epr_-bbny0t>button {
+.epr_-bbny0t > button {
   display: none !important;
 }
 
 .epr_-rk4ix5 {
   font-size: 0.9rem !important;
-}
-
-button:focus {
-  background-color: transparent !important;
 }
 
 .epr_q54ef2 {

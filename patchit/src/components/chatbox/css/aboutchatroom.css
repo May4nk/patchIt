@@ -42,31 +42,9 @@
   margin-top: 1rem;
 }
 
-.aboutchatuseroption {
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  padding: 0.2vw 0.7vw;
-  margin: 0 0.7rem;
-  border-radius: 3rem;
-  font-weight: 410;
-  text-transform: capitalize;
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 0.9vw;
-  background: black;
-}
-
-.aboutchatuseroptionicn {
-  line-height: 25px !important;
-  margin: 0 0.2vw;
-  font-size: 1vw !important;
-  height: auto !important;
-}
-
-.aboutchatuseroption:hover {
-  cursor: pointer;
-  color: white;
-  background: rgba(255, 255, 255, 0.035);
+.aboutchatuseroptions .patbtn,
+.aboutchatuseroptions .patclearbtn {
+  margin: 0 0.5rem;
 }
 
 .showinmates {

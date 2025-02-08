@@ -1,36 +1,35 @@
 import db from "../../db.js";
-import { findOne } from "../../utils/queriesutils.js";
+import { findOne } from "../../utils/common/queriesutils.js";
 
 //types
-import { usertype } from "../resolvers/types/usertypes.js";
-import { communitytype } from "../resolvers/types/communitiestypes.js";
-type rcommunitytype = { id: number };
+import { IDSTYPE, loggedusertype } from "../../utils/common/types.js";
+import { rawcommunitytype } from "../resolvers/types/communitiestypes.js";
 
 export const communityMutations = {
   Mutation: {
     upsertCommunity: async (
       _: undefined,
-      { data }: { data: communitytype },
-      { user }: { user: usertype }
-    ): Promise<communitytype> => {
+      { data }: { data: rawcommunitytype },
+      { user }: { user: loggedusertype }
+    ): Promise<rawcommunitytype> => {
       try {
         if (!user) {
           throw new Error("User not authenticated");
         }
 
-        const foundCommunity: communitytype = await findOne<
-          communitytype,
-          { communityname: string }
-        >("communities", { communityname: data.communityname });
+        const foundCommunity: rawcommunitytype = await findOne<
+          rawcommunitytype,
+          { name: string }
+        >("communities", { name: data.name });
 
         if (!foundCommunity) {
-          const [createCommunity]: communitytype[] = await db("communities")
+          const [createCommunity]: rawcommunitytype[] = await db("communities")
             .insert(data)
             .returning("*");
 
           return createCommunity;
         } else if (foundCommunity && user.id === foundCommunity.owner) {
-          const [updateCommunity]: communitytype[] = await db("communities")
+          const [updateCommunity]: rawcommunitytype[] = await db("communities")
             .where("id", foundCommunity["id"])
             .update(data)
             .returning("*");
@@ -45,17 +44,17 @@ export const communityMutations = {
     },
     removeCommunity: async (
       _: undefined,
-      { data }: { data: rcommunitytype }
-    ): Promise<rcommunitytype> => {
+      { data }: { data: IDSTYPE }
+    ): Promise<IDSTYPE> => {
       try {
-        const foundCommunity: communitytype = await findOne<
-          communitytype,
-          { id: number }
+        const foundCommunity: rawcommunitytype = await findOne<
+          rawcommunitytype,
+          { id: string }
         >("communities", { id: data.id });
 
         if (!foundCommunity) throw new Error("Community not found...");
 
-        const [deleteCommunity]: rcommunitytype[] = await db("communities")
+        const [deleteCommunity]: IDSTYPE[] = await db("communities")
           .where("id", data.id)
           .del()
           .returning("id");

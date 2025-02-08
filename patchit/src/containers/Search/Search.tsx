@@ -52,7 +52,7 @@ const Search = () => {
 
   const foundCommunities: communitytype[] = useMemo(() => {
     return !allCommunitiesLoading && allCommunitiesData?.listCommunities?.filter(
-      (community: communitytype) => community.communityname.toLowerCase().includes(searchtext!.toLowerCase())
+      (community: communitytype) => community.name.toLowerCase().includes(searchtext!.toLowerCase())
     );
   }, [allCommunitiesLoading, allCommunitiesData, searchtext]);
 
@@ -101,14 +101,14 @@ const Search = () => {
       if (!communityLoading) {
         const communityPostsComments = communityData?.community?.posts?.map((post: posttype) => post.comments);
         return communityPostsComments?.flat(1)?.filter((comment: commentcardtype) => (
-          comment?.comment?.toLowerCase().includes(searchtext.toLowerCase())
+          comment?.text?.toLowerCase().includes(searchtext.toLowerCase())
         ));
       }
     }
 
     if (!allCommentsLoading) {
       return allCommentsData?.listComments.filter((comment: commentcardtype) => (
-        comment?.comment?.toLowerCase().includes(searchtext.toLowerCase())
+        comment?.text?.toLowerCase().includes(searchtext.toLowerCase())
       ));
     }
 
@@ -116,6 +116,7 @@ const Search = () => {
   }, [searchtext, cname, allCommentsLoading, allCommentsData, communityLoading, communityData]);
 
   useEffect(() => {
+    handleSearchtabs("Posts");
     if (searchtext && searchtext.length !== 0 && !cname) {
       getCommunities({
         variables: {
@@ -151,20 +152,14 @@ const Search = () => {
           }
         }
       })
-    }
-
-    if (searchtext && searchtext.length !== 0) {
+    } else {
       getCommunityActions({
         variables: {
           communityname: cname
         }
       })
     }
-  }, []);
-
-  useEffect(() => {
-    handleSearchtabs("Posts");
-  }, []);
+  }, [searchtext, cname]);
 
   return (
     <>

@@ -2,39 +2,28 @@ import React, { useEffect, useState } from "react";
 import { useLazyQuery, useMutation } from "@apollo/client";
 
 //components
-import Chat from "./Chat";
+import Chat from "./chat/Chat";
 import Chatoptions from "./Chatoptions";
 import Aboutchatroom from "./Aboutchatroom";
-import Createchatroom from "./Createchatroom";
-import Chatroomsettings from "./chatgroupsettings/Chatroomsettings";
+import Createchatroom from "./newchat/Createchatroom";
+import Chatroomsettings from "./settings/Chatroomsettings";
 
 //queries
 import { DELETECHATROOM, GETALLUSERS } from "../queries";
 
 //css & types
 import "../css/chatmsgs.css";
-import { chatmsgsprops } from "../types";
+import { ASYNCVOIDFUNC, ERRORTYPE } from "../../../utils/main/types";
+import { chatlevels, chatmsgsprops, setchatleveltype, seterrortype } from "../types";
 const logo = require("../../../img/white-logo.png")
 
 const Chatmsgs = (chatmsgsprops: chatmsgsprops) => {
   const {
-    error,
     userId,
-    setError,
-    roomName,
-    chatLevel,
-    activeRoom,
-    createRoom,
-    setRoomName,
-    setChatLevel,
-    chatgroupUsers,
-    usernameSearch,
-    chatroomInfo,
-    setChatGroupUsers,
-    setUsernameSearch,
+    chatBoxState,
+    handleChatBoxState,
     handleDefaultState,
     handleCreateChatroom,
-    updateChatroomInfo,
   } = chatmsgsprops;
 
   //states
@@ -45,11 +34,19 @@ const Chatmsgs = (chatmsgsprops: chatmsgsprops) => {
   const [getUsers, { data }] = useLazyQuery(GETALLUSERS);
 
   //handlers  
-  const handleDelete: () => Promise<void> = async () => {
+  const setChatLevel: setchatleveltype = (level: chatlevels) => {
+    handleChatBoxState({ type: "SET_LEVEL", level });
+  }
+
+  const setError: seterrortype = (error: ERRORTYPE) => {
+    handleChatBoxState({ type: "SET_ERROR", error });
+  }
+
+  const handleDelete: ASYNCVOIDFUNC = async () => {
     await deleteChatroom({
       variables: {
         data: {
-          room_code: activeRoom.roomId
+          id: chatBoxState?.activeRoomId
         }
       }
     })
@@ -60,6 +57,7 @@ const Chatmsgs = (chatmsgsprops: chatmsgsprops) => {
       variables: {
         filter: {
           "status": "ACTIVE",
+          "privacy": "PUBLIC"
         }
       }
     });
@@ -68,25 +66,28 @@ const Chatmsgs = (chatmsgsprops: chatmsgsprops) => {
   return (
     <div className="rchatcontainer">
       <div className="chattitle">
-        {activeRoom.roomId.length !== 0 ? (
-          <div className="chatuserpage" onClick={() => setChatLevel(1)}>
-            {chatLevel === 2 && (
+        {chatBoxState?.activeRoomId.length !== 0 ? (
+          <div
+            className="chatuserpage"
+            onClick={() => handleChatBoxState({ type: "SET_LEVEL", level: 1 })}
+          >
+            {chatBoxState?.level === 2 && (
               <i className="material-icons chatuserpageicn blue-text">
                 settings
               </i>
             )}
-            {chatroomInfo.roomName}
+            {chatBoxState?.roomInfo.name}
           </div>
         ) : (
           <>
-            {chatLevel === 101 ? (
-              createRoom ? "Create Room" : "Start Chat"
+            {chatBoxState?.level === 101 ? (
+              chatBoxState?.createRoom ? "Create Room" : "Start Chat"
             ) : ("")}
           </>
         )}
         <div className="chattitleicnwrapper">
-          {chatLevel === 0 && (
-            activeRoom.roomId.length !== 0 && (
+          {chatBoxState?.level === 0 && (
+            chatBoxState?.activeRoomId.length !== 0 && (
               <Chatoptions
                 handleDelete={handleDelete}
                 showChatoptions={showChatoptions}
@@ -94,53 +95,52 @@ const Chatmsgs = (chatmsgsprops: chatmsgsprops) => {
               />
             )
           )}
-          <i className="material-icons tiny chattitleicn" onClick={() => handleDefaultState(false)}>
+          <i className="material-icons chattitleicn" onClick={() => handleDefaultState(true)}>
             clear
           </i>
         </div>
       </div>
-      <div className={`${error.status === 200
+      <div className={`${chatBoxState?.error.status === 200
         ? "successerror"
-        : error.status === 0
+        : chatBoxState.error.status === 0
           ? "infoerror"
           : "checkerror"
         }
-        ${error.show ? "showerror" : ""}`
+        ${chatBoxState?.error.show ? "showerror" : ""}`
       }>
         <i className="material-icons checkerroricn">
-          {error.status !== 200 ? "error_outline" : "insert_emoticon"}
+          {chatBoxState?.error.status !== 200 ? "error_outline" : "insert_emoticon"}
         </i>
-        {error.message}
+        {chatBoxState?.error.message}
       </div>
       <div className="chatbody">
-        {activeRoom?.roomId.length !== 0 ? (
+        {chatBoxState?.activeRoomId.length !== 0 ? (
           <>
-            {chatLevel === 0 ? (
+            {chatBoxState?.level === 0 ? (
               <Chat
                 userId={userId}
-                activeRoom={activeRoom}
                 setError={setError}
+                activeRoomInfo={{ id: chatBoxState.activeRoomId, isRoom: chatBoxState.roomInfo.isRoom }}
               />
-            ) : chatLevel === 1 ? (
+            ) : chatBoxState?.level === 1 ? (
               <Aboutchatroom
                 userId={userId!}
-                handleDelete={handleDelete}
                 setChatLevel={setChatLevel}
-                chatroomInfo={chatroomInfo}
+                handleDelete={handleDelete}
+                chatroomInfo={chatBoxState.roomInfo}
               />
-            ) : chatLevel === 2 && (
+            ) : chatBoxState.level === 2 && (
               <Chatroomsettings
                 userId={userId!}
-                setError={setError}
                 usersList={data?.listUsers}
-                chatroomPreferences={chatroomInfo}
-                updateChatroomPreferences={updateChatroomInfo}
+                handleChatBoxState={handleChatBoxState}
+                chatroomPreferences={chatBoxState.roomInfo}
               />
             )}
           </>
         ) : (
           <>
-            {chatLevel === 100 ? (
+            {chatBoxState.level === 100 ? (
               <div className="startnewchat">
                 <div className="chatlogowrapper">
                   <img src={logo} className="chatlogo" alt="Chat_logo" />
@@ -154,18 +154,12 @@ const Chatmsgs = (chatmsgsprops: chatmsgsprops) => {
                   </div>
                 </div>
               </div>
-            ) : chatLevel === 101 && (
+            ) : chatBoxState?.level === 101 && (
               <Createchatroom
                 userId={userId}
-                roomName={roomName}
-                createRoom={createRoom}
-                setRoomName={setRoomName}
-                setChatLevel={setChatLevel}
                 usersList={data?.listUsers}
-                usernameSearch={usernameSearch}
-                chatgroupUsers={chatgroupUsers}
-                setUsernameSearch={setUsernameSearch}
-                setChatgroupUsers={setChatGroupUsers}
+                chatBoxState={chatBoxState}
+                handleChatBoxState={handleChatBoxState}
                 handleDefaultState={handleDefaultState}
                 handleCreateChatroom={handleCreateChatroom}
               />

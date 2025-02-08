@@ -35,18 +35,9 @@
   margin-top: 2rem;
 }
 
-.actionbtn,
-.closebtn {
-  font-weight: 500;
-  font-size: 0.9vw;
-  border-radius: 2rem;
-  cursor: pointer;
-  text-transform: capitalize;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 0 0.3rem;
-  padding: 0.3rem 0.9rem;
+.btnwrapper .patselectedbtn,
+.btnwrapper .patclearbtn {
+  margin: 0 0.3vw;
 }
 
 .modaltxt {

@@ -21,8 +21,4 @@ const Postrulestab = (postruletabprops: postruletabprops) => {
   )
 }
 
-Postrulestab.defaultProps = {
-  active: false
-}
-
 export default Postrulestab;

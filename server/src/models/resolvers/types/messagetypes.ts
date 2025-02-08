@@ -1,16 +1,15 @@
-import { usertype }  from "./usertypes.js";
+import { usertype } from "./usertypes.js";
 import { chatroomtype } from "./chatroomtypes.js";
+import { IDSTYPE } from "../../../utils/common/types.js";
 
-export interface messagetype {
-  id: number;
+export interface messagetype extends IDSTYPE {
+  text: string;
   user_id: usertype;
-  message: string;
   room_id: chatroomtype;
   created_at: string;
 }
 
-export interface messagefiltertype {
-  id: number;
-  user_id: number;
+export interface messagefiltertype extends IDSTYPE {
+  user_id: string;
   room_id: string;
 }

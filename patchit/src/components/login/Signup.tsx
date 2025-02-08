@@ -1,62 +1,96 @@
 import React, { useState } from 'react';
 
-import useLoginvia from '../../utils/loginvia';
-import { Randomcred } from '../../utils/helpers';
+//utils
+import useLoginvia from '../../utils/helpers/loginvia';
+import { Randomcred } from '../../utils/helpers/helpers';
 
 //components
+import Patbtn from '../html/Patbtn';
 import Askinput from '../html/Askinput';
 
-//css, types, images & constants
+//css, types, & constants
 import "./loginbox.css";
 import { signuppropstype } from './types';
 import { allNames } from '../../constants/const';
+import { signupdatatype } from '../../containers/Login/types';
+import { ASYNCVOIDFUNC, VOIDFUNC } from '../../utils/main/types';
 
 function Signup(signupprops: signuppropstype) {
-  const { handleChange, userData, setUserData, setError, error, closeLogin } = signupprops;
+  const { setError, error, closeLogin } = signupprops;
 
   const randomUsername = Randomcred("username");
   const isUsernameExist = useLoginvia("isUsernameAvailable");
   const signupAndLogin = useLoginvia("signupAndLoginUser");
 
   //states   
-  const [signupLevel, setSignupLevel] = useState<number>(0); //levels 0: default, 1: after entering mail
+  //levels 0: email, 1: username & password
+  const [signupLevel, setSignupLevel] = useState<number>(0);
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [userData, setUserData] = useState<signupdatatype>({
+    username: "",
+    password: "",
+    email: "",
+    consent: false,
+    cpassword: ""
+  });
 
   //handlers
-  const handleFocus: (check: string) => Promise<void> = async (check) => {
-    if (check === "email") {
-      if (userData?.email.length < 3 && userData?.email.match(
-        /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-      )) {
-        setError(`Email should be valid`)
-      }
+  const handleChange: VOIDFUNC = (e: any) => {
+    setUserData(prev => ({
+      ...prev,
+      [e.target.name]: e.target.value
+    }));
+  }
 
-      let emailExists: boolean = await isUsernameExist(null, userData.email);
+  const handleDefault: VOIDFUNC = () => {
+    setSignupLevel(0);
+    setShowPassword(false);
+    setUserData({
+      username: "",
+      password: "",
+      email: "",
+      consent: false,
+      cpassword: ""
+    });
+  }
 
-      if (emailExists) {
-        setError(`User with email "${userData.email}" already exist.`)
+  const handleUsernameVerification: ASYNCVOIDFUNC = async () => {
+    // if (check === "email") {
+    //   if (userData?.email.length < 3 && userData?.email.match(
+    //     /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+    //   )) {
+    //     setError(`Email should be valid`)
+    //   }    
+    if (userData?.username.length > 3) {
+      let usernameExists = await isUsernameExist(userData.username, null);
+
+      if (usernameExists) {
+        setError({ status: 500, message: `User with username "${userData.username}" already exist.`, show: true });
       } else {
-        setError("");
+        setError({ status: 0, message: "", show: false });
       }
-
-    } else if (check === "username") {
-      if (userData?.username.length > 3) {
-        let usernameExists = await isUsernameExist(userData.username);
-
-        if (usernameExists) {
-          setError(`User with username "${userData.username}" already exist.`)
-        } else {
-          setError("");
-        }
-      } else {
-        setError(`Username should be 4-17 letters`)
-      }
+    } else {
+      setError({ status: 500, message: "Username should be 4-17 letters", show: true });
     }
   }
 
-  const handleSignup: (e: any) => Promise<void> = async (e: any) => {
+  const verifyEmail: ASYNCVOIDFUNC = async () => {
+    const emailExists: boolean = await isUsernameExist(null, userData.email);
+
+    if (emailExists) {
+      setError({ status: 500, message: "Account with email already exists, try login", show: true });
+      return;
+    } else {
+      setError({ status: 0, message: "", show: false });
+    }
+
+    setSignupLevel(1);
+  }
+
+  const handleSignup: ASYNCVOIDFUNC = async (e: any) => {
     e.preventDefault();
-    if (userData.password !== userData.confirm_password) {
-      setError("Entered Passwords don't match");
+    if (userData.password !== userData.cpassword) {
+      setError({ status: 500, message: "Entered Passwords don't match", show: false });
       return;
     }
 
@@ -68,97 +102,102 @@ function Signup(signupprops: signuppropstype) {
       }
 
       await signupAndLogin(signupData);
+      handleDefault();
       closeLogin();
     } catch (err) {
-      setError("Something went wrong: User Signup failed");
+      setError({ status: 500, message: "User Signup failed: Try again", show: false });
     }
   }
 
   return (
-    <form className="form">
+    <>
       {signupLevel === 0 ? (
         <>
           <div className="loginforminp">
             <Askinput
+              required={true}
               name={"email"}
               placeholder={"Email"}
               onChange={handleChange}
               value={userData?.email}
-              onBlur={() => handleFocus("email")}
+            />
+          </div>
+          <div className="policy">
+            <label className="block">
+              <input
+                required
+                name="terms"
+                type="checkbox"
+                checked={userData?.consent}
+                onChange={() => setUserData({ ...userData, consent: !userData.consent })}
+              />
+              <span className="policytxt">
+                By checking, you agree on setting up a Patch! account and agree to our User Agreement and Privacy Policy.
+              </span>
+            </label>
+          </div>
+          <div className="loginbtnwrapper">
+            <Patbtn
+              text={"continue"}
+              state={"active"}
+              handleClick={verifyEmail}
+              disabled={(userData.email && userData.consent && !error.show) ? false : true}
             />
           </div>
         </>
       ) : signupLevel === 1 && (
-        <>
+        <form className="form" onSubmit={handleSignup}>
           <div className="loginforminp">
             <Askinput
+              required={true}
               prefixes={["u/"]}
               name={"username"}
               onChange={handleChange}
               placeholder={"Username"}
               value={userData.username}
               postfix={"ICimport_export"}
-              onBlur={() => handleFocus("username")}
+              onBlur={handleUsernameVerification}
               onClickPostfix={() => setUserData({ ...userData, username: randomUsername(allNames) })}
             />
           </div>
           <div className="loginforminp">
             <Askinput
-              type={"password"}
+              required={true}
               name={"password"}
               onChange={handleChange}
               placeholder={"Password"}
               value={userData.password}
+              type={showPassword ? "text" : "password"}
             />
           </div>
           <div className="loginforminp">
             <Askinput
-              type={"password"}
-              name={"confirm_password"}
+              required={true}
+              name={"cpassword"}
               onChange={handleChange}
+              value={userData.cpassword}
               placeholder={"Confirm Password"}
-              value={userData.confirm_password}
+              type={showPassword ? "text" : "password"}
             />
           </div>
-        </>
-      )}
-      {signupLevel === 0 && (
-        <div className="policy">
-          <label className="block">
-            <input
-              required
-              name="terms"
-              type="checkbox"
-              checked={userData?.consent}
-              onChange={() => setUserData({ ...userData, consent: !userData.consent })}
+          <div className="signupshowpwd" onClick={() => setShowPassword(prev => !prev)}>
+            (show password)
+            <i className="material-icons signupshowpwdicn">
+              {showPassword ? "no_encryption" : "https"}
+            </i>
+          </div>
+          <div className="loginbtnwrapper">
+            <Patbtn
+              text={"Sign up"}
+              state={"active"}
+              type={"submit"}
+              handleClick={verifyEmail}
+              disabled={(userData?.username && userData?.password && userData?.email) ? false : true}
             />
-            <span className="policytxt">
-              By checking, you agree on setting up a Patch! account and agree to our User Agreement and Privacy Policy.
-            </span>
-          </label>
-        </div>
+          </div>
+        </form>
       )}
-      {signupLevel === 0 ? (
-        <button
-          id="modalloginbtn"
-          onClick={() => setSignupLevel(1)}
-          className="btn waves-effect waves-light"
-          disabled={(userData.email && userData.consent && error.length < 1) ? false : true}
-        >
-          Continue
-        </button>
-      ) : signupLevel === 1 && (
-        <button
-          type="submit"
-          id="modalloginbtn"
-          onClick={handleSignup}
-          className="btn waves-effect waves-light"
-          disabled={(userData?.username && userData?.password && userData?.email) ? false : true}
-        >
-          Signup
-        </button>
-      )}
-    </form>
+    </>
   )
 }
 

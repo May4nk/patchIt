@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useReducer } from "react";
 import { useMutation } from "@apollo/client";
 import { useNavigate } from "react-router-dom";
 
 import { useAuth } from "../../utils/hooks/useAuth";
 
 //component
+import Patbtn from "../html/Patbtn";
 import Commentlist from "./Commentlist";
 
 //queries
@@ -13,24 +14,55 @@ import { UPSERTCOMMENT } from "./queries";
 //css & types
 import "./css/commentspace.css";
 import { authcontexttype } from "../../context/types";
-import { newcommenttype, commenttype, commentspaceprops, parentcommenttype } from "./types";
+import { ASYNCVOIDFUNC, USER_S_N_TYPE, VOIDFUNC } from "../../utils/main/types";
+import { commenttype, commentspaceprops, commentstatetype, commentstateactiontype, handlecommentstatetype } from "./types";
 
 const Commentspace = (commentspaceprops: commentspaceprops) => {
-  const { postId, comments } = commentspaceprops;
+  const { postId, comments, setError } = commentspaceprops;
 
   const navigate = useNavigate();
   const { user }: authcontexttype = useAuth();
-  const userId: number | null = user && Number(user["id"]);
+  const userId: USER_S_N_TYPE = user && user["id"];
 
   //states
-  const [addComment, setAddComment] = useState<boolean>(false);
-  const [parentComment, setParentComment] = useState<parentcommenttype>();
-  const [newComment, setNewComment] = useState<newcommenttype>({
-    user_id: userId!,
-    post_id: Number(postId),
-    parent_id: null,
-    comment: ""
-  });
+  const commentInitState: commentstatetype = {
+    addComment: false,
+    parentComment: null,
+    newComment: {
+      user_id: userId!,
+      post_id: postId,
+      parent_id: null,
+      text: ""
+    }
+  }
+
+  const handleCommentState: handlecommentstatetype = (state: commentstatetype, action: commentstateactiontype) => {
+    switch (action.type) {
+      case "ADD_COMMENT":
+        return { ...state, addComment: action.addComment };
+
+      case "NEW_COMMENT":
+        return {
+          ...state,
+          addComment: true,
+          newComment: {
+            ...state.newComment,
+            ...action.comment
+          }
+        };
+
+      case "ADD_PARENT_COMMENT":
+        return { ...state, parentComment: action.comment };
+
+      case "RESET":
+        return commentInitState;
+
+      default:
+        return state;
+    }
+  }
+
+  const [commentState, dispatch] = useReducer(handleCommentState, commentInitState);
 
   //queries
   const [insertComment] = useMutation(UPSERTCOMMENT);
@@ -49,96 +81,107 @@ const Commentspace = (commentspaceprops: commentspaceprops) => {
     })
   }
 
-  const handleComment: (e: any) => void = (e) => {
-    setNewComment({
-      ...newComment,
-      [e.target.name]: e.target.value
-    })
+  const handleComment: VOIDFUNC = (e) => {
+    dispatch({ type: "NEW_COMMENT", comment: { [e.target.name]: e.target.value } });
   }
 
-  const handleAddComment: (e: any) => Promise<void> = async (e) => {
+  const handleAddComment: ASYNCVOIDFUNC = async (e: any) => {
     e.preventDefault();
-    if (newComment.comment.length !== 0) {
-      await insertComment({
-        variables: {
-          data: newComment
-        },
-        onCompleted: () => {
-          if (newComment?.parent_id) {
-            const parentComment = document.getElementById(`comment${newComment.parent_id}`);
-            if (parentComment) {
-              parentComment.scrollIntoView({ behavior: "smooth" });
+    if (commentState?.newComment.text.length !== 0) {
+      try {
+        await insertComment({
+          variables: {
+            data: commentState?.newComment
+          },
+          onCompleted: () => {
+            if (commentState?.newComment?.parent_id) {
+              const parentComment = document.getElementById(`comment${commentState?.newComment.parent_id}`);
+              if (parentComment) {
+                parentComment.scrollIntoView({ behavior: "smooth" });
+              }
             }
+            dispatch({ type: "RESET" });
           }
-          setNewComment({ user_id: userId!, post_id: Number(postId), parent_id: null, comment: "" });
-          setParentComment({ id: 0, comment: "" });
-          setAddComment(!addComment);
-        }
-      })
+        })
+      } catch (err) {
+        setError({ show: true, status: 500, message: "Try again: Something went wrong..." })
+      }
     }
   }
 
-  const handleCommentSection: () => void = () => {
-    if (user) {
-      setNewComment({ user_id: userId!, post_id: Number(postId), parent_id: null, comment: "" });
-      setParentComment({ id: 0, comment: "" });
-      setAddComment(!addComment);
+  const handleCommentSection: VOIDFUNC = () => {
+    if (userId) {
+      dispatch({
+        type: "NEW_COMMENT",
+        comment: {
+          user_id: userId,
+          post_id: postId
+        }
+      });
     } else {
       navigate("/account/login");
     }
   }
 
   useEffect(() => {
-    if (newComment.parent_id !== null) {
-      setAddComment(true);
+    if (commentState?.newComment.parent_id !== null) {
+      dispatch({ type: "ADD_COMMENT", addComment: true });
     }
-  }, [newComment.parent_id]);
+  }, [commentState?.newComment.parent_id]);
 
   return (
     <div className="commentspace">
-      {!addComment && (
-        <div className="commentspaceadd waves-effect waves-light" onClick={handleCommentSection}>
-          <i className="material-icons commentspaceaddicn"> add </i>
-          Comment
-        </div>
+      {!commentState.addComment && (
+        <Patbtn
+          icn={"add"}
+          size={"big"}
+          text={"comment"}
+          handleClick={handleCommentSection}
+        />
       )}
-      {addComment && (
+      {commentState.addComment && (
         <div className="newcommentwrapper">
-          {newComment.parent_id !== null && (
+          {commentState?.newComment.parent_id !== null && (
             <div className="parentComment">
               <i className="material-icons tiny"> reply </i>
               <div className="parentcommenttxt">
-                {parentComment && parentComment?.comment.length > 88
-                  ? `${parentComment?.comment.substring(0, 88)}...`
-                  : parentComment?.comment
+                {commentState?.parentComment && commentState?.parentComment?.text.length > 88
+                  ? `${commentState?.parentComment?.text.substring(0, 88)}...`
+                  : commentState?.parentComment?.text
                 }
               </div>
             </div>
           )}
           <textarea
-            name="comment"
+            name="text"
             className="newcomment"
             placeholder="Add a comment..."
             onChange={handleComment}
             id={"replycomment"}
-            value={newComment.comment}
+            value={commentState?.newComment.text}
           ></textarea>
           <div className="newcommentaction">
-            <div className="newcommentactionbtnpost waves-effect waves-light" onClick={handleAddComment}>
-              Post
-            </div>
-            <div className="newcommentactionbtncancel waves-effect waves-light" onClick={handleCommentSection}>
-              cancel
-            </div>
+            <Patbtn
+              text={"post"}
+              size={"small"}
+              state={"selected"}
+              handleClick={handleAddComment}
+            />
+            <Patbtn
+              text={"cancel"}
+              state={"clear"}
+              size={"small"}
+              handleClick={() => dispatch({ type: "ADD_COMMENT", addComment: false })}
+            />
           </div>
         </div>
       )}
       <Commentlist
         allcomments={group}
-        newComment={newComment}
-        setNewComment={setNewComment}
+        setError={setError}
+        setCommentState={dispatch}
+        commentState={commentState}
         rootcomments={group[0].reverse()}
-        setParentComment={setParentComment}
       />
     </div>
   )

@@ -1,3 +1,4 @@
+import { IDSTYPE } from "../../../utils/common/types";
 import { communitytype } from "./communitiestypes";
 import { usertype } from "./usertypes";
 
@@ -12,13 +13,14 @@ interface communitypreference {
   birthday: boolean;
 }
 
-export interface communitypreferencetype extends communitypreference {
-  id: number;
+export interface communitypreferencetype extends communitypreference, IDSTYPE {
+  community_name: string;
   handlers: string;
 }
 
-export interface communitypreferenceresolvertype extends communitypreference {
-  id: number;
+export interface communitypreferenceresolvertype
+  extends communitypreference,
+    IDSTYPE {
   community_name: communitytype;
   handers: usertype[];
 }
@@ -26,3 +28,13 @@ export interface communitypreferenceresolvertype extends communitypreference {
 export interface communitypreferencefiltertype extends communitypreference {
   community_name: string;
 }
+
+export interface rawcommunitypreferencetype
+  extends communitypreferencefiltertype,
+    IDSTYPE {
+  handlers: string;
+}
+
+export type rcommunitypreferencetype = IDSTYPE & {
+  community_name: string;
+};

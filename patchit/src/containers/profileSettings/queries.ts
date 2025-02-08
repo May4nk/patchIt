@@ -1,4 +1,5 @@
 import { gql } from "@apollo/client";
+import { USER_BASIC_FIELDS } from "../queries/user";
 
 export const UPSERTUSERPREFERENCES = gql`
   mutation UpsertUserPreference($data: InsertUserPreferencesInput) {
@@ -9,18 +10,14 @@ export const UPSERTUSERPREFERENCES = gql`
 `;
 
 export const GETUSERPREFERENCE = gql`
-  query Userpreference($userId: Int!) {
-    userpreference(userId: $userId) {
-      user_id {
-        id
-        username
-        email
-        privacy
-        profile_pic
+  query Userpreference($username: String!) {
+    userpreference(username: $username) {
+      user {
+        ...userBasicFields
         background_pic
-        about
         social_links
       }
     }
   }
+  ${USER_BASIC_FIELDS}
 `;

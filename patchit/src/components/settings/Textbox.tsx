@@ -1,5 +1,8 @@
 import React from 'react';
 
+//components
+import Patbtn from '../html/Patbtn';
+
 //types & css
 import "./main.css";
 import { textboxpropstype } from './types';
@@ -8,10 +11,6 @@ function Textbox(textboxprops: textboxpropstype) {
   const { setShowTextBox, placeholder, name, value, handleChange, handleUpdate } = textboxprops;
 
   //handlers
-  const handleDefault: () => void = () => {
-    setShowTextBox(false);
-  }
-
   const handleBoxUpdates: () => void = () => {
     handleUpdate();
     setShowTextBox(false);
@@ -36,18 +35,16 @@ function Textbox(textboxprops: textboxpropstype) {
         ></textarea>
       </div>
       <div className="textboxfooter">
-        <div
-          onClick={handleDefault}
-          className="waves-effect waves-light black-text red lighten-2 socialactionbtn"
-        >
-          cancel
-        </div>
-        <div
-          onClick={handleBoxUpdates}
-          className="waves-effect waves-light black-text blue lighten-3 socialactionbtn"
-        >
-          update
-        </div>
+        <Patbtn
+          text={"cancel"}
+          state="clear"
+          handleClick={() => setShowTextBox(false)}
+        />
+        <Patbtn
+          text={"update"}
+          state="selected"
+          handleClick={handleBoxUpdates}
+        />
       </div>
     </div>
   )

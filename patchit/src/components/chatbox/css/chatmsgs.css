@@ -53,7 +53,7 @@
 }
 
 .chattitleicn:hover {
-  color: white;
+  color: rgb(232, 132, 132);
 }
 
 .chatbody {
@@ -101,7 +101,7 @@
   height: 1.3rem;
   width: 100%;
   margin: 0.3rem 0;
-  color: transparent
+  color: transparent;
 }
 
 .selectedGroupUsers {
@@ -178,26 +178,18 @@
   border-radius: 50%;
 }
 
-.acceptroom {
+.createroombtns {
   display: flex;
-  justify-content: flex-end;
-  width: 100%;
+  justify-content: space-around;
+  margin-left: auto;
+  width: auto;
+  margin-bottom: 0.9vw;
   align-items: center;
 }
 
-.acceptroombtn {
-  height: 1.5vw;
-  border-radius: 1.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.5rem 0.7rem;
-  font-size: 0.9vw;
-  font-weight: 500;
-  margin: 0.5rem;
-  text-transform: capitalize;
-  color: black;
-  background: #64B5F6 !important;
+.createroombtns .patselectedbtn,
+.createroombtns .patclearbtn {
+  margin: 0 0.5vw;
 }
 
 .createroom input {
@@ -291,7 +283,7 @@
 
 .startnewchatmetatext {
   font-size: 0.8vw;
-  color: #82C2F4;
+  color: #82c2f4;
   font-weight: 500;
 }
 
@@ -312,5 +304,5 @@
 }
 
 .startnewchatbtn:hover {
-  background: #64B5F6;
+  background: #64b5f6;
 }

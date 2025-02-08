@@ -5,8 +5,7 @@ export const chatroomTypeDefs = `
   }
 
   type Chatroom {
-    id: Int!
-    room_code: String!
+    id: String!
     roomName: String
     owner: User!
     status: STATUS
@@ -15,22 +14,24 @@ export const chatroomTypeDefs = `
     chatPreferences: ChatPreferences
   }
 
-  input InsertChatroomInput {
-    room_code: String!
-    owner: Int!
+  input InsertChatroomInput {    
+    owner: String!
     roomName: String
     status: STATUS
   }
 
   input ChatroomsfilterInput {
-    id: Int
-    room_code: String
-    roomName: String
-    owner: Int
+    id: String    
+    roomName: [String]
+    owner: String
     status: STATUS
+  }
+
+  input CheckRoomExists {
+    roomName: String
   }
     
   input RemoveChatroomInput {
-    id: Int
+    id: String
   }
 `;

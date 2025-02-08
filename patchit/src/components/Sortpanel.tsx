@@ -2,10 +2,13 @@ import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useLazyQuery } from "@apollo/client";
 
-import useLoginvia from "../utils/loginvia";
+//utils
+import useLoginvia from "../utils/helpers/loginvia";
 import { useAuth } from "../utils/hooks/useAuth";
 
 //components
+import Patbtn from "./html/Patbtn";
+import Patchip from "./html/Patchip";
 import Patdrop from "./html/patdrop/Patdrop";
 
 //queries
@@ -14,16 +17,17 @@ import { GETUSERPINNEDPOST } from "./queries/sortpannel";
 //css & types
 import "./css/sortpannel.css";
 import { authcontexttype } from "../context/types";
-import { sortprofile } from "../constants/patdropconst";
 import { droppertype } from "./html/patdrop/types";
+import { USER_S_N_TYPE } from "../utils/main/types";
+import { sortprofile } from "../constants/patdropconst";
 import { savedposttype, sortpanelprops } from "./types/sortpaneltypes";
 
 const Sortpanel = (sortpanelprops: sortpanelprops) => {
   const { sort, setSort } = sortpanelprops;
-  const anonymouslogin = useLoginvia("anonymousLogin");
 
   const { user }: authcontexttype = useAuth();
-  const userId: number | null = user && Number(user["id"]);
+  const anonymouslogin = useLoginvia("anonymousLogin");
+  const userId: USER_S_N_TYPE = user && user["id"];
 
   const sortpanelDroppers: droppertype[] = [
     { title: "New", icn: "timeline", event: () => setSort("created_at"), state: "CLICKED" },
@@ -62,11 +66,13 @@ const Sortpanel = (sortpanelprops: sortpanelprops) => {
             {!loading && (
               data?.listSavedPost.length > 0 ? (
                 data?.listSavedPost.map((savedpost: savedposttype, idx: number) => (
-                  <Link to={`/post/${savedpost.post_id.id}`} className="sortposttabs" key={idx}>
-                    {savedpost.post_id.title.length > 22 ?
-                      savedpost.post_id.title.trim().substring(0, 23) + "..." :
-                      savedpost.post_id.title.trim()
-                    }
+                  <Link to={`/post/${savedpost.post_id.id}`} key={idx}>
+                    <Patchip
+                      title={savedpost.post_id.title.length > 22 ?
+                        savedpost.post_id.title.trim().substring(0, 23) + "..." :
+                        savedpost.post_id.title.trim()
+                      }
+                    />
                   </Link>
                 ))
               ) : (
@@ -75,9 +81,11 @@ const Sortpanel = (sortpanelprops: sortpanelprops) => {
             )}
           </div>
           <div className="sortpaneloptions">
-            <Link to={"/post/new"} className="waves-effect sortpanelbtn waves-light">
-              <i className="material-icons sortpanelbtnicn">add</i>
-              Post
+            <Link to={"/create/post"}>
+              <Patbtn
+                text={"Post"}
+                icn={"add"}
+              />
             </Link>
             <div className="sortpanelsortoptions">
               <Patdrop profile={sortprofile} droppers={sortpanelDroppers} />
@@ -86,24 +94,29 @@ const Sortpanel = (sortpanelprops: sortpanelprops) => {
         </>
       ) : (
         <div className="nologinsort">
-          <div
-            className={`waves-effect sortpanelbtn waves-light ${sort === "created_at" && "blue black-text"}`}
-            onClick={() => handleSort("created_at")}
-          >
-            <i className="material-icons sortpanelbtnicn">timeline</i>
-            New
+          <Patbtn
+            icn={"timeline"}
+            text={"new"}
+            handleClick={() => handleSort("created_at")}
+            state={sort === "created_at" ? "active" : "inactive"}
+          />
+          <Patbtn
+            icn={"trending_up"}
+            text={"popular"}
+            handleClick={() => handleSort("likes")}
+            state={sort === "likes" ? "active" : "inactive"}
+          />
+          <div className="lastbtn">
+            <Patbtn
+              text={"anonymous"}
+              icn={"perm_identity"}
+              handleClick={() => anonymouslogin()}
+            />
           </div>
-          <div
-            className={`waves-effect sortpanelbtn waves-light ${sort === "likes" && "blue black-text"}`}
-            onClick={() => handleSort("likes")}
-          >
-            <i className="material-icons sortpanelbtnicn">trending_up</i>
-            Popular
-          </div>
-          <div className="waves-effect sortpanelbtnlogin  waves-light" onClick={() => anonymouslogin()}>
+          {/* <div className="waves-effect sortpanelbtnlogin  waves-light" onClick={() => anonymouslogin()}>
             <i className="material-icons sortpanelbtnicn">perm_identity</i>
             Anonymous Browsing
-          </div>
+          </div> */}
         </div>
       )}
     </div>

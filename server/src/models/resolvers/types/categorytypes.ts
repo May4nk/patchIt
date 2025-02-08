@@ -1,12 +1,12 @@
 export interface categorytype {
-  id: number;
+  id: string;
   categoryname: string;
   categoryicon: string;
   created_at: string;
 }
 
 export interface categoryfiltertype {
-  id: number;
+  id: string;
   categoryname: string;
   categoryicon: string;
 }

@@ -1,23 +1,26 @@
 export const userfollowingTypeDefs = `
   type UserFollowing {
-    id: Int!
+    id: String!
     follower: User
     following: User
     created_at: String
-  }                                         
-  input InsertUserFollowingInput {
-    follower: Int!
-    following: Int!
   }
+
+  input InsertUserFollowingInput {
+    follower: String!
+    following: String!
+  }
+
   input UserFollowingfilterInput {
-    id: Int
-    follower: Int
-    following: Int
+    id: String
+    follower: String
+    following: String
     created_at: String
   }
+
   input RemoveUserFollowingInput {
-    id: Int
-    follower: Int
-    following: Int
+    id: String
+    follower: String
+    following: String
   }
 `;

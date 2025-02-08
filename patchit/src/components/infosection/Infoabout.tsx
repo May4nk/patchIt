@@ -2,36 +2,45 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useLazyQuery, useMutation } from "@apollo/client";
 
-import { defaultUPic, generateRoomCode } from "../../utils/helpers";
+//utils
 import { useAuth } from "../../utils/hooks/useAuth";
-import { checkChatroomExists, createNewChatroom } from "../../utils/chatopx";
-import { changeToThemeColor } from "../../utils/themeopx";
+import { defaultUPic } from "../../utils/helpers/helpers";
+import { changeToThemeColor } from "../../utils/opx/communityopx";
+import { checkChatroomExists, createNewChatroom } from "../../utils/opx/chatopx";
 
 //components
+import Patbtn from "../html/Patbtn";
 import Patpicer from "../html/Patpicer";
 
 //queries & mutations
 import { FOLLOWUSER, GETNOTIFICATIONS } from "../navbar/queries";
-import { INSERTUSERCOMMUNITY, REMOVEUSERCOMMUNITY, SENDFOLLOWREQ, REMOVEFOLLOWER, REMOVEFOLLOWREQ } from "../queries/infosection";
+import {
+  INSERTUSERCOMMUNITY,
+  REMOVEUSERCOMMUNITY,
+  REMOVEFOLLOWREQ,
+  REMOVEFOLLOWER,
+  SENDFOLLOWREQ,
+} from "../queries/infosection";
 
 //css, images & types
 import "./css/infoabout.css";
-import { infoaboutpropstype } from "./types";
+import { infoaboutpropstype, sendnotificationreqtype } from "./types";
+import { notificationtype } from "../navbar/types";
 import { authcontexttype } from "../../context/types";
 import { chatgroupusertype } from "../chatbox/types";
-import { FOLLOWINGTYPE, NOTIFICATIONTYPE } from "../../utils/main/types";
-import { notificationtype } from "../navbar/types";
+import { FOLLOWINGTYPE, NOTIFYTYPE, USER_S_N_TYPE } from "../../utils/main/types";
+import { defaultUserPic } from "../../constants/const";
+
 let bgpic: string = require("../../img/defaultbgpic.png");
 
 const Infoabout = (infoaboutprops: infoaboutpropstype) => {
-  const { data, userdata, setError } = infoaboutprops;
-
+  const { data, userdata } = infoaboutprops;
   const navigate = useNavigate();
 
   const { user }: authcontexttype = useAuth();
-  const userId: number | null = user && Number(user["id"]);
+  const userId: USER_S_N_TYPE = user && user["id"];
   const userName: string | null = user && user["username"];
-  const userRole: number | null = user && (user["role"]);
+  const roomName: USER_S_N_TYPE = userdata ? `${data.username}-${userName}` : null;
 
   //states
   const [pics, setPics] = useState<string[]>([]);
@@ -58,7 +67,7 @@ const Infoabout = (infoaboutprops: infoaboutpropstype) => {
           variables: {
             data: {
               user_id: userId,
-              community_id: Number(data?.id)
+              community_id: data?.id
             }
           }
         });
@@ -67,20 +76,24 @@ const Infoabout = (infoaboutprops: infoaboutpropstype) => {
           variables: {
             data: {
               user_id: userId,
-              community_id: Number(data?.id)
+              community_id: data?.id
             }
           }
         });
       }
 
-      data?.setInCommunity(!data?.inCommunity);
+      data?.updateCommunitySettings({ type: "UPDATE_IN_COMMUNITY", inCommunity: !data?.inCommunity });
 
     } else {
       navigate("/account/login");
     }
   }
 
-  const sendRequest: (type: NOTIFICATIONTYPE) => Promise<void> = async (type: NOTIFICATIONTYPE) => {
+  const sendRequest: sendnotificationreqtype = async (type: NOTIFYTYPE) => {
+    if (!userdata) {
+      return;
+    }
+
     try {
       await sendFollowReq({
         variables: {
@@ -99,10 +112,9 @@ const Infoabout = (infoaboutprops: infoaboutpropstype) => {
         }
       });
     } catch (err) {
-      setError({
-        message: "Something went wrong: Not able to send request",
-        status: 500,
-        show: true
+      data?.updateUserSettings({
+        type: "SET_ERROR",
+        error: { show: true, status: 500, message: "Request failed: Something went wrong" }
       });
 
       setFollowing((prev) => prev);
@@ -111,6 +123,10 @@ const Infoabout = (infoaboutprops: infoaboutpropstype) => {
   }
 
   const removeReq: () => Promise<void> = async () => {
+    if (!userdata) {
+      return;
+    }
+
     try {
       await removeFollowReq({
         variables: {
@@ -121,17 +137,17 @@ const Infoabout = (infoaboutprops: infoaboutpropstype) => {
         }
       });
     } catch (err) {
-      setError({
-        message: "Uh! Oh, Something went wrong",
-        status: 500,
-        show: true
+      data?.updateUserSettings({
+        type: "SET_ERROR",
+        error: { show: true, status: 500, message: "Request failed: Something went wrong" }
       });
+
       setFollowing((prev) => prev);
       setIsChatBuddy((prev) => prev);
     }
   }
 
-  const handleUserFollow: (type: NOTIFICATIONTYPE) => Promise<void> = async (type: NOTIFICATIONTYPE) => {
+  const handleUserFollow: sendnotificationreqtype = async (type: NOTIFYTYPE) => {
     if (!user) {
       navigate("/account/login");
       return;
@@ -151,21 +167,26 @@ const Infoabout = (infoaboutprops: infoaboutpropstype) => {
             },
             onCompleted: () => {
               setFollowing("FOLLOW");
-              if (data?.userSettings.privacy === "PRIVATE") {
+              if (data?.userSettings.isProfilePrivate) {
                 data?.updateUserSettings({
-                  type: "UPDATE", payload: { showProfile: false, following: "FOLLOW" }
+                  type: "UPDATE_SETTINGS",
+                  settings: {
+                    isProfilePrivate: true,
+                    following: "FOLLOW"
+                  }
                 });
               } else {
                 data?.updateUserSettings(
-                  { type: "UPDATE_FOLLOWING", payload: { following: "FOLLOW" } }
-                );
+                  { type: "UPDATE_SETTINGS", settings: { following: "FOLLOW" } });
               }
             }
           });
         } else if (following === "REQUESTED") {
           await removeReq().then(() => {
             setFollowing("FOLLOW");
-            data?.updateUserSettings({ type: "UPDATE_FOLLOWING", payload: { following: "FOLLOW" } });
+            data?.updateUserSettings(
+              { type: "UPDATE_SETTINGS", settings: { following: "FOLLOW" } }
+            );
           });
         } else {
           if (data?.privacy === "PUBLIC") {
@@ -178,12 +199,16 @@ const Infoabout = (infoaboutprops: infoaboutpropstype) => {
               },
               onCompleted: () => {
                 setFollowing("FOLLOWING");
-                data?.updateUserSettings({ type: "UPDATE_FOLLOWING", payload: { following: "FOLLOWING" } });
+                data?.updateUserSettings(
+                  { type: "UPDATE_SETTINGS", settings: { following: "FOLLOWING" } }
+                );
               }
             });
           } else {
             await sendRequest(type);
-            data?.updateUserSettings({ type: "UPDATE_FOLLOWING", payload: { following: "REQUESTED" } });
+            data?.updateUserSettings(
+              { type: "UPDATE_SETTINGS", settings: { following: "REQUESTED" } }
+            );
           }
         }
       } else if (type === "CHAT") {
@@ -195,38 +220,55 @@ const Infoabout = (infoaboutprops: infoaboutpropstype) => {
           }
 
           if (data?.privacy === "PUBLIC") {
-            const roomCode = generateRoomCode([userId!, data?.id], false);
-            const newRoom = await createNewChatroom(roomCode, userId!, [chatUser]);
+            const newRoom = await createNewChatroom({
+              ownerId: userId!,
+              roomName: roomName!,
+              chatgroupUsers: [chatUser],
+            });
 
+            console.log(newRoom);
             if (newRoom.status === 200 || newRoom.status === 0) {
-              setError({
-                message: `${newRoom?.message} with ${data?.username}`,
-                status: newRoom.status,
-                show: true
+              data?.updateUserSettings({
+                type: "SET_ERROR",
+                error: {
+                  message: `${newRoom?.message} with ${data?.username}`,
+                  status: newRoom.status,
+                  show: true
+                }
               })
             } else {
-              setError({
-                message: `Something went wrong: Patching failed with ${data?.username}`,
-                status: newRoom.status,
-                show: true
+              data?.updateUserSettings({
+                type: "SET_ERROR",
+                error: {
+                  message: `Something went wrong: Patching failed with ${data?.username}`,
+                  status: newRoom.status,
+                  show: true
+                }
               })
             }
-          } else {
-            const isChatroomExists = await checkChatroomExists([userId!, data?.id]);
+          }
+          else {
+            const isChatroomExists = await checkChatroomExists(roomName!);
             if (isChatroomExists.status === 0) {
-              setError({
-                message: `Chatroom already exists with ${data?.username}`,
-                status: isChatroomExists.status,
-                show: true
+              data?.updateUserSettings({
+                type: "SET_ERROR",
+                error: {
+                  message: `Chatroom already exists with ${data?.username}`,
+                  status: isChatroomExists.status,
+                  show: true
+                }
               });
             } else if (isChatroomExists.status === 404) {
               await sendRequest(type);
             } else {
-              setError({
-                message: `Something went wrong: Patching failed with ${data?.username}`,
-                status: isChatroomExists.status,
-                show: true
-              })
+              data?.updateUserSettings({
+                type: "SET_ERROR",
+                error: {
+                  message: `Something went wrong: Patching failed with ${data?.username}`,
+                  status: isChatroomExists.status,
+                  show: true
+                }
+              });
             }
           }
         } else if (isChatBuddy === "REQUESTED") {
@@ -236,10 +278,13 @@ const Infoabout = (infoaboutprops: infoaboutpropstype) => {
         }
       }
     } catch (err) {
-      setError({
-        message: "Uh! Oh, Something went wrong",
-        status: 500,
-        show: true
+      data?.updateUserSettings({
+        type: "SET_ERROR",
+        error: {
+          message: "Uh! Oh, Something went wrong",
+          status: 500,
+          show: true
+        }
       });
     }
   }
@@ -251,7 +296,7 @@ const Infoabout = (infoaboutprops: infoaboutpropstype) => {
       }
     }
 
-    if (userdata && data) {
+    if (userdata && data && userId) {
       setFollowing(data?.userSettings?.following);
       getNotifications({
         variables: {
@@ -267,10 +312,10 @@ const Infoabout = (infoaboutprops: infoaboutpropstype) => {
               listNotifications.map((notification: notificationtype) => {
                 if (notification.type === "FRIEND") {
                   setFollowing("REQUESTED");
-                  data?.updateUserSettings({ type: "UPDATE_FOLLOWING", payload: { following: "REQUESTED" } });
-                }
-
-                if (notification.type === "CHAT") {
+                  data?.updateUserSettings(
+                    { type: "UPDATE_SETTINGS", settings: { following: "REQUESTED" } }
+                  );
+                } else if (notification.type === "CHAT") {
                   setIsChatBuddy("REQUESTED");
                 }
               })
@@ -297,36 +342,36 @@ const Infoabout = (infoaboutprops: infoaboutpropstype) => {
             <div className="overviewuserpicwrapper">
               <img
                 alt="profile pic"
-                className="useroverviewpic"
-                src={data?.profile_pic}
                 onError={defaultUPic}
-                onClick={() => { setPics([data?.profile_pic]); setShowPics(true) }}
+                className="useroverviewpic"
+                src={data?.profile_pic || defaultUserPic}
+                onClick={() => { setPics([(data?.profile_pic || defaultUserPic)]); setShowPics(true) }}
               />
             </div>
             <div className="userinfoname">
               {data?.status === "ACTIVE" ? data?.username : "deleted"}
             </div>
             {userName === data?.username ? (
-              <Link to={`/u/${data?.username}/settings/profile`} className="usersettingicn">
+              <Link to={`/u/${data?.username}/settings`} className="usersettingicn">
                 <i className="material-icons usersettingicn"> settings </i>
               </Link>
             ) : (
-              <div className="followbtnwrapper">
+              <div className="followbtnswrapper">
                 {following !== "FOLLOWING" && (
-                  <div
-                    onClick={() => handleUserFollow("CHAT")}
-                    className="waves-effect waves-light followbtn"
-                  >
-                    {isChatBuddy.toLowerCase()}
-                  </div>
+                  <Patbtn
+                    size={"small"}
+                    state={"selected"}
+                    text={isChatBuddy.toLowerCase()}
+                    handleClick={() => handleUserFollow("CHAT")}
+                  />
                 )}
                 {data?.userSettings?.allowPplToFollow && (
-                  <div
-                    onClick={() => handleUserFollow("FRIEND")}
-                    className="waves-effect waves-light followbtn"
-                  >
-                    {following.toLowerCase()}
-                  </div>
+                  <Patbtn
+                    size={"small"}
+                    state={"selected"}
+                    text={following.toLowerCase()}
+                    handleClick={() => handleUserFollow("FRIEND")}
+                  />
                 )}
               </div>
             )}
@@ -334,24 +379,33 @@ const Infoabout = (infoaboutprops: infoaboutpropstype) => {
         )}
         {!userdata ? (
           <>
-            <div className="followbtnwrapper">
-              <div className="waves-light waves-effect followbtn themecolor">
-                chat
-              </div>
+            <div className="followbtnswrapper">
+              <Link to={`/create/post/${data?.name}`}>
+                <Patbtn
+                  theme={true}
+                  text={"post"}
+                  size={"small"}
+                  lasticn={"add"}
+                />
+              </Link>
               {data?.owner?.id !== userId ? (
-                <div
-                  onClick={handleCommunityJoin}
-                  className={`waves-light waves-effect ${data?.inCommunity ? "unfollowbtn" : "followbtn themecolor"}`}
-                >
-                  {data?.inCommunity ? "leave" : "join"}
-                  {!data?.inCommunity && (
-                    <i className="material-icons followbtnicn"> gavel </i>
-                  )}
-                </div>
+                <Patbtn
+                  size={"small"}
+                  theme={true}
+                  handleClick={handleCommunityJoin}
+                  icn={!data?.inCommunity ? "gavel" : ""}
+                  text={data?.inCommunity ? "leave" : "join"}
+                  state={data?.inCommunity ? "clear" : "selected"}
+                />
               ) : (
-                <Link to={`/c/${data?.communityname}/settings`} className="waves-light waves-effect followbtn themecolor">
-                  {data?.communityname}
-                  <i className="material-icons followbtnicn"> settings </i>
+                <Link to={`/c/${data?.name}/settings`}>
+                  <Patbtn
+                    size={"small"}
+                    theme={true}
+                    icn={"settings"}
+                    state={"selected"}
+                    text={data?.name}
+                  />
                 </Link>
               )}
             </div>
@@ -385,11 +439,6 @@ const Infoabout = (infoaboutprops: infoaboutpropstype) => {
                 # 2 years
               </div>
             </div>
-            {(userName === data?.username && userRole === 0) && (
-              <div className="usersubtnwrapper" onClick={() => navigate("/su/profile")}>
-                <div className="usersubtn waves-light waves-effect"> superuser </div>
-              </div>
-            )}
             <div className="infoaboutheading">
               <i className="material-icons infoicn tiny">sentiment_satisfied</i>
               Me
@@ -402,7 +451,7 @@ const Infoabout = (infoaboutprops: infoaboutpropstype) => {
             </div>
           </>
         )}
-      </div>
+      </div >
       <Patpicer
         pics={pics}
         showPic={showPics}

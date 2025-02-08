@@ -21,11 +21,9 @@ export async function seed(knex: Knex): Promise<void> {
     .del()
     .then(function () {
       return knex("roles").insert([
-        { id: 0, role: "su" },
-        { id: 7001, role: "admin" },
-        { id: 5339, role: "cm" },
-        { id: 9005, role: "user" },
-        { id: 1337, role: "anon" },
+        { role_id: 5339, role: "ADMIN" },
+        { role_id: 9005, role: "USER" },
+        { role_id: 1337, role: "ANON" },
       ]);
     });
 }

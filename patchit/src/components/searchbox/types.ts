@@ -1,7 +1,9 @@
-export interface communitytype {
-  id: number;
+import { IDSTYPE } from "../../utils/main/types";
+import { navshowtype } from "../navbar/types";
+
+export interface communitytype extends IDSTYPE {
   about: string;
-  communityname: string;
+  name: string;
 }
 
 export interface searchdropprops {
@@ -11,5 +13,5 @@ export interface searchdropprops {
 
 export interface searchboxprops {
   showSearchbox: boolean;
-  setShowSearchbox: React.Dispatch<React.SetStateAction<boolean>>;
+  setShowSearchbox: navshowtype;
 }

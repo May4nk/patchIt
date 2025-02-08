@@ -1,10 +1,10 @@
 export interface tagtype {
-  id: number;
+  id: string;
   name: string;
   description: string;
 }
 
 export interface tagfiltertype {
-  id: number;
+  id: string;
   name: string;
 }

@@ -33,7 +33,7 @@ const Searchbox = (searchboxprops: searchboxprops) => {
   const searchCommunity: communitytype[] = useMemo(() => {
     if (searchPrefixes.length === 1 && !loading) {
       return data?.listCommunities?.filter((community: communitytype) => (
-        community.communityname.startsWith(searchInput)
+        community.name.startsWith(searchInput)
       ));
     }
 
@@ -43,7 +43,7 @@ const Searchbox = (searchboxprops: searchboxprops) => {
   const suggestCommunity: communitytype[] = useMemo(() => {
     if (!loading && searchPrefixes.length === 1) {
       return data?.listCommunities?.filter((community: communitytype) => (
-        (community?.communityname?.includes(searchInput) && !searchCommunity.includes(community))
+        (community?.name?.includes(searchInput) && !searchCommunity.includes(community))
       ))
     }
   }, [searchInput, data, loading, searchCommunity]);

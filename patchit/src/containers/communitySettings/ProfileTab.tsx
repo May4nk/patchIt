@@ -1,9 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useMutation } from '@apollo/client';
 
-import { changeToBase64 } from '../../utils/opx';
+//utils
+import { uploadToS3, getSignedUrls } from '../../utils/services/s3';
 
 //components
+import Patbtn from '../../components/html/Patbtn';
 import Askinput from '../../components/html/Askinput';
 import Textbox from '../../components/settings/Textbox';
 import Socialbox from '../../components/settings/Socialbox';
@@ -13,19 +15,15 @@ import Settingtab from '../../components/settings/Settingtab';
 import { UPSERTCOMMUNITY } from './queries';
 
 //types, images & const
-import { profiletabpropstype, showinputtype } from './types';
+import { handlecommunityupdatetype, profiletabpropstype } from './types';
+import { signedurltype } from '../../utils/types';
 import { defaultCommunityPic } from '../../constants/const';
 import { droppertype, profiletype } from '../../components/html/patdrop/types';
 let defaultBackgroundPic: string = require("../../img/defaultbgpic.png");
 
 function ProfileTab(profiletabprops: profiletabpropstype) {
-  const {
-    cname,
-    setErrorMessage,
-    communityState,
-    setCommunityState,
-    setDeleteCommunity
-  } = profiletabprops;
+  const { cname, handleState, communityState } = profiletabprops;
+  const { about, description, social_links, theme, privacy } = communityState?.data;
 
   const communityWallRef = useRef<HTMLInputElement | null>(null);
   const communityProfileRef = useRef<HTMLInputElement | null>(null);
@@ -34,112 +32,138 @@ function ProfileTab(profiletabprops: profiletabpropstype) {
   const [updatedLinks, setUpdatedLinks] = useState<string>("");
   const [showSocialBox, setShowSocialBox] = useState<boolean>(false);
   const [showTextBox, setShowTextBox] = useState<boolean>(false);
-  const [showInput, setShowInput] = useState<showinputtype>({ about: false });
+  const [showInput, setShowInput] = useState<boolean>(false);
 
   //queries
   const [updateCommunity] = useMutation(UPSERTCOMMUNITY);
 
   //handlers
-  const handleCommunityUpdate: (update?: string, val?: string) => Promise<void> = async (update?: string, val?: string) => {
+  const handleCommunityUpdate: handlecommunityupdatetype = async (update: string, val: string) => {
     try {
-      const updatedState = {
-        communityname: cname,
-        ...communityState,
-      };
-
-      if (update && val) {
-        updatedState[update] = val;
+      let updatedState = {
+        ...communityState?.data,
+        [update]: val
       }
+      if (update === "background_pic" || update === "profile_pic") {
+        const profileFiles = communityProfileRef?.current?.files;
+        const wallpicFiles = communityWallRef?.current?.files;
 
-      await updateCommunity({
-        variables: {
-          data: updatedState
-        },
-        onCompleted: () => {
-          setErrorMessage({
-            status: 200,
-            show: true,
-            message: "Settings updated Successfully"
+        const picBlob = (profileFiles && profileFiles.length > 0 ? profileFiles[0] : null) ||
+          (wallpicFiles && wallpicFiles.length > 0 ? wallpicFiles[0] : null);
+
+        if (picBlob) {
+          const fileName = `${cname}_${update}.${picBlob.type.split('/')[1]}`;
+
+          const uploadUrls: signedurltype[] = await getSignedUrls({
+            userId: "0",
+            req: "PUT",
+            postId: "0",
+            files: [{ name: fileName, type: picBlob.type }],
           });
 
-          setShowInput({ about: false });
+          const pic = uploadUrls[0].fileUrl;
+          updatedState = {
+            ...communityState?.data,
+            [update]: pic
+          }
+
+          await updateCommunity({
+            variables: {
+              data: {
+                name: cname!,
+                ...updatedState
+              }
+            },
+            onCompleted: () => {
+              handleState({ type: "UPDATE_COMMUNITYDATA", communityData: { ...updatedState } });
+              handleState({
+                type: "SET_ERROR",
+                error: {
+                  status: 200,
+                  show: true,
+                  message: "Settings updated Successfully"
+                }
+              });
+
+              setShowInput(false);
+            }
+          });
+
+          const file = new File([picBlob], fileName, { type: picBlob.type });
+          await uploadToS3({
+            url: uploadUrls[0].signedUrl,
+            file: file,
+            progress: (prog) => { }
+          });
+
+          const signedUrls: signedurltype[] = await getSignedUrls({
+            userId: communityState?.data?.owner,
+            postId: "0",
+            req: "GET",
+            files: [{ name: pic }]
+          });
+
+          if (update === "profile_pic") {
+            handleState({ type: "UPDATE_PIC", profile_pic: signedUrls[0].signedUrl })
+          } else if (update === "background_pic") {
+            handleState({ type: "UPDATE_BG_PIC", background_pic: signedUrls[0].signedUrl })
+          }
         }
-      });
-    } catch (err) {
-      setCommunityState(prev => ({ ...prev }));
-      setErrorMessage({
-        status: 500,
-        show: true,
-        message: "Something went wrong: Settings update failed"
-      });
-    }
-  }
-
-  const handleThemeAndPrivacyChange: (toUpdate: string, val: string) => void = async (toUpdate: string, val: string) => {
-    setCommunityState({
-      ...communityState,
-      [toUpdate]: val
-    });
-
-    handleCommunityUpdate(toUpdate, val);
-  }
-
-  const privacyDropperprofile: profiletype = { set: communityState?.privacy, name: "privacy" };
-
-  const privacyDroppers: droppertype[] = [
-    {
-      title: "PUBLIC", icn: "person_outline",
-      state: "CLICKED", event: () => handleThemeAndPrivacyChange("privacy", "PUBLIC")
-    },
-    {
-      title: "PRIVATE", icn: "lock_outline",
-      state: "CLICKED", event: () => handleThemeAndPrivacyChange("privacy", "PRIVATE")
-    },
-  ];
-
-  const handleInput = (communityblock: "about" | "description") => {
-    if (communityState[communityblock].length > 0) {
-      handleCommunityUpdate()
-    }
-    setShowInput({ ...showInput, [communityblock]: false });
-  }
-
-  const handleCommunityPicChange: (toUpdate: string) => Promise<void> = async (toUpdate: string) => {
-    const profileFiles = communityProfileRef?.current?.files;
-    const wallpicFiles = communityWallRef?.current?.files;
-
-    const picBlob = (profileFiles && profileFiles.length > 0 ? profileFiles[0] : null) ||
-      (wallpicFiles && wallpicFiles.length > 0 ? wallpicFiles[0] : null);
-
-    try {
-      if (picBlob) {
-        const pic = await changeToBase64(picBlob);
-
-        setCommunityState({ ...communityState, [toUpdate]: pic });
-
+      } else {
         await updateCommunity({
           variables: {
             data: {
-              communityname: cname,
-              [toUpdate]: pic
+              name: cname!,
+              ...updatedState
             }
+          },
+          onCompleted: () => {
+            handleState({ type: "UPDATE_COMMUNITYDATA", communityData: { ...updatedState } });
+            handleState({
+              type: "SET_ERROR",
+              error: {
+                status: 200,
+                show: true,
+                message: "Settings updated Successfully"
+              }
+            });
+
+            setShowInput(false);
           }
         });
       }
     } catch (err) {
-      setErrorMessage({
-        status: 500,
-        show: true,
-        message: "Something went wrong: Settings update failed"
+      handleState({ type: "RESET" });
+      handleState({
+        type: "SET_ERROR",
+        error: {
+          status: 500,
+          show: true,
+          message: "Something went wrong: Settings update failed"
+        }
       });
     }
   }
 
+  const privacyDropperprofile: profiletype = { set: privacy, name: "privacy" };
+  const privacyDroppers: droppertype[] = [
+    {
+      title: "PUBLIC", icn: "person_outline",
+      state: "CLICKED", event: () => handleCommunityUpdate("privacy", "PUBLIC")
+    },
+    {
+      title: "PRIVATE", icn: "lock_outline",
+      state: "CLICKED", event: () => handleCommunityUpdate("privacy", "PRIVATE")
+    },
+  ];
+
   useEffect(() => {
     if (updatedLinks.length > 0) {
-      setCommunityState({ ...communityState, social_links: updatedLinks });
+      handleState({ type: "UPDATE_COMMUNITYDATA", communityData: { social_links: updatedLinks } });
     }
   }, [updatedLinks]);
+
+  console.log(communityState?.data)
 
   return (
     <>
@@ -151,14 +175,14 @@ function ProfileTab(profiletabprops: profiletabpropstype) {
             <img
               className="pic"
               alt="community_pic"
-              src={communityState?.profile_pic || defaultCommunityPic}
+              src={communityState?.show_profile_pic || defaultCommunityPic}
             />
           </div>
           <div className="waves-effect waves-light wallpicwrapper">
             <img
               alt="wall_pic"
               className="wallpic"
-              src={communityState.background_pic || defaultBackgroundPic}
+              src={communityState.show_background_pic || defaultBackgroundPic}
             />
           </div>
         </div>
@@ -169,10 +193,10 @@ function ProfileTab(profiletabprops: profiletabpropstype) {
             name="profile_pic"
             id="community_profile"
             ref={communityProfileRef}
-            onChange={() => handleCommunityPicChange("profile_pic")}
+            onChange={() => handleCommunityUpdate("profile_pic", "")}
           />
           <label htmlFor="community_profile">
-            <div className="usettingitembtn waves-effect waves-light black-text themebg ">
+            <div className="picchangebtn waves-effect waves-light themecolor">
               Update
             </div>
           </label>
@@ -182,10 +206,10 @@ function ProfileTab(profiletabprops: profiletabpropstype) {
             name="background_pic"
             id="community_wall"
             ref={communityWallRef}
-            onChange={() => handleCommunityPicChange("background_pic")}
+            onChange={() => handleCommunityUpdate("background_pic", "")}
           />
           <label htmlFor="community_wall">
-            <div className="usettingitembtn waves-effect waves-light black-text themebg ">
+            <div className="picchangebtn waves-effect waves-light themecolor">
               Update
             </div>
           </label>
@@ -194,30 +218,33 @@ function ProfileTab(profiletabprops: profiletabpropstype) {
           <div className="usettingitemlabels">
             <div className="usettingitemtitle"> About </div>
             <div className="usettingitemmetatitle thememetanhtext">
-              {showInput.about ? (
+              {showInput ? (
                 <div className="updateinput">
                   <Askinput
                     name="about"
                     maxlength={89}
-                    value={communityState.about}
-                    placeholder={communityState.about || "Tell us something about your community in one line."}
-                    onChange={(e: any) => setCommunityState({ ...communityState, about: e.target.value })}
+                    value={about}
+                    placeholder={about || "Tell us something about your community in one line."}
+                    onChange={(e: any) => handleState({
+                      type: "UPDATE_COMMUNITYDATA",
+                      communityData: { about: e.target.value }
+                    })}
                   />
                 </div>
               ) : (
-                communityState.about || "Describe your community in one line or so."
+                about || "Describe your community in one line or so."
               )}
             </div>
           </div>
-          <div
-            className={`waves-effect waves-light black-text ${showInput.about && "themebg"} usettingitembtn themeinactivebtnbg`}
-            onClick={showInput.about
-              ? () => handleInput("about")
-              : () => setShowInput({ ...showInput, about: true })
+          <Patbtn
+            theme={true}
+            text={showInput ? about.length > 1 ? "update" : "cancel" : "change"}
+            state={showInput && about.length < 1 ? "clear" : "selected"}
+            handleClick={!showInput
+              ? () => setShowInput(true)
+              : () => { about.length > 0 ? handleCommunityUpdate("about", about) : setShowInput(false) }
             }
-          >
-            {showInput.about ? "update" : "change"}
-          </div>
+          />
         </div>
         <div className="usettingitems">
           <div className="usettingitemlabels">
@@ -226,12 +253,11 @@ function ProfileTab(profiletabprops: profiletabpropstype) {
               Tell people what your community moto & is all about.
             </div>
           </div>
-          <div
-            className="waves-effect waves-light black-text usettingitembtn themeinactivebtnbg"
-            onClick={() => setShowTextBox(!showTextBox)}
-          >
-            {showTextBox ? "hide" : "Update"}
-          </div>
+          <Patbtn
+            text={showTextBox ? "hide" : "Update"}
+            state={showTextBox ? "selected" : "inactive"}
+            handleClick={() => setShowTextBox(prev => !prev)}
+          />
         </div>
         <div className="usettingitems">
           <div className="usettingitemlabels">
@@ -240,12 +266,11 @@ function ProfileTab(profiletabprops: profiletabpropstype) {
               People who visit community will see social links.
             </div>
           </div>
-          <div
-            className="waves-effect waves-light black-text usettingitembtn themeinactivebtnbg"
-            onClick={() => setShowSocialBox(!showSocialBox)}
-          >
-            {showSocialBox ? "hide" : "Update"}
-          </div>
+          <Patbtn
+            text={showSocialBox ? "hide" : "Update"}
+            state={showSocialBox ? "selected" : "inactive"}
+            handleClick={() => setShowSocialBox(prev => !prev)}
+          />
         </div>
         <div className="usettingitems">
           <div className="usettingitemlabels">
@@ -256,8 +281,8 @@ function ProfileTab(profiletabprops: profiletabpropstype) {
             <Askinput
               name={"theme"}
               type={"color"}
-              value={communityState.theme}
-              onChange={(e) => setCommunityState((prev) => ({ ...prev, theme: e.target.value }))}
+              value={theme}
+              onChange={(e) => handleCommunityUpdate("theme", e.target.value)}
             />
           </div>
         </div>
@@ -274,27 +299,32 @@ function ProfileTab(profiletabprops: profiletabpropstype) {
             <div className="usettingitemtitle"> Delete community </div>
             <div className="usettingitemmetatitle thememetanhtext">{cname}</div>
           </div>
-          <div className="waves-effect waves-light black-text red usettingitembtn" onClick={() => setDeleteCommunity(true)}>
-            delete
-          </div>
+          <Patbtn
+            text={"delete"}
+            state={"clear"}
+            handleClick={() => handleState({ type: "DELETE_ACCOUNT", deleteAcc: true })}
+          />
         </div>
-      </div>
+      </div >
       <div className="actionboxes">
         {showSocialBox && (
           <Socialbox
             setUpdatedLinks={setUpdatedLinks}
             setShowSocialBox={setShowSocialBox}
-            handleUpdate={handleCommunityUpdate}
-            socialMediaLinks={communityState.social_links}
+            socialMediaLinks={social_links}
+            handleUpdate={() => handleCommunityUpdate("social_links", social_links!)}
           />
         )}
         {showTextBox && (
           <Textbox
             name={"description"}
             setShowTextBox={setShowTextBox}
-            value={communityState.description}
-            handleUpdate={handleCommunityUpdate}
-            handleChange={(e: any) => setCommunityState({ ...communityState, description: e.target.value })}
+            value={description}
+            handleUpdate={() => handleCommunityUpdate("description", description)}
+            handleChange={(e: any) => handleState({
+              type: "UPDATE_COMMUNITYDATA",
+              communityData: { description: e.target.value }
+            })}
           />
         )}
       </div>

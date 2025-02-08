@@ -1,13 +1,16 @@
-import React, { useRef, useState } from "react";
+import React, { useReducer, useRef } from "react";
 import { useQuery, useMutation } from "@apollo/client";
 import { useNavigate } from 'react-router-dom';
 
-import { changeToBase64 } from "../utils/opx";
+//utils
 import { useAuth, useLogged } from "../utils/hooks/useAuth";
+import { getSignedUrls, uploadToS3 } from "../utils/services/s3";
+import { handleNewUserState, newUserSetupInitState } from "../utils/opx/useropx";
 
 //components
 import Askinput from "../components/html/Askinput";
 import Loadingpage from "../components/Loadingpage";
+import Errorcard from "../components/cards/Errorcard";
 
 //queries
 import { UPDATEUSER } from "../utils/loginqueries";
@@ -15,32 +18,24 @@ import { GETPOPULARCOMMUNITIES, JOINCOMMUNITYINBATCH } from "./queries/newuserse
 
 //css, images & types
 import "./css/newusersetup.css";
+import { signedurltype } from "../utils/types";
 import { authcontexttype } from "../context/types";
-import { newusersetuptype, newusersetupprops, selectedcommunitytype, communitytype } from "./types/newusersetuptypes";
+import { USER_S_N_TYPE } from "../utils/main/types";
+import { communitytype, handledelpictype, newusersetuplevel, newuserstatetype } from "./types/newusersetuptypes";
 const logo: string = require("../img/logo.png");
 
-const Newusersetup = (newusersetupprops: newusersetupprops) => {
-  const { newUser } = newusersetupprops;
+const Newusersetup = ({ newUser }: { newUser: boolean }) => {
   const active: string = newUser ? "block" : "none";
 
   const navigate = useNavigate();
+  const { updateLoggedUser } = useLogged();
+  const { user }: authcontexttype = useAuth();
+  const userId: USER_S_N_TYPE = user && user["id"];
   const profileRef = useRef<HTMLInputElement | null>(null);
   const wallpicRef = useRef<HTMLInputElement | null>(null);
 
-  const { updateLoggedUser } = useLogged();
-  const { user }: authcontexttype = useAuth();
-  const userId: number | null = user && Number(user["id"]);
-
-  //states 
-  const [level, setLevel] = useState<number>(0);
-  const [userCommunities, setUserCommunities] = useState<selectedcommunitytype[]>([]);
-  const [userSetup, setUserSetup] = useState<newusersetuptype>({
-    id: userId!,
-    about: "",
-    profile_pic: "",
-    new_user: false,
-    background_pic: "",
-  });
+  //states
+  const [newUserState, dispatch] = useReducer(handleNewUserState, newUserSetupInitState);
 
   //queries
   const { loading, data } = useQuery(GETPOPULARCOMMUNITIES);
@@ -49,34 +44,56 @@ const Newusersetup = (newusersetupprops: newusersetupprops) => {
 
   //handlers
   const handleUserinputs: (e: any) => Promise<void> = async (e: any) => {
-    const toUpdate: string = e.target.name;
+    const toUpdate: keyof newuserstatetype["userInfo"] = e.target.name;
 
     if (toUpdate === "profile_pic" || toUpdate === "background_pic") {
       const profileFiles = profileRef.current?.files;
       const wallpicFiles = wallpicRef.current?.files;
 
-      const picBlob = (profileFiles && profileFiles.length > 0 ? profileFiles[0] : null) ||
+      const picBlob: File | null = (profileFiles && profileFiles.length > 0 ? profileFiles[0] : null) ||
         (wallpicFiles && wallpicFiles.length > 0 ? wallpicFiles[0] : null);
 
       if (picBlob) {
-        const pic = await changeToBase64(picBlob);
-        setUserSetup((prev) => ({ ...prev, [toUpdate]: pic }));
+        const fileName = `${toUpdate}.${picBlob.type.split('/')[1]}`;
+        const newPic = new File([picBlob], fileName);
+
+        const uploadUrls: signedurltype[] = await getSignedUrls({
+          userId: userId!,
+          postId: "0",
+          req: "PUT",
+          files: [{
+            name: newPic.name,
+            type: newPic.type,
+          }],
+        });
+
+        await uploadToS3({
+          url: uploadUrls[0].signedUrl,
+          file: newPic,
+          progress: (progress) => { }
+        });
+
+        dispatch({ type: "UPDATE_USERINFO", info: { [toUpdate]: uploadUrls[0].fileUrl } });
+
+        const signedUrls: signedurltype[] = await getSignedUrls({
+          userId: userId!,
+          postId: "0",
+          req: "GET",
+          files: [{ name: uploadUrls[0].fileUrl }]
+        });
+
+
+        if (toUpdate === "profile_pic") {
+          dispatch({ type: "UPDATE_PIC", profile_pic: signedUrls[0].signedUrl })
+        }
+
+        if (toUpdate === "background_pic") {
+          dispatch({ type: "UPDATE_BG_PIC", background_pic: signedUrls[0].signedUrl })
+        }
       }
     } else {
-      setUserSetup((prev) => ({ ...prev, [toUpdate]: e.target.value }));
+      dispatch({ type: "UPDATE_USERINFO", info: { [toUpdate]: e.target.value } });
     }
-  }
-
-  const handleDefault: () => void = () => {
-    setLevel(0);
-    setUserCommunities([]);
-    setUserSetup({
-      id: userId!,
-      about: "",
-      profile_pic: "",
-      new_user: false,
-      background_pic: "",
-    });
   }
 
   const handleUpdateCommunities: (e: any, communityObj: communitytype) => void = (e, communityObj) => {
@@ -84,45 +101,59 @@ const Newusersetup = (newusersetupprops: newusersetupprops) => {
 
     if (classExistInElement) {
       e.currentTarget.classList.remove("selectedcommunity");
-
-      const tempUserCommunities: selectedcommunitytype[] = userCommunities.filter((community: selectedcommunitytype) => {
-        return community.community_id !== Number(communityObj.id);
-      })
-
-      setUserCommunities(tempUserCommunities);
+      dispatch({ type: "DEL_USERCOMMUNITY", communityId: communityObj.id });
     } else {
       e.currentTarget.classList.add("selectedcommunity");
-
-      setUserCommunities([...userCommunities, { user_id: userId!, community_id: Number(communityObj.id) }]);
+      dispatch({ type: "ADD_USERCOMMUNITY", community: { user_id: userId!, community_id: communityObj.id } })
     }
+  }
+
+  const handleDelPic: handledelpictype = (toUpdate: "profile_pic" | "background_pic") => {
+    if (toUpdate === "profile_pic") {
+      dispatch({ type: "UPDATE_PIC", profile_pic: null });
+    } else {
+      dispatch({ type: "UPDATE_BG_PIC", background_pic: null });
+    }
+
+    dispatch({ type: "UPDATE_USERINFO", info: { [toUpdate]: null } });
   }
 
   const handleUpdate: (e: any) => Promise<void> = async (e: any) => {
     e.preventDefault();
     try {
-      if (userCommunities.length > 0) {
+      if (newUserState?.userCommunities.length > 0) {
         await joincommunity({
           variables: {
-            data: [...userCommunities]
+            data: [...newUserState?.userCommunities]
           }
         });
       }
 
       await updateUser({
         variables: {
-          data: userSetup
+          data: {
+            id: userId!,
+            ...newUserState?.userInfo
+          }
         }
       }).then(() => {
         updateLoggedUser({
-          new_user: false,
-          profile_pic: userSetup.profile_pic,
+          profile_pic: newUserState.display_profile_pic
         });
 
-        handleDefault();
+        dispatch({ type: "RESET" });
         navigate("/c/popular");
       });
     } catch (err) {
-      console.log(err);
+      dispatch({
+        type: "SET_ERROR",
+        error: {
+          status: 500,
+          show: true,
+          message: "Something went wrong: setup failed..."
+        }
+      });
+      return;
     }
   }
 
@@ -132,11 +163,13 @@ const Newusersetup = (newusersetupprops: newusersetupprops) => {
         <div className="setuserbox">
           <div className="newusersetuplogowrapper">
             <img src={logo} className="newusersetuplogo" alt={"patch_logo"} />
-            {level < 3 && (
-              <div className="skipbtn" onClick={() => setLevel(3)}> skip </div>
+            {newUserState?.level < 3 && (
+              <div className="skipbtn" onClick={() => dispatch({ type: "SET_LEVEL", level: 3 })}>
+                skip
+              </div>
             )}
           </div>
-          {level === 0 ? (
+          {newUserState?.level === 0 ? (
             <>
               <div className="newuserusernametitle">
                 <i className="material-icons blue-text text-lighten-3 left"> mood </i>
@@ -151,30 +184,30 @@ const Newusersetup = (newusersetupprops: newusersetupprops) => {
                   placeholder={"about"}
                   maxlength={70}
                   onChange={handleUserinputs}
-                  value={userSetup.about}
+                  value={newUserState?.userInfo.about}
                 />
               </div>
             </>
-          ) : level === 1 ? (
+          ) : newUserState?.level === 1 ? (
             <>
               <h5 className="newuserusernametitle">Your wall</h5>
-              {userSetup?.background_pic.length > 0 && (
+              {newUserState?.userInfo?.background_pic && (
                 <div className="bgpicdel">
                   <i
                     className="material-icons delicn"
-                    onClick={() => setUserSetup({ ...userSetup, background_pic: "" })}
+                    onClick={() => handleDelPic("background_pic")}
                   >
                     delete
                   </i>
                 </div>
               )}
               <div className="newuserbackgroundbox">
-                {userSetup?.background_pic.length > 0 ? (
+                {newUserState?.display_background_pic ? (
                   <div className="newuserpicwrapper">
                     <img
                       alt="unable to load pic"
                       className="newuserpic"
-                      src={userSetup.background_pic}
+                      src={newUserState?.display_background_pic}
                     />
                   </div>
                 ) : (
@@ -194,27 +227,27 @@ const Newusersetup = (newusersetupprops: newusersetupprops) => {
                 )}
               </div>
             </>
-          ) : level === 2 ? (
+          ) : newUserState?.level === 2 ? (
             <>
               <h6 className="newuserusernametitle"> Profile pic </h6>
-              {userSetup?.profile_pic.length > 0 && (
+              {newUserState?.display_profile_pic && (
                 <div className="bgpicdel">
                   <i
                     className="material-icons delicn"
-                    onClick={() => setUserSetup({ ...userSetup, profile_pic: "" })}
+                    onClick={() => handleDelPic("profile_pic")}
                   >
                     delete
                   </i>
                 </div>
               )}
               <div className="newuserprofilepicbox">
-                {userSetup?.profile_pic.length > 0 ? (
+                {newUserState?.display_profile_pic ? (
                   <>
                     <div className="newuserpicwrapper">
                       <img
                         alt="unable to load pic"
                         className="newuserpic"
-                        src={userSetup.profile_pic}
+                        src={newUserState.display_profile_pic}
                       />
                     </div>
                   </>
@@ -235,7 +268,7 @@ const Newusersetup = (newusersetupprops: newusersetupprops) => {
                 )}
               </div>
             </>
-          ) : level === 3 ? (
+          ) : newUserState?.level === 3 ? (
             <>
               <h6 className="newuserusernametitle"> Link Some communities to your home... </h6>
               <div className="metatitle"> (You can add or remove them later) </div>
@@ -247,7 +280,7 @@ const Newusersetup = (newusersetupprops: newusersetupprops) => {
                       className="communityspace"
                       onClick={(e) => handleUpdateCommunities(e, community)}
                     >
-                      {community.communityname}
+                      {community.name}
                     </div>
                   ))
                 ) : (
@@ -265,14 +298,17 @@ const Newusersetup = (newusersetupprops: newusersetupprops) => {
               </div>
             </>
           )}
-          {level <= 3 && (
+          {newUserState?.level <= 3 && (
             <div className="setusername">
               <div
-                onClick={level === 3 ? handleUpdate : () => setLevel(level + 1)}
                 className="waves-effect waves-light setusernamebtn"
+                onClick={newUserState?.level === 3
+                  ? handleUpdate
+                  : () => dispatch({ type: "SET_LEVEL", level: (newUserState.level + 1 as newusersetuplevel) })
+                }
               >
-                {level === 3 ? "done" : "next"}
-                {level === 3 && (
+                {newUserState?.level === 3 ? "done" : "next"}
+                {newUserState?.level === 3 && (
                   <i className="material-icons right">mood</i>
                 )}
               </div>
@@ -280,6 +316,9 @@ const Newusersetup = (newusersetupprops: newusersetupprops) => {
           )}
         </div>
       </div>
+      {newUserState.error.status === 500 && (
+        <Errorcard message={newUserState.error} />
+      )}
     </div>
   )
 }

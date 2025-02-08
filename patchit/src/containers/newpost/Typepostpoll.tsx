@@ -7,42 +7,40 @@ import Askinput from "../../components/html/Askinput";
 //css & types, constants
 import "./css/typepostpoll.css";
 import { pollrules } from "../../constants/const";
-import { newpolltype, posttypepollprops } from "./types";
+import { postpolltype, posttypepollprops } from "./types";
 
 const Typepostpoll = (posttypepollprops: posttypepollprops) => {
   const { polls, setPolls } = posttypepollprops;
 
   //handlers
   const handlepolloptions: () => void = () => {
-    setPolls([...polls, { value: "", count: 0 }]);
+    setPolls({ type: "ADD_POLLS", polls: [...polls, { value: "", count: 0 }] })
   }
 
   const handleOnChange: (e: any, index: number) => void = (e: any, index: number) => {
-    let temppolls: newpolltype[] = [...polls];
+    let temppolls: postpolltype[] = [...polls];
     (temppolls[index] as any)[e.target.name as keyof typeof polls] = e.target.value;
-    setPolls([...temppolls]);
+    setPolls({ type: "ADD_POLLS", polls: temppolls })
   }
 
-  const handleDeleteOption: (idx: number) => void = (idx: number) => {
-    let pollarray = [...polls];
-    pollarray.splice(idx, 1);
-    setPolls(pollarray);
+  const handleDeleteOption: (pollIdx: number) => void = (pollIdx: number) => {
+    setPolls({ type: "DEL_POLL", pollIdx })
   }
 
   return (
     <div className="polloptions" >
       <div className="options">
-        {polls.map((poll: newpolltype, idx: number) => (
+        {polls.map((poll: postpolltype, idx: number) => (
           <div className="pollinputs" key={idx}>
             <Askinput
               name={"value"}
-              placeholder={`option${idx + 1}`}
               maxlength={30}
               required={true}
+              value={poll.value}
+              placeholder={`option${idx + 1}`}
+              onChange={(e: any) => handleOnChange(e, idx)}
               postfix={polls.length > 2 ? "ICdelete" : null}
               onClickPostfix={() => handleDeleteOption(idx)}
-              onChange={(e: any) => handleOnChange(e, idx)}
-              value={poll.value}
             />
           </div>
         ))}

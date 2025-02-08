@@ -50,22 +50,6 @@
   animation-iteration-count: 1;
 }
 
-.patcoinamnt {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-weight: 500;
-  padding: 0.3rem 1rem;
-  border-radius: 1rem;
-  font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.8);
-}
-
-.patcoinamnt:hover {
-  background: #263238;
-  color: white;
-}
-
 .patcoinabout {
   display: flex;
   justify-content: flex-start;

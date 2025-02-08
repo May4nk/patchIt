@@ -74,7 +74,14 @@
   width: auto;
 }
 
+.commenttext {
+  margin-left: 0.5vw;
+  font-size: 0.8vw;
+  color: rgba(255, 255, 255, 0.6);
+}
+
 .commentcontentmsg {
+  padding-bottom: 0.6vw;
   padding-left: 1.5rem;
   font-size: 1vw;
   word-wrap: break-word;
@@ -98,35 +105,6 @@
   justify-content: flex-start;
   align-items: center;
   padding-left: 0.5rem;
-}
-
-.commentaction {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: rgba(255, 255, 255, 0.7);
-  margin: 0.5rem 0.3rem;
-  padding: 0.1rem 0.7rem;
-  background: #23282b;
-  border-radius: 1.5rem;
-  border: 0.1rem solid rgba(0, 0, 0, 0.1);
-  font-size: 0.7vw;
-}
-
-.commentactionicn {
-  margin-right: 0.5rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.commentaction:hover .commentactionicn {
-  color: #74bcf7;
-}
-
-.commentaction:hover {
-  color: white;
-  border-color: rgba(255, 255, 255, 0.1);
 }
 
 .show {

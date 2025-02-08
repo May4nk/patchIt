@@ -1,17 +1,25 @@
 import db from "../../db.js";
-import { findOne } from "../../utils/queriesutils.js";
+import { findOne } from "../../utils/common/queriesutils.js";
 
 //types
-import { remusercommunitytype, usercommunitytype, } from "./types/usercommunitiesmutetypes.js";
+import { IDSTYPE } from "../../utils/common/types.js";
+import {
+  userscommunitytype,
+  rawusercommunitytype,
+  remusercommunitytype,
+  userscommunityfiltertype,
+} from "../resolvers/types/userscommunitytypes.js";
 
 export const userscommunityMutations = {
   Mutation: {
     insertUserCommunity: async (
       _: undefined,
-      { data }: { data: usercommunitytype }
-    ): Promise<usercommunitytype> => {
+      { data }: { data: rawusercommunitytype }
+    ): Promise<rawusercommunitytype> => {
       try {
-        const [createUserCommunity]: usercommunitytype[] = await db("user_community_relation")
+        const [createUserCommunity]: rawusercommunitytype[] = await db(
+          "user_community_relation"
+        )
           .insert({
             user_id: data.user_id,
             community_id: data.community_id,
@@ -25,10 +33,10 @@ export const userscommunityMutations = {
     },
     batchInsertUserCommunity: async (
       _: undefined,
-      { data }: { data: usercommunitytype[] }
-    ): Promise<usercommunitytype[]> => {
+      { data }: { data: rawusercommunitytype[] }
+    ): Promise<rawusercommunitytype[]> => {
       try {
-        const createBulkUserCommunity: usercommunitytype[] = await db
+        const createBulkUserCommunity: rawusercommunitytype[] = await db
           .batchInsert("user_community_relation", [...data])
           .returning("*");
 
@@ -40,11 +48,11 @@ export const userscommunityMutations = {
     removeUserCommunity: async (
       _: undefined,
       { data }: { data: remusercommunitytype }
-    ): Promise<{ id: number }> => {
+    ): Promise<IDSTYPE> => {
       try {
-        const foundUsersCommunity: usercommunitytype = await findOne<
-          usercommunitytype,
-          { user_id: number; community_id: number }
+        const foundUsersCommunity: userscommunitytype = await findOne<
+          userscommunitytype,
+          userscommunityfiltertype
         >("user_community_relation", {
           user_id: data.user_id,
           community_id: data.community_id,
@@ -53,7 +61,9 @@ export const userscommunityMutations = {
         if (!foundUsersCommunity)
           throw new Error("User is not member of this community yet...");
 
-        const [deleteUserCommunity]: { id: number }[] = await db("user_community_relation")
+        const [deleteUserCommunity]: IDSTYPE[] = await db(
+          "user_community_relation"
+        )
           .where("id", foundUsersCommunity.id)
           .del()
           .returning("id");

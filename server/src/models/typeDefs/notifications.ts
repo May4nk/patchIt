@@ -4,36 +4,44 @@ export const notificationTypeDefs = `
     FRIEND
   }
 
+  enum STATUS {
+    ACCEPT
+    REJECT
+    PENDING
+  }
+
   type Notification {
-    id: Int
+    id: String
     type: NOTIFICATIONTYPE
     message: String
-    status: String
+    status: STATUS
     touser: User
     fromuser: User
+    created_at: String
   }
 
   input InsertNotificationInput {
-    id: Int
+    id: String
     type: NOTIFICATIONTYPE
     message: String
-    status: String
-    touser: Int
-    fromuser: Int
+    status: STATUS
+    touser: String
+    fromuser: String
   }
 
   input NotificationfilterInput {
-    id: Int
+    id: String
     type: NOTIFICATIONTYPE
     message: String
-    status: String
-    touser: Int
-    fromuser: Int
+    status: STATUS
+    touser: String
+    fromuser: String
+    created_at: String
   }
 
   input RemoveNotificationInput {
-    touser: Int!
-    fromuser: Int!
+    touser: String!
+    fromuser: String!
     type: NOTIFICATIONTYPE
   }
 `;

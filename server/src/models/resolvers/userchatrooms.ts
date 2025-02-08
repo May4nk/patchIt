@@ -1,14 +1,14 @@
-import { listAll, findOne } from "../../utils/queriesutils.js";
+import { listAll, findOne } from "../../utils/common/queriesutils.js";
 
 //types
 import { usertype } from "./types/usertypes.js";
 import { messagetype } from "./types/messagetypes.js";
-import { filtersorttype } from "../../utils/types.js";
+import { filtersorttype, IDSTYPE } from "../../utils/common/types.js";
 import { chatroomtype } from "./types/chatroomtypes.js";
-import { rawuserchatroomtype } from "../mutations/types/userchatroommutetypes.js";
 import {
-  userchatroomfiltertype,
   userchatroomtype,
+  rawuserchatroomtype,
+  userchatroomfiltertype,
 } from "./types/userchatroomtypes.js";
 
 export const userchatroomResolvers = {
@@ -48,12 +48,12 @@ export const userchatroomResolvers = {
     },
   },
   UserChatroom: {
-    user_id: async ({ user_id }: { user_id: number }): Promise<usertype> => {
+    user_id: async ({ user_id }: { user_id: string }): Promise<usertype> => {
       try {
-        const userById: usertype = await findOne<usertype, { id: number }>(
-          "users",
-          { id: user_id }
-        );
+        const userById: usertype = await findOne<usertype, IDSTYPE>("users", {
+          id: user_id,
+        });
+
         return userById;
       } catch (err) {
         throw err;
@@ -65,10 +65,10 @@ export const userchatroomResolvers = {
       room_id: string;
     }): Promise<chatroomtype> => {
       try {
-        const roomById: chatroomtype = await findOne<
-          chatroomtype,
-          { room_code: string }
-        >("chatrooms", { room_code: room_id });
+        const roomById: chatroomtype = await findOne<chatroomtype, IDSTYPE>(
+          "chatrooms",
+          { id: room_id }
+        );
 
         return roomById;
       } catch (err) {
@@ -83,10 +83,9 @@ export const userchatroomResolvers = {
 
       const chatroomUsers: usertype[] = await Promise.all(
         userRooms.map(async (room: rawuserchatroomtype) => {
-          const userById: usertype = await findOne<usertype, { id: number }>(
-            "users",
-            { id: room.user_id }
-          );
+          const userById: usertype = await findOne<usertype, IDSTYPE>("users", {
+            id: room.user_id,
+          });
           return userById;
         })
       );
@@ -101,7 +100,7 @@ export const userchatroomResolvers = {
       const RoomMessages: messagetype[] = await listAll<
         messagetype,
         { room_id: string }
-      >("chat", { filter: { room_id: room_id } });
+      >("messages", { filter: { room_id } });
 
       const lastMessage: messagetype = RoomMessages[RoomMessages.length - 1];
 

@@ -1,8 +1,9 @@
-import { listAll, findOne } from "../../utils/queriesutils.js";
+import { listAll, findOne } from "../../utils/common/queriesutils.js";
+
 //types
 import { usertype } from "./types/usertypes.js";
-import { filtersorttype } from "../../utils/types.js";
 import { chatroomtype } from "./types/chatroomtypes.js";
+import { filtersorttype, IDSTYPE } from "../../utils/common/types.js";
 import { messagetype, messagefiltertype } from "./types/messagetypes.js";
 
 export const messageResolvers = {
@@ -15,18 +16,19 @@ export const messageResolvers = {
         const allMessages: messagetype[] = await listAll<
           messagetype,
           messagefiltertype
-        >("chat", filter);
+        >("messages", filter);
+
         return allMessages;
       } catch (err) {
         throw err;
       }
     },
-    message: async (_: undefined, { id }: { id: number }): Promise<messagetype> => {
+    message: async (_: undefined, { id }: IDSTYPE): Promise<messagetype> => {
       try {
-        const messageById: messagetype = await findOne<
-          messagetype,
-          { id: number }
-        >("chat", { id: id });
+        const messageById: messagetype = await findOne<messagetype, IDSTYPE>(
+          "messages",
+          { id }
+        );
 
         if (!messageById) throw new Error(`Message not found with id: ${id}`);
 
@@ -37,24 +39,27 @@ export const messageResolvers = {
     },
   },
   Message: {
-    user_id: async ({ user_id }: { user_id: number }): Promise<usertype> => {
+    user_id: async ({ user_id }: { user_id: string }): Promise<usertype> => {
       try {
-        const userById: usertype = await findOne<
-          usertype,
-          { id: number }
-        >("users", { id: user_id });
+        const userById: usertype = await findOne<usertype, IDSTYPE>("users", {
+          id: user_id,
+        });
 
         return userById;
       } catch (err) {
         throw err;
       }
     },
-    room_id: async ({ room_id }: { room_id: string }): Promise<chatroomtype> => {
+    room_id: async ({
+      room_id,
+    }: {
+      room_id: string;
+    }): Promise<chatroomtype> => {
       try {
-        const roomByCode: chatroomtype = await findOne<
-          chatroomtype,
-          { room_code: string }
-        >("chatrooms", { room_code: room_id });
+        const roomByCode: chatroomtype = await findOne<chatroomtype, IDSTYPE>(
+          "chatrooms",
+          { id: room_id }
+        );
 
         return roomByCode;
       } catch (err) {

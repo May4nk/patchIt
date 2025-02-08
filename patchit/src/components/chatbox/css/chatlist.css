@@ -8,43 +8,13 @@
 }
 
 .newroombtns {
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
   width: 100%;
-  height: 2.7vw;
-  padding: 0 0.1rem;
-  margin-bottom: 0.3rem;
   margin-top: auto;
-  font-size: 0.9rem;
-  font-weight: 500;
-  background: transparent;
-}
-
-.newchatbtn,
-.newroombtn {
+  margin-bottom: 0.9vw;
   display: flex;
-  justify-content: center;
   align-items: center;
-  border-radius: 1.5rem;
-  margin-left: 1rem;
-  width: auto;
-  cursor: pointer;
-  height: 60%;
-  padding: 0.1vw 0.9vw;
-  border: 0.1rem solid rgba(255, 255, 255, 0.3);
-  background: rgba(0, 0, 0, 0.1);
-  color: rgba(255, 255, 255, 0.6);
-  font-size: 0.9vw;
+  justify-content: space-around;
 }
-
-.newroombtn:hover,
-.newchatbtn:hover {
-  color: white;
-  border-color: rgba(255, 255, 255, 0.7);
-}
-
-/* done */
 
 .chatters {
   display: flex;
@@ -111,38 +81,15 @@
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  padding-top: 0.3vw;
-  padding-right: 0.5vw;
-}
-
-.newchatroomrequest {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 1.5rem;
-  font-size: 0.9vw;
-  font-weight: 500;
-  cursor: pointer;
-  padding: 0 0.5rem;
-  background-color: rgb(12, 12, 12);
-  color: rgba(255, 255, 255, 0.4);
-}
-
-.newchatroomrequest:hover {
-  color: #2195f3c9;
-}
-
-.newchatrequestwrapperimg {
-  height: 1.3vw;
-  padding-left: 0.3vw;
+  margin: 0.3vw;
 }
 
 .newchatrequests {
   position: absolute;
-  background-color: rgba(30, 36, 38, 0.95);
+  background-color: rgba(11, 15, 17);
   border-radius: 0.5rem;
   color: white;
-  width: 13rem;
+  width: 15vw;
   z-index: 10;
   display: flex;
   justify-content: center;
@@ -162,14 +109,13 @@
   align-items: center;
   flex-direction: column;
   width: 100%;
-  padding: 0.5rem;
+  padding: 0.4vw;
   margin: 0.1rem 0;
   border-bottom: 1px solid rgba(255, 255, 255, 0.02);
 }
 
 .newchatrequestabtuser,
-.newchatrequestuser,
-.newchatrequestactions {
+.newchatrequestuser {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -177,18 +123,22 @@
 }
 
 .newchatrequestactions {
-  margin-top: 0.2rem;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  width: 70%;
 }
 
 .newchatrequestuser {
   flex-direction: column;
-  padding: 0 0.5rem;
+  padding: 0 0.5vw;
+  margin-bottom: 0.5vw;
 }
 
 .newchatrequestuserpicwrapper {
-  height: 2rem;
-  width: 2.3rem;
-  border-radius: 50%;
+  height: 2.7vw;
+  width: 2.7vw;
+  border-radius: 0.3vw;
 }
 
 .newchatrequestuserpic {
@@ -204,8 +154,9 @@
 }
 
 .newchatrequestuserbio {
-  font-size: 0.7vw;
+  font-size: 0.8vw;
   color: rgba(255, 255, 255, 0.7);
   font-weight: 500;
   width: 100%;
+  margin-top: 0.2vw;
 }

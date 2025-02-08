@@ -28,7 +28,7 @@ const Patdrop = (patdropprops: patdropprops) => {
     "/c/popular": { icn: "whatshot", title: "Popular" },
     "/u/": { icn: "perm_identity", title: param.uname || "" },
     "/c/": { icn: "people_outline", title: param.cname || "" },
-    "/post/new": { icn: "add_to_photos", title: "Create post" },
+    "/create/post": { icn: "add_to_photos", title: "New post" },
     "/post/": { icn: "panorama", title: "Post" },
     "/search/": { icn: "search", title: "Search" },
     "/c/settings": { icn: "settings", title: param.cname || "" },
@@ -61,12 +61,13 @@ const Patdrop = (patdropprops: patdropprops) => {
 
     switch (action.type) {
       case "CLICKED":
+        setDropped(false);
         return {
           title: action.payload?.title,
           img: action.payload?.img,
           icn: action.payload?.icn,
-          state: action?.payload?.state,
-        };;
+          state: "CLICKED",
+        };
 
       case "INPUT":
         return {
@@ -75,6 +76,7 @@ const Patdrop = (patdropprops: patdropprops) => {
         };
 
       case "LINKED":
+        setDropped(false);
         return state;
 
       case "DEFAULT":
@@ -116,16 +118,10 @@ const Patdrop = (patdropprops: patdropprops) => {
   const droppered = name ? droppers.map((drop: droppertype) => ({ ...drop, name: name })) : droppers;
 
   useEffect(() => {
-    if (profile && activeState === "DEFAULT") {
+    if ((profile && activeState === "DEFAULT") || (profile && activeState === "INPUT" && !patInput.length)) {
       profileDispatch({ type: "DEFAULT", payload: profile });
     }
   }, [profile]);
-
-  useEffect(() => {
-    if (activeState === "CLICKED" || activeState === "LINKED") {
-      setDropped(false);
-    }
-  }, [activeState]);
 
   useEffect(() => {
     if (profile?.state === "CURRENT") {
@@ -133,8 +129,8 @@ const Patdrop = (patdropprops: patdropprops) => {
         setCurrentState(current["/c/popular"]);
       } else if (location.pathname === "/") {
         setCurrentState(current["/c/popular"]);
-      } else if (location.pathname.includes("/post/new")) {
-        setCurrentState(current["/post/new"]);
+      } else if (location.pathname.includes("/create/post")) {
+        setCurrentState(current["/create/post"]);
       } else if (location.pathname.includes("/c/") && location.pathname.includes("search")) {
         setCurrentState(current["/c/search"]);
       } else if (location.pathname.includes("/u/") && location.pathname.includes("settings")) {

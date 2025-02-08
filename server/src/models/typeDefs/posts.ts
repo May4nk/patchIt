@@ -1,60 +1,81 @@
 export const postTypeDefs = `
-  type Post {
-    id: Int!
-    title: String!
-    owner: User!
-    community_id: Community
-    content: String
-    type: TYPE
-    likes: Int
-    status: STATUS!
-    privacy: PRIVACY!
-    created_at: String!
-    tags: [PostTags]
-    comments: [Comment]
-  }
   enum STATUS {
     ACTIVE
     INACTIVE
   }
-  enum PRIVACY {
-    PUBLIC
-    PRIVATE 
-  }
+    
   enum TYPE {
     BLOG
     IMAGE
     POLL
     LINK
   }
-  input UpsertPostInput {
-    title: String
-    owner: Int
-    community_id: Int
+
+  enum REQTYPE {
+    GET
+    PUT
+  }
+  
+  type Post {
+    id: String!
+    title: String!
+    owner: User!
     content: String
-    type: String
-    status: String
-    privacy: String
-    tag: [String]
+    type: TYPE
     likes: Int
-    id: Int
+    status: STATUS!
+    community_id: Community    
+    created_at: String!
+    tags: [PostTags]
+    comments: [Comment]
+  }  
+  
+  type signedUrls {
+    signedUrl: String
+    fileUrl: String
+    req: REQTYPE
   }
+
+  input UpsertPostInput {
+    id: String
+    title: String
+    owner: String
+    community_id: String
+    content: String
+    type: TYPE
+    status: STATUS    
+    likes: Int
+  }
+
   input RemovePostInput {
-    id: Int!
+    id: String!
   }
+
   input PostfilterInput {
-    id: Int
-    owner: Int
-    community_id: Int
+    id: String
+    owner: String
+    community_id: String
     tag: String
-    type: String
-    status: String
-    privacy: String
+    type: TYPE
+    status: STATUS    
     likes: Int
   }
-  input SortInput { 
+
+  input UrlFiles {
+    name: String!
+    type: String
+  }
+
+  input SortInput {
     column: String
     order: String
     nulls: String
+  }
+
+  input SignedUrlInput {
+    postId: String!
+    userId: String!
+    req: REQTYPE!
+    files: [UrlFiles]!
   }
 `;

@@ -1,19 +1,18 @@
 import db from "../../db.js";
-import { findOne } from "../../utils/queriesutils.js";
+import { findOne } from "../../utils/common/queriesutils.js";
 
 //types
-import {
-  posttagbatchdatatype,
-  remposttagdatatype,
-  rposttagtype,
-  posttagtype,
-} from "./types/posttagmutetypes.js";
+import { IDSTYPE } from "../../utils/common/types.js";
+import { rawposttagtype } from "../resolvers/types/posttagstypes.js";
 
 export const posttagMutations = {
   Mutation: {
-    batchInsertPostTags: async (_: undefined, { data }: posttagbatchdatatype): Promise<posttagtype[]> => {
+    batchInsertPostTags: async (
+      _: undefined,
+      { data }: { data: rawposttagtype[] }
+    ): Promise<rawposttagtype[]> => {
       try {
-        const insertBulkPostTags: posttagtype[] = await db
+        const insertBulkPostTags: rawposttagtype[] = await db
           .batchInsert("posts_tags_relation", data)
           .returning("*");
 
@@ -22,11 +21,14 @@ export const posttagMutations = {
         throw err;
       }
     },
-    removePostTag: async (_: undefined, { data }: remposttagdatatype): Promise<rposttagtype> => {
+    removePostTag: async (
+      _: undefined,
+      { data }: { data: rawposttagtype }
+    ): Promise<IDSTYPE> => {
       try {
-        const foundPostTag: posttagtype = await findOne<
-          posttagtype,
-          { post_id: number; tag_id: number }
+        const foundPostTag: rawposttagtype = await findOne<
+          rawposttagtype,
+          { post_id: string; tag_id: string }
         >("posts_tags_relation", {
           post_id: data.post_id,
           tag_id: data.tag_id,
@@ -34,7 +36,7 @@ export const posttagMutations = {
 
         if (!foundPostTag) throw new Error("Tag is not associated with post");
 
-        const [deletePostTag]: rposttagtype[] = await db("posts_tags_relation")
+        const [deletePostTag]: IDSTYPE[] = await db("posts_tags_relation")
           .where("id", foundPostTag.id)
           .del()
           .returning("id");

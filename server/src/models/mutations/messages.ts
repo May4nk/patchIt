@@ -1,39 +1,49 @@
 import db from "../../db.js";
-import { findOne } from "../../utils/queriesutils.js";
+import { findOne } from "../../utils/common/queriesutils.js";
 
 //types
+import { IDSTYPE } from "../../utils/common/types.js";
 import { messagetype } from "../resolvers/types/messagetypes.js";
 import { getProducer, getConsumer } from "../../services/kafka.js";
-type rmessagetype = { id: number };
 
 export const messageMutations = {
   Mutation: {
-    insertMessage: async (_: undefined, { data }: { data: messagetype }, { pubsub }: any) => {
-
+    insertMessage: async (
+      _: undefined,
+      { data }: { data: messagetype },
+      { pubsub }: any
+    ) => {
       const topic: string = "NEW-MESSAGE";
       const group: string = "test-group";
 
       await getProducer<messagetype>(topic, data);
-      
-      await getConsumer<messagetype>(topic, group, (async (data: messagetype) => {
-        const [createChat]: messagetype[] = await db("chat")
-        .insert(data)
-        .returning("*");
-    
-        pubsub.publish("NEW_MESSAGE", createChat);
-        return createChat;
-      }));
+
+      await getConsumer<messagetype>(
+        topic,
+        group,
+        async (data: messagetype) => {
+          const [createChat]: messagetype[] = await db("messages")
+            .insert(data)
+            .returning("*");
+
+          pubsub.publish("NEW_MESSAGE", createChat);
+          return createChat;
+        }
+      );
     },
-    removeMessage: async (_: undefined, { data }: { data: rmessagetype }): Promise<rmessagetype> => {
+    removeMessage: async (
+      _: undefined,
+      { data }: { data: IDSTYPE }
+    ): Promise<IDSTYPE> => {
       try {
-        const foundMessage: messagetype = await findOne<
-          messagetype,
-          { id: number }
-        >("chat", { id: data.id });
+        const foundMessage: messagetype = await findOne<messagetype, IDSTYPE>(
+          "messages",
+          { id: data.id }
+        );
 
         if (!foundMessage) throw new Error("Messages not found...");
 
-        const [deleteMessage]: rmessagetype[] = await db("chat")
+        const [deleteMessage]: IDSTYPE[] = await db("chat")
           .where("id", foundMessage.id)
           .del()
           .returning("id");

@@ -1,11 +1,22 @@
 export const userTypeDefs = `
+  enum STATUS {
+    ACTIVE
+    INACTIVE
+  }
+
+  enum PRIVACY {
+    PUBLIC
+    PRIVATE
+  }
+
   type LoginUser {
-    username: String!
+    email: String
+    username: String
     password: String!
   }
 
   type User {
-    id: Int!
+    id: String!
     email: String!
     username: String!
     status: STATUS
@@ -13,7 +24,7 @@ export const userTypeDefs = `
     dob: String
     country: String
     about: String
-    privacy: String
+    privacy: PRIVACY
     new_user: Boolean
     profile_pic: String
     token: String
@@ -32,13 +43,9 @@ export const userTypeDefs = `
     followers: [UserFollowing]
   }
 
-  enum STATUS {
-    ACTIVE
-    INACTIVE
-  }
-
   input LoginUserInput {
-    username: String!
+    email: String
+    username: String
     password: String!
   }
 
@@ -49,14 +56,14 @@ export const userTypeDefs = `
   }
     
   input InsertUserInput {
-    id: Int
+    id: String
     email: String
     username: String
     dob: String
     country: String
     about: String
-    status: String
-    privacy: String
+    status: STATUS
+    privacy: PRIVACY
     password: String
     new_user: Boolean
     social_links: String
@@ -67,14 +74,14 @@ export const userTypeDefs = `
   }
 
   input UsersfilterInput {
-    id: Int
+    id: String
     email: String
     username: String
     dob: String
     role: Int
     country: String
-    status: String
-    privacy: String
+    status: STATUS
+    privacy: PRIVACY
     new_user: Boolean
     profile_pic: String
     background_pic: String
@@ -82,13 +89,23 @@ export const userTypeDefs = `
   }
 
   input RemoveUserInput {
-    id: Int!
+    id: String!
   }
 
   input ChangePasswordInput {
-    id: Int!
+    id: String!
     password: String!
     newPassword: String!
   }
-  
+
+  input RequestForgetPasswordInput {
+    email: String!    
+    message: String!
+  }
+
+  input ForgetPasswordInput {
+    token: String!    
+    password: String!
+    cpassword: String!
+  }
 `;

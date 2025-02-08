@@ -1,18 +1,21 @@
 import React, { createContext, useState, useEffect } from "react";
 import { useLazyQuery } from "@apollo/client";
 
+//utils
 import { useAuth } from "../utils/hooks/useAuth";
+import { getSignedUrls } from "../utils/services/s3";
 
 //query
 import { GETLOGGEDUSER } from "./queries";
 
 //types
+import { signedurltype } from "../utils/types";
+import { USER_S_N_TYPE } from "../utils/main/types";
 import {
-  loggedusercontexttype,
+  usertype,
   userstate,
   authcontexttype,
-  usercontextdatatype,
-  usertype
+  loggedusercontexttype,
 } from "./types";
 
 const LoggedUserContext = createContext<loggedusercontexttype>({
@@ -22,12 +25,11 @@ const LoggedUserContext = createContext<loggedusercontexttype>({
 
 const LoggedUserProvider = (props: any) => {
   const { user }: authcontexttype = useAuth();
-  const loggedInUsername: string | null = user && user["username"];
+  const loggedInUsername: USER_S_N_TYPE = user && user["username"];
 
   //states
   const [userState, setUserState] = useState<userstate>({
-    profile_pic: "",
-    new_user: false,
+    profile_pic: null,
     nsfw: false,
     visiblity: false,
     show_nsfw: false,
@@ -42,7 +44,7 @@ const LoggedUserProvider = (props: any) => {
     communityfollowed: false,
     birthday: false,
     announcements: false,
-    sendmsg: "",
+    sendmsg: "ANYONE",
     searchshowprofile: false,
     auth_twofactor: false,
     blocked: "",
@@ -60,26 +62,49 @@ const LoggedUserProvider = (props: any) => {
 
   useEffect(() => {
     if (user !== null) {
-      getUser({
-        variables: {
-          filter: {
-            username: loggedInUsername!
+      (async function () {
+        // console.log(userData);
+        await getUser({
+          variables: {
+            filter: {
+              username: loggedInUsername!
+            }
+          },
+          onCompleted: ({ listUsers }: { listUsers: usertype[] }) => {
+            const currentUser: usertype = listUsers[0];
+            if (currentUser) {
+              if (currentUser?.profile_pic !== null && currentUser?.profile_pic.length > 0) {
+                (async function () {
+                  try {
+                    const signedUrls: signedurltype[] = await getSignedUrls({
+                      userId: user.id,
+                      postId: "0",
+                      req: "GET",
+                      files: [{ name: currentUser?.profile_pic! }]
+                    });
+
+                    if (signedUrls.length > 0) {
+                      setUserState({
+                        ...currentUser?.settings,
+                        profile_pic: signedUrls[0].signedUrl || null
+                      });
+                    }
+                  } catch (err) {
+                    console.log(err);
+                  }
+                }())
+              } else {
+                setUserState({
+                  ...currentUser?.settings,
+                  profile_pic: null
+                })
+              }
+            }
           }
-        }
-      }).then(({ data }: usercontextdatatype) => {
-        if (data) {
-          const currentUser: usertype = data?.listUsers[0];
-          if (currentUser) {
-            setUserState({
-              ...currentUser?.settings,
-              new_user: currentUser?.new_user,
-              profile_pic: currentUser?.profile_pic
-            });
-          }
-        }
-      })
+        });
+      }())
     }
-  }, [user]);
+  }, [user, loggedInUsername, getUser]);
 
   return (
     <>

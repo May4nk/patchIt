@@ -7,24 +7,29 @@ import Settingtab from '../../components/settings/Settingtab';
 import "./profilesettings.css";
 import { chatprops } from './types';
 import { profiletype, droppertype } from '../../components/html/patdrop/types';
+import { ALLOWTOMSG } from '../../utils/main/types';
 
 function Chattab(chatprops: chatprops) {
-  const { chatState, setChatState } = chatprops;
+  const { chatState, handleState } = chatprops;
 
   //handlers
+  const handleChatState: (val: ALLOWTOMSG) => void = (val: ALLOWTOMSG) => {
+    handleState({ type: "UPDATE_CHAT_SETTINGS", chatSettings: { sendmsg: val } })
+  }
+
   const chatDropperprofile: profiletype = { set: chatState.sendmsg };
   const chatDroppers: droppertype[] = [
     {
       title: "ANYONE", icn: "supervisor_account",
-      state: "CLICKED", event: () => setChatState({ ...chatState, sendmsg: "ANYONE" })
+      state: "CLICKED", event: () => handleChatState("ANYONE")
     },
     {
       title: "NONE", icn: "lock_outline",
-      state: "CLICKED", event: () => setChatState({ ...chatState, sendmsg: "NONE" })
+      state: "CLICKED", event: () => handleChatState("NONE")
     },
     {
       title: "FOLLOWERS", icn: "no_encryption",
-      state: "CLICKED", event: () => setChatState({ ...chatState, sendmsg: "FOLLOWERS" })
+      state: "CLICKED", event: () => handleChatState("FOLLOWERS")
     }
   ];
 
